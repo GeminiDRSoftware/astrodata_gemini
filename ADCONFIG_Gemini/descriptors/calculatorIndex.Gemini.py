@@ -14,8 +14,13 @@
 #       index and single giant calculator .py file, but that would be a mess.
 
 calculatorIndex = {
-    "GMOS_RAW":"GMOS_RAWDescriptor.GMOS_RAWDescriptorCalc()",
+    "FLAMINGOS2_RAW":"FLAMINGOS2_RAWDescriptor.FLAMINGOS2_RAWDescriptorCalc()",
+    #"GMOS_RAW":"GMOS_RAWDescriptor.GMOS_RAWDescriptorCalc()",
+    "GMOS_IMAGE":"GMOS_RAWDescriptor.GMOS_RAWDescriptorCalc()",
+    "GNIRS_RAW":"GNIRS_RAWDescriptor.GNIRS_RAWDescriptorCalc()",
+    "MICHELLE_RAW":"MICHELLE_RAWDescriptor.MICHELLE_RAWDescriptorCalc()",
+    "NICI_RAW":"NICI_RAWDescriptor.NICI_RAWDescriptorCalc()",
+    "NIFS_RAW":"NIFS_RAWDescriptor.NIFS_RAWDescriptorCalc()",
     "NIRI_RAW":"NIRI_RAWDescriptor.NIRI_RAWDescriptorCalc()",
-    "GMOS":"GMOS_RAWDescriptor.GMOS_RAWDescriptorCalc()",
-    
+    "TRECS_RAW":"TRECS_RAWDescriptor.TRECS_RAWDescriptorCalc()",
     }

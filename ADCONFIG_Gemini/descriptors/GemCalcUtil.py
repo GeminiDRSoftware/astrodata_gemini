@@ -15,4 +15,4 @@ def removeComponentID(instr):
         return instr
     else:
         retstr = m.group("filt")
-        return retstr        
+        return retstr
