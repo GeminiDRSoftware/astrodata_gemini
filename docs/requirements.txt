@@ -1,0 +1,5 @@
+# requirements for RTD
+sphinx-rtd-theme
+astrodata
+astropy
+numpy>=2.0.0

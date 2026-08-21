@@ -1,0 +1,48 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug"]
+projects: []
+assignees:
+  - KathleenLabrie
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to Reproduce
+      description: A clear and concise description of what actually happened instead. Was the output confusing or poorly described? Please provide steps to reproduce this bug.
+      value: "1. Get package from '...'\n2. Then run '...'\n3. An error occurs.\n\n```python\n# Put your Python code snippet here.\n```"
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running?
+      value: "run `python -c \"import astrodata_gemini; print(astrodata_gemini.version)\"` to print the version to the terminal."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell

@@ -25,3 +25,7 @@
 .big {
   font-size: 120%;
 }
+
+.extra-bold {
+  font-weight: 900;
+}

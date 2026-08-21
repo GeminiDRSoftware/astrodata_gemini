@@ -1,0 +1,28 @@
+name: Feature Request
+description: Request a feature
+title: "[Feat]: "
+labels: ["enhancement"]
+projects: []
+assignees:
+  - KathleenLabrie
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Describe the feature in words
+      description: "Tell us about your feature request. Example questions to consider: What problem does it solve? What does it do? How might it be implemented?"
+      placeholder: I'd like astrodata to...
+    validations:
+      required: true
+  - type: textarea
+    id: code-description
+    attributes:
+      label: code-description
+      description: If possible, please provide an example code snippet with the feature being used. It doesn't have to run---show us code the way you'd like it to work!
+      render: shell
+    validations:
+      required: true
