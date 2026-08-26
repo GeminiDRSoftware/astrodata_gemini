@@ -1,10 +1,10 @@
 import datetime
-from gemini_instruments.common import Section
+from astrodata import Section
 
 
 # This has been modified from a dict to a hideous nested list so
 # path_to_inputs can be used
-fixture_data = {
+descriptors_data = {
     ('GHOST', "S20230214S0025.fits"): [  # BUNDLE
         ('airmass', 1.0907455772702386),
         ('amp_read_area', {'blue': ["'EEV231-84, E':[1:2048,1:2056]", "'EEV231-84, F':[2049:4096,1:2056]",

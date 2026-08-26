@@ -1,0 +1,173 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools_scm[toml]>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "astrodata_gemini"
+dynamic = ["version"]
+description = """
+A plugin for accessing data from the Gemini Observatory instruments through
+the astrodata uniform interface.
+"""
+authors = [
+    { name = "DRAGONS development team" },
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "astrodata>=3",
+    "astropy>=7.1.2",
+    "numpy>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/GeminiDRSoftware/astrodata_gemini/"
+Documentation = "https://astrodata-gemini.readthedocs.io/en/latest/"
+Repository = "https://github.com/GeminiDRSoftware/astrodata_gemini/"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.16",
+    "coverage>=7.15",
+    "pre-commit>=4.6",
+]
+docs = [
+    "sphinx>=9.0.0,<10",
+    "sphinx-automodapi>=0.22.0",
+    "sphinx-rtd-theme>=3.1.0",
+]
+test = [
+    "pytest>=9.1.1",
+    "coverage>=7.15.4",
+    "genbadge[coverage]>=1.1.3",
+    "pytest-cov>=7.1.0",
+    "nox>=2026.8.17",
+    "docutils>=0.21",
+]
+build_test = [
+    "devpi-server>=6.20.3",
+    "devpi-client>=7.3.0",
+    "build>=1.5.0",
+    "twine>=7.0.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["astrodata_gemini"]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "no-local-version"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+markers = [
+    "dragons_remote_data: data used by DRAGONS tests",
+    "dragons: tests that require a DRAGONS environment",
+]
+
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "docs/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
+precision = 1
+
+[tool.ruff]
+line-length = 79
+exclude = [
+    "docs",
+]
+
+include = [
+    "astrodata_gemini",
+    "noxfile.py",
+]
+
+[tool.ruff.lint]
+# select = ["ALL"]
+select = ["F", "E", "D", "I"]
+
+# Ruff ignored linting rules:
+#  + ANN: Annotations
+#  + B: Bugbear lint rules
+#  + C: Complexity
+#  + DTZ003: datetime issue
+#  + EM: Error messages
+#  + FIX: FIXME statements
+#  + N811: Imported constant names
+#  + PERF: Performance
+#  + PTH: os.path issue
+#  + PLR: Refactors
+#  + PYI024: collections.namedtuple
+#  + RET504: Return statement with no value
+#  + RUF: Ruff specific rules
+#  + SLOT: __slots__ in derived classes
+#  + SIM: Simplicity
+#  + SLF001: Private member accessed
+#  + T201: print statements
+#  + TD: TODO statements
+#  + TRY003: string literals in exceptions
+ignore = [
+#  "ANN",
+#  "B",
+#  "C",
+#  "COM812",
+#  "DTZ003",
+#  "EM",
+#  "FIX",
+#  "N811",
+#  "PERF",
+#  "PLR",
+#  "PTH",
+#  "PYI024",
+#  "RET504",
+#  "RUF",
+#  "SIM",
+#  "SLOT",
+#  "SLF001",
+#  "T201",
+#  "TD",
+#  "TRY003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests should not be worried about:
+#  + ERA001: Commented out code
+#  + S101: Use of assert
+#  + D: Docstring content
+#  + PLR2004: Magic numbers (false positives at times)
+#  + SLF001: Private member accessed
+#  + N: Naming convention
+"tests/*" = [
+  "ERA001",
+  "S101",
+  "D",
+  "PLR2004",
+  "SLF001",
+  "N",
+]
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.flake8-pytest-style]
+mark-parentheses = false
+
+#[tool.script_tests]
+#"docs/TBD.rst" = ""

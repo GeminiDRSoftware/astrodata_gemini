@@ -1,4 +1,4 @@
-fixture_data = {
+tags_data = {
     # GMOS-Level Tags
     #   Tags: GMOS, BIAS, DARK, FRINGE, FLAT (whether it's GCAL or TWILIGT), GCALFLAT, TWILIGHT, ARC, IMAGE, SPECT,
     #         IFU, LS, MOS, NODANDSHUFFLE, BLUE, RED, TWO

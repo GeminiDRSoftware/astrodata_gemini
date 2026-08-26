@@ -1,0 +1,311 @@
+import os
+import sys
+
+import fileinput
+import functools
+import importlib.util
+from packaging.requirements import Requirement
+from pathlib import Path
+from typing import ClassVar
+
+import nox
+from nox.command import CommandFailed
+
+sys.path.insert(0, str(Path(__file__).parent))
+from nox_utils.devpi_support import devpi_available_port
+from nox_utils import dragons_support
+
+# Sessions to run by default when nox is called without arguments.
+nox.options.sessions = []
+nox.options.error_on_external_run = True
+
+# ---- Session Variables ---------------------------------------------------
+
+class SessionVariables:
+    """Session variables for the nox sessions."""
+
+    # Python versions:
+    python_versions: ClassVar[list[str]] = [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+    ]  # fmt: skip
+
+    # paths to test directories
+    unit_test_dir = Path(__file__).parent / "tests" / "unit"
+    integration_test_dir = Path(__file__).parent / "tests" / "integration"
+
+    # pytest options for the test sessions
+    pytest_options = ["--cov=astrodata", "--cov-report=term-missing"]
+    unit_pytest_options = pytest_options + [str(unit_test_dir)]
+    integration_pytest_options = pytest_options + [str(integration_test_dir)]
+
+    # conda channels and url for DRAGONS integration tests
+    dragons_conda_channels: ClassVar[list[str]] = (
+        dragons_support.dragons_conda_channels
+    )
+    dragons_venv_params = dragons_support.dragons_venv_params
+    dragons_github_url = dragons_support.dragons_github_url
+
+    # devpi server information
+    devpi_host = "localhost"
+    devpi_initial_port = 1420
+
+    @classmethod
+    @functools.cache
+    def devpi_port(cls):
+        """Return the devpi port"""
+        return devpi_available_port(cls.devpi_host, cls.devpi_initial_port)
+
+    @classmethod
+    def devpi_url(cls):
+        """Return the devpi url"""
+        return f"http://{cls.devpi_host}:{cls.devpi_port()}/"
+
+    def __new__(cls) -> None:
+        """Just catches accidental invocations."""
+        message = "This class should not be instantiated."
+        raise NotImplementedError(message)
+
+# ---- Utility functions ---------------------------------------------------
+
+def apply_data_caching_environment_variable(session: nox.Session) -> None:
+    """Add a test caching env var to the session's environment."""
+    default_data_cache_path = str(Path(os.getcwd()) / "_test_data_cache")
+
+    # astrodata.testing.download_from_archive() uses the  ASTRODATA_TEST
+    # environment variable to determine where to cache downloaded test data.
+    session.env["ASTRODATA_TEST"] = (
+        os.getenv("ASTRODATA_TEST") or default_data_cache_path
+    )
+
+def install_pip_test_dependencies(session, packages=None, optionals=[]):
+    """Install the test dependencies from pyproject.toml using pip."""
+
+    # If using venv, upgrade pip first. Report the pip version.
+    # Not needed if backend is a conda environment.
+    if session.venv_backend == "venv":
+        session.install("--upgrade", "pip")
+        session.run("python", "-m", "pip", "--version")
+
+    # Write the requirements.txt file if no packages are specified,
+    # otherwise write the specified packages to a temporary requirements.txt
+    # file.
+    if not packages:
+        req_file_path = write_req_file(session, optionals=optionals)
+    else:
+        req_file_path = Path(session.create_tmp()) / "requirements.txt"
+        req_file_path.write_text("\n".join(packages) + "\n")
+
+    # Install the dependencies from the requirements.txt file.
+    # The timeout helps when devpi is used in a conda environment.
+    session.install("-r", str(req_file_path), "--timeout=30")
+
+
+def install_conda_test_dependencies(session, packages=None, optionals=[]):
+    """Install the test dependencies from pyproject.toml using conda."""
+
+    # Write the requirements.txt file if no packages are specified,
+    # otherwise write the specified packages to a temporary requirements.txt
+    # file.
+    if not packages:
+        req_file_path = write_req_file(session, optionals=optionals)
+    else:
+        req_file_path = Path(session.create_tmp()) / "requirements.txt"
+        req_file_path.write_text("\n".join(packages) + "\n")
+
+    # Get the session's python version.
+    cmd = [
+        "python",
+        "-c",
+        (
+            "import sys;"
+            "print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+        ),
+    ]
+    session_python_version = session.run(*cmd, silent=True).strip()
+
+    # The requirements file may contain PEP 508 environment markers
+    # (e.g. numpy's python_version-conditioned pins). conda cannot
+    # parse those. Evaluate each marker for this session's Python
+    # version and strip it, dropping any requirement that doesn't
+    # apply.
+    with fileinput.input(files=str(req_file_path), inplace=True) as file:
+        for line in file:
+            stripped = line.strip()
+            if not stripped:
+                continue
+
+            requirement = Requirement(stripped)
+
+            if requirement.marker is None or requirement.marker.evaluate(
+                    environment={"python_version": session_python_version}
+            ):
+                requirement.marker = None
+                print(str(requirement), end="\n")
+
+    session.conda_install(
+        "--quiet",
+        "--file",
+        str(req_file_path),
+        channel=SessionVariables.dragons_conda_channels,
+    )
+
+
+def write_req_file(session, optionals=[]):
+    """Write the requirements.txt file from pyproject.toml."""
+
+    # Get the dependencies from pyproject.toml
+    toml_config = nox.project.load_toml("pyproject.toml")
+    requirements = toml_config["project"]["dependencies"]
+    for optional in optionals:
+        requirements += toml_config["project"]["optional-dependencies"].get(optional, [])
+
+    # Write the requirements to a temporary file
+    req_file_path = Path(session.create_tmp()) / "requirements.txt"
+    req_file_path.write_text("\n".join(requirements) + "\n")
+
+    # Log list to the session log
+    session.log(f"Requirements written to {req_file_path}")
+    session.log(f"\n".join(requirements) + "\n")
+
+    return req_file_path
+
+#---- Nox Sessions ---------------------------------------------------------
+
+def get_lut_data(module_name, lut_path):
+    """Get the LUT data from the lut_tags.py file."""
+    spec = importlib.util.spec_from_file_location(module_name, lut_path)
+    lut = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(lut)
+    return lut
+
+@nox.session(venv_backend="venv", python="3.12")
+def pre_download_test_data(session):
+    """Pre-download test data for the unit and integration tests."""
+    apply_data_caching_environment_variable(session)
+
+    # Install pytest and astrodata for downloading test data
+    install_pip_test_dependencies(session, packages=["astrodata"])
+
+    # Get the file names from the LUTs.
+    lut_tag_path = SessionVariables.unit_test_dir / "lut_tags.py"
+    lut_tags_dict = get_lut_data("lut_tags", lut_tag_path).tags_data
+
+    lut_descriptor_path = SessionVariables.unit_test_dir / "lut_descriptors.py"
+    lut_descriptors_dict = get_lut_data(
+        "lut_descriptors",  lut_descriptor_path
+    ).descriptors_data
+
+    lut_ghost_descriptor_path = SessionVariables.unit_test_dir / "ghost_lut_descriptors.py"
+    lut_ghost_descriptors_dict = get_lut_data(
+        "ghost_lut_descriptors",  lut_ghost_descriptor_path
+    ).descriptors_data
+
+    all_keys = (set(lut_tags_dict.keys())
+                | set(lut_descriptors_dict.keys())
+                | set(lut_ghost_descriptors_dict.keys()))
+
+    failed_to_download = []
+    for (junk, filename) in all_keys:
+        try:
+            print(f"Downloading file: {filename}")
+            session.run(
+                "python",
+                "-c",
+                f"import astrodata; astrodata.testing.download_from_archive('{filename}', env_var='ASTRODATA_TEST')",
+            )
+        except CommandFailed as e:
+            print(f"Error downloading file {filename}: {e}")
+            failed_to_download.append(filename)
+
+    if failed_to_download:
+        session.log(
+            f"Failed to download the following files: \n{'\n'.join(failed_to_download)}\n"
+        )
+
+# @nox.session(python=SessionVariables.python_versions):
+# def unit_tests(session):
+#     """ Run the unit tests with pytest."""
+#     apply_data_caching_environment_variable(session)
+
+
+@nox.session
+def devshell(session):
+    """Create a development environment with all dependencies installed."""
+    venv_name = "adgemini_venv"
+    venv_path = Path("." + venv_name + "/").absolute()
+    activate_path = venv_path / "bin" / "activate"
+    venv_python = venv_path / "bin" / "python"
+
+    # Remove any existing virtual environment
+    if venv_path.exists():
+        session.run("rm", "-rf", str(venv_path), external=True)
+
+    # Create fresh virtual environment
+    session.run(
+        "python", "-m", "venv", str(venv_path), "--prompt", venv_name
+    )
+
+    # Install dependencies in the virtual environment
+    toml = nox.project.load_toml("pyproject.toml")
+    req_file_path = write_req_file(
+        session, optionals=["dev", "docs", "test", "build_test"]
+    )
+
+    session.run(
+        str(venv_python),
+        "-m",
+        "pip",
+        "install",
+        "--upgrade",
+        "pip",
+        external=True,
+    )
+
+    session.run(
+        str(venv_python),
+        "-m",
+        "pip",
+        "install",
+        "-r",
+        str(req_file_path),
+        external=True,
+    )
+
+    # Install the package itself in editable mode
+    session.run(
+        str(venv_python),
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".",
+        "--no-deps",
+        external=True,
+    )
+
+    session.log("Virtual environment created.")
+    session.log("Activate the environment with:")
+    session.log(f"  source {activate_path.relative_to(Path.cwd())}")
+    session.log("Deactivate the environment with: deactivate")
+
+    if "--no-pre-commit" not in session.posargs:
+        session.notify("initialize_pre_commit")
+
+@nox.session(python="3.12")
+def initialize_pre_commit(session):
+    """Initialize pre-commit hooks."""
+
+    session.install("pre-commit")
+    session.run(
+        "pre-commit",
+        "install",
+        "--install-hooks",
+        "--hook-type=pre-commit",
+        "--hook-type=commit-msg",
+    )
+
+# ------
+

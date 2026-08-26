@@ -2,7 +2,7 @@ import datetime
 
 from astrodata import Section
 
-fixture_data = {
+descriptors_data = {
     ('bHROS', 'S20070112S0081.fits'): (
         ('airmass', 1.128),
         ('amp_read_area', [None]),

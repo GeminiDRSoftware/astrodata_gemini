@@ -1,0 +1,4 @@
+Take the GHOST S0025 file and use dragons to debunble it.  Then run
+the descriptor tests on the debundled files.  The unit tests cannot be run
+on those files with just archive download.
+
