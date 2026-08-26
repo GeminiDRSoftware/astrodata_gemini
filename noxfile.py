@@ -87,7 +87,19 @@ def apply_data_caching_environment_variable(session: nox.Session) -> None:
 
 
 def get_lut_data(module_name, lut_path):
-    """Get the LUT data from the lut_tags.py file."""
+    """Get the LUT data from the lut_tags.py file.
+
+    Arguments
+    ---------
+    module_name : str
+        The name of the module to import.
+    lut_path : str
+        The path to the lookup table python file.
+
+    Returns
+    -------
+    The LUT module.
+    """
     spec = importlib.util.spec_from_file_location(module_name, lut_path)
     lut = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(lut)
@@ -95,7 +107,22 @@ def get_lut_data(module_name, lut_path):
 
 
 def install_pip_test_dependencies(session, packages=None, optionals=[]):
-    """Install the test dependencies from pyproject.toml using pip."""
+    """Install the test dependencies from pyproject.toml using pip.
+
+    Arguments
+    ---------
+    session : nox.Session
+        The nox session object.
+
+    packages : list of str, optional
+        A list of the packages to install. If not specified, the packages
+        will be read from pyproject.toml.
+
+    optionals : list of str
+        A list of the optional dependencies to include in the installation.
+        The valid options are defined under the [project.optional-dependencies]
+        section of pyproject.toml.
+    """
     # If using venv, upgrade pip first. Report the pip version.
     # Not needed if backend is a conda environment.
     if session.venv_backend == "venv":
@@ -117,7 +144,22 @@ def install_pip_test_dependencies(session, packages=None, optionals=[]):
 
 
 def install_conda_test_dependencies(session, packages=None, optionals=[]):
-    """Install the test dependencies from pyproject.toml using conda."""
+    """Install the test dependencies from pyproject.toml using conda.
+
+    Arguments
+    ---------
+    session : nox.Session
+        The nox session object.
+
+    packages : list of str, optional
+        A list of the packages to install. If not specified, the packages
+        will be read from pyproject.toml.
+
+    optionals : list of str
+        A list of the optional dependencies to include in the installation.
+        The valid options are defined under the [project.optional-dependencies]
+        section of pyproject.toml.
+    """
     # Write the requirements.txt file if no packages are specified,
     # otherwise write the specified packages to a temporary requirements.txt
     # file.
@@ -166,7 +208,18 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
 
 
 def write_req_file(session, optionals=[]):
-    """Write the requirements.txt file from pyproject.toml."""
+    """Write the requirements.txt file from pyproject.toml.
+
+    Arguments
+    ---------
+    session : nox.Session
+        The nox session object.
+
+    optionals : list of str
+        A list of the optional dependencies to include in the
+        requirements.txt file.  The valid options are defined under the
+        [project.optional-dependencies] section of pyproject.toml.
+    """
     # Get the dependencies from pyproject.toml
     toml_config = nox.project.load_toml("pyproject.toml")
     requirements = toml_config["project"]["dependencies"]
@@ -228,11 +281,7 @@ def pre_download_test_data(session):
                 f"astrodata.testing.download_from_archive('{filename}', "
                 "env_var='ASTRODATA_TEST')"
             )
-            session.run(
-                "python",
-                "-c",
-                cmd,
-            )
+            session.run("python", "-c", cmd)
         except CommandFailed as e:
             print(f"Error downloading file {filename}: {e}")
             failed_to_download.append(filename)
@@ -252,7 +301,11 @@ def pre_download_test_data(session):
 
 @nox.session
 def devshell(session):
-    """Create a development environment with all dependencies installed."""
+    """Create a development environment with all dependencies installed.
+
+    To not activate the pre-commit hooks, use the --no-pre-commit option.
+    Eg.  nox -s devshell -- --no-pre-commit
+    """
     venv_name = "adgemini_venv"
     venv_path = Path("." + venv_name + "/").absolute()
     activate_path = venv_path / "bin" / "activate"
