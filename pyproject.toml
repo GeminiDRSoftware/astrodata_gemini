@@ -20,6 +20,7 @@ requires-python = ">=3.12"
 dependencies = [
     "astrodata>=3",
     "astropy>=7.1.2",
+    "python-dateutil>=2.9.0",
     "numpy>=2.0.0",
 ]
 
@@ -46,6 +47,7 @@ test = [
     "pytest-cov>=7.1.0",
     "nox>=2026.8.17",
     "docutils>=0.21",
+   # "astrofaker @ git+https:/github.com/GeminiDRSoftware/astrofaker.git",
 ]
 build_test = [
     "devpi-server>=6.20.3",
@@ -65,8 +67,9 @@ local_scheme = "no-local-version"
 testpaths = ["tests"]
 
 markers = [
-    "dragons_remote_data: data used by DRAGONS tests",
     "dragons: tests that require a DRAGONS environment",
+    "goa_remote_data: test uses data downloaded from the Gemini Observatory Archive (GOA)",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 
 [tool.coverage.run]

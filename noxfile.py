@@ -40,7 +40,7 @@ class SessionVariables:
     integration_test_dir = Path(__file__).parent / "tests" / "integration"
 
     # pytest options for the test sessions
-    pytest_options = ["--cov=astrodata", "--cov-report=term-missing"]
+    pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
     unit_pytest_options = pytest_options + [str(unit_test_dir)]
     integration_pytest_options = pytest_options + [str(integration_test_dir)]
 
@@ -79,10 +79,16 @@ def apply_data_caching_environment_variable(session: nox.Session) -> None:
     """Add a test caching env var to the session's environment."""
     default_data_cache_path = str(Path(os.getcwd()) / "_test_data_cache")
 
-    # astrodata.testing.download_from_archive() uses the  ASTRODATA_TEST
-    # environment variable to determine where to cache downloaded test data.
-    session.env["ASTRODATA_TEST"] = (
-        os.getenv("ASTRODATA_TEST") or default_data_cache_path
+    # astrodata.testing.download_from_archive() will download the files
+    # into this location.
+    session.env["ADGEMINNI_TESTDATA"] = (
+        os.getenv("ADGEMINI_TESTDATA") or default_data_cache_path
+    )
+
+    # Non-downloadable files (e.g. reduced data) are stored in the
+    # $ADGEMINI_STORE_TESTDATA directory.
+    session.env['ADGEMINI_STORE_TESTDATA'] = (
+        os.getenv("ADGEMINI_STORE_TESTDATA") or default_data_cache_path
     )
 
 
@@ -164,6 +170,7 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
     # otherwise write the specified packages to a temporary requirements.txt
     # file.
     if not packages:
+        # write_req_file will always include the project dependencies.
         req_file_path = write_req_file(session, optionals=optionals)
     else:
         req_file_path = Path(session.create_tmp()) / "requirements.txt"
@@ -293,10 +300,18 @@ def pre_download_test_data(session):
         )
 
 
-# @nox.session(python=SessionVariables.python_versions):
-# def unit_tests(session):
-#     """ Run the unit tests with pytest."""
-#     apply_data_caching_environment_variable(session)
+@nox.session(python=SessionVariables.python_versions)
+def unit_tests(session):
+    """ Run the unit tests with pytest."""
+    apply_data_caching_environment_variable(session)
+    install_pip_test_dependencies(session, optionals=["test"])
+    session.install("-e", ".", "--no-deps")
+
+    # Positional arguments after -- are passed to pytest
+    pytest_args = session.posargs
+
+    # Run the tests.
+    session.run("pytest", *SessionVariables.unit_pytest_options, *pytest_args)
 
 
 @nox.session
