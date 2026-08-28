@@ -2,7 +2,7 @@ import pytest
 
 import astrodata
 import astrodata.testing
-import gemini_instruments
+import astrodata_gemini
 
 import numpy as np
 
@@ -33,7 +33,7 @@ def ad(request):
 
 @pytest.mark.dragons_remote_data
 def test_is_right_instance(ad):
-    assert isinstance(ad, gemini_instruments.gmos.adclass.AstroDataGmos)
+    assert isinstance(ad, astrodata_gemini.gmos.adclass.AstroDataGmos)
 
 
 @pytest.mark.dragons_remote_data

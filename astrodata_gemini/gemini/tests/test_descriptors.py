@@ -4,7 +4,7 @@ import datetime
 import pytest
 import astrodata
 import astrodata.testing
-import gemini_instruments
+import astrodata_gemini
 
 import numpy as np
 

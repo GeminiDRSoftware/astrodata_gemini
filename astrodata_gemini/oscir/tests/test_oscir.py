@@ -1,6 +1,6 @@
 import pytest
 
-from gemini_instruments.oscir import AstroDataOscir
+from astrodata_gemini.oscir import AstroDataOscir
 
 
 def test_ra_dec_from_text():

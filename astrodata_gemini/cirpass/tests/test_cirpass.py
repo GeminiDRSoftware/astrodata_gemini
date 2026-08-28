@@ -2,7 +2,7 @@ import pytest
 import astrodata
 
 # until we add CIRPASS to astrofaker
-from gemini_instruments.cirpass import AstroDataCirpass
+from astrodata_gemini.cirpass import AstroDataCirpass
 
 
 def test_ra_dec_from_text():

@@ -1,7 +1,7 @@
 import numpy as np
 
 # If the filter names and central wavelength are different from
-# the global definitions in gemini_instruments/gemini/lookup.py
+# the global definitions in astrodata_gemini/gemini/lookup.py
 # redefine them here in filter_wavelengths.
 
 filter_wavelengths = {

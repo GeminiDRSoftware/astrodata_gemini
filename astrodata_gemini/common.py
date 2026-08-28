@@ -3,7 +3,7 @@ Structures and functions that can be shared across instrument code.
 
 When should you add something here? Here's some criteria: the code
 that belongs in here is not generally useful outside of
-gemini_instruments, and:
+astrodata_gemini, and:
 
     - more than one instrument share the code to override a method
       that provides *default* behaviour, meaning that there's no

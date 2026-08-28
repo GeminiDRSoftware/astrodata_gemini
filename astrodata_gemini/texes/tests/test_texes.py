@@ -1,6 +1,6 @@
 import pytest
 
-from gemini_instruments.texes import AstroDataTexes
+from astrodata_gemini.texes import AstroDataTexes
 
 
 @pytest.mark.skip  # skip fornow

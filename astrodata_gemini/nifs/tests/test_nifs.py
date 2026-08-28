@@ -2,7 +2,7 @@ import pytest
 
 import astrodata
 import astrodata.testing
-import gemini_instruments
+import astrodata_gemini
 
 test_files = [
     'N20160727S0077.fits',
@@ -19,7 +19,7 @@ def ad(request):
 @pytest.mark.dragons_remote_data
 def test_is_right_instance(ad):
     # YES, this *can* be different from test_is_right_type. Metaclasses!
-    assert isinstance(ad, gemini_instruments.nifs.adclass.AstroDataNifs)
+    assert isinstance(ad, astrodata_gemini.nifs.adclass.AstroDataNifs)
 
 
 @pytest.mark.dragons_remote_data

@@ -11,7 +11,7 @@
 
 import numpy as np
 from datetime import date
-from gemini_instruments.gmos import lookup
+from astrodata_gemini.gmos import lookup
 # ------------------------------------------------------------------------------
 
 

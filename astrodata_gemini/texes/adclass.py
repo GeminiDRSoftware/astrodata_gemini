@@ -2,7 +2,7 @@
 #                                                             Gemini Observatory
 #
 #                                                                        Dragons
-#                                                             gemini_instruments
+#                                                             astrodata_gemini
 #                                                               texes.adclass.py
 # ------------------------------------------------------------------------------
 from astrodata import astro_data_tag

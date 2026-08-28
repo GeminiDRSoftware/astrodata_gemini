@@ -12,8 +12,8 @@ from astrodata import (
     TagSet,
     astro_data_descriptor,
 )
-from gemini_instruments.gemini import AstroDataGemini
-from gemini_instruments.common import build_group_id
+from astrodata_gemini.gemini import AstroDataGemini
+from astrodata_gemini.common import build_group_id
 
 from .. import gmu
 

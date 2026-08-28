@@ -2,7 +2,7 @@ import pytest
 
 import astrodata
 import astrodata.testing
-import gemini_instruments
+import astrodata_gemini
 
 filename = 'N20190116G0054i.fits'
 
@@ -16,13 +16,13 @@ def ad():
 @pytest.mark.xfail(reason="AstroFaker changes the AstroData factory")
 @pytest.mark.dragons_remote_data
 def test_is_right_type(ad):
-    assert type(ad) == gemini_instruments.graces.adclass.AstroDataGraces
+    assert type(ad) == astrodata_gemini.graces.adclass.AstroDataGraces
 
 
 @pytest.mark.dragons_remote_data
 def test_is_right_instance(ad):
     # YES, this *can* be different from test_is_right_type. Metaclasses!
-    assert isinstance(ad, gemini_instruments.graces.adclass.AstroDataGraces)
+    assert isinstance(ad, astrodata_gemini.graces.adclass.AstroDataGraces)
 
 
 @pytest.mark.dragons_remote_data

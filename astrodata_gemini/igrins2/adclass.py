@@ -1,6 +1,6 @@
 """
 This module defines AstroData classes for IGRINS instruments, extending
-`gemini_instruments.igrins.AstroDataIgrins` to provide instrument-specific
+`astrodata_gemini.igrins.AstroDataIgrins` to provide instrument-specific
 metadata handling and data descriptors for IGRINS and IGRINS-2 data.
 """
 import datetime
@@ -9,7 +9,7 @@ import numpy as np
 import astropy.units as u
 from astrodata import (astro_data_tag, astro_data_descriptor,
                        returns_list, TagSet)
-from gemini_instruments.common import Section
+from astrodata_gemini.common import Section
 from ..gemini import AstroDataGemini, use_keyword_if_prepared
 from .. import gmu
 from . import lookup

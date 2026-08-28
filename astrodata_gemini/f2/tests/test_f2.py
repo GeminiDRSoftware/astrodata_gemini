@@ -3,8 +3,8 @@ import pytest
 
 import astrodata
 import astrodata.testing
-import gemini_instruments
-from gemini_instruments.f2 import AstroDataF2
+import astrodata_gemini
+from astrodata_gemini.f2 import AstroDataF2
 
 import numpy as np
 
@@ -35,12 +35,12 @@ def ad(request):
 @pytest.mark.dragons_remote_data
 @pytest.mark.xfail(reason="AstroFaker changes the AstroData factory")
 def test_is_right_type(ad):
-    assert type(ad) == gemini_instruments.f2.adclass.AstroDataF2
+    assert type(ad) == astrodata_gemini.f2.adclass.AstroDataF2
 
 
 @pytest.mark.dragons_remote_data
 def test_is_right_instance(ad):
-    assert isinstance(ad, gemini_instruments.f2.adclass.AstroDataF2)
+    assert isinstance(ad, astrodata_gemini.f2.adclass.AstroDataF2)
 
 
 @pytest.mark.dragons_remote_data

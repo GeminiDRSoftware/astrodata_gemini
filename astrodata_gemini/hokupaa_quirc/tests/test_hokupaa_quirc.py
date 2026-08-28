@@ -2,7 +2,7 @@ import pytest
 
 
 # Until we add Hokupaa to astrofaker
-from gemini_instruments.hokupaa_quirc import AstroDataHokupaaQUIRC
+from astrodata_gemini.hokupaa_quirc import AstroDataHokupaaQUIRC
 
 
 def test_ra_dec_from_text():

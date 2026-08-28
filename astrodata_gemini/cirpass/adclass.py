@@ -2,7 +2,7 @@
 #                                                            Gemini Observatory
 #
 #                                                                        Dragons
-#                                                             gemini_instruments
+#                                                             astrodata_gemini
 #                                                             cirpass.adclass.py
 # ------------------------------------------------------------------------------
 

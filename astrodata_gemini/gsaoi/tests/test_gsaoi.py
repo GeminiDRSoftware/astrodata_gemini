@@ -1,6 +1,6 @@
 import pytest
 
-from gemini_instruments.gsaoi import AstroDataGsaoi
+from astrodata_gemini.gsaoi import AstroDataGsaoi
 
 
 def test_ra_dec_from_text():

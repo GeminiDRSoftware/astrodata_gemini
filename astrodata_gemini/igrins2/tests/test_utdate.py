@@ -2,7 +2,7 @@ import pytest
 
 import datetime
 
-import astrodata, gemini_instruments
+import astrodata, astrodata_gemini
 
 from . import test_data
 from importlib.resources import files
