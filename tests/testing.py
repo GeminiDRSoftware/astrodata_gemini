@@ -4,16 +4,17 @@ import pytest
 import astrodata
 from astrodata.testing import download_from_archive
 
+
 def find_test_data(filename, store_location):
-    """
-    Find the test data file in the local store.
+    """Find the test data file in the local store.
 
     Parameters
     ----------
     filename : str
         The name of the test data file to find.
-    store_location : str
-        The path to the local store of test data files.
+    store_location : list of str
+        The path elements to the local store of test data files, relative
+        to the $ADGEMINI_STORE_TESTDATA environment variable.
 
     Returns
     -------
@@ -24,6 +25,8 @@ def find_test_data(filename, store_location):
     ------
     FileNotFoundError
         If the test data file is not found in the local store.
+        Those exceptions are caught and handled with pytest.skip().
+        Nothing is currently raised to the caller.
     """
 
     # First try to download the file from the archive.
@@ -33,7 +36,9 @@ def find_test_data(filename, store_location):
             download_from_archive(filename, env_var="ADGEMINI_TESTDATA")
         )
     except OSError:
-        skip_message = f"\n{str(filename)} cannot be downloaded from the archive."
+        skip_message = (
+            f"\n{str(filename)} cannot be downloaded from the archive."
+        )
         failed_to_download = True
 
     # If the download fails, see if the file is stored locally in the
@@ -43,7 +48,9 @@ def find_test_data(filename, store_location):
         # First check if the file in in ADGEMINI_TESTDATA.  If so, use that.
         # If not, check if the file is in ADGEMINI_STORE_TESTDATA.  If not,
         # skip the test.
-        adgemini_testdata_path = Path(os.getenv("ADGEMINI_TESTDATA")).expanduser()
+        adgemini_testdata_path = Path(
+            os.getenv("ADGEMINI_TESTDATA")
+        ).expanduser()
         try:
             path_to_test_file = Path(os.getenv("ADGEMINI_TESTDATA")) / filename
             ad = astrodata.open(path_to_test_file)
@@ -57,7 +64,8 @@ def find_test_data(filename, store_location):
         # the $ADGEMINI_STORE_TESTDATA directory.
         path_to_stored_files = os.getenv("ADGEMINI_STORE_TESTDATA")
         if path_to_stored_files is None:
-            pytest.skip(f"{skip_message}  "
+            pytest.skip(
+                f"{skip_message}  "
                 f"Also, environment variable not set: $ADGEMINI_STORE_TESTDATA"
             )
 
