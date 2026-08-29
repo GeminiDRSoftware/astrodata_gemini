@@ -1,15 +1,15 @@
 import pytest
 import astrodata
-import astrodata.testing
-import gemini_instruments
+from astrodata.testing import download_from_archive
+import astrodata_gemini
 import os
+from pathlib import Path
 
-from .lut_tags import fixture_data as tags_fixture_data
+from .lut_tags import tags_data
 
-
-@pytest.mark.dragons_remote_data
+@pytest.mark.goa_remote_data
 @pytest.mark.parametrize("instr,filename,tag_set",
-                         list([*k]+[v] for k, v in tags_fixture_data.items()))
+                         list([*k]+[v] for k, v in tags_data.items()))
 def test_descriptor(instr, filename, tag_set):
     path_to_test_data = os.getenv("DRAGONS_TEST")
     if path_to_test_data is None:
@@ -27,6 +27,6 @@ def test_descriptor(instr, filename, tag_set):
         except FileNotFoundError:
             pytest.skip(f"{filename} not found")
     else:
-        ad = astrodata.open(astrodata.testing.download_from_archive(filename))
+        ad = astrodata.open(download_from_archive(filename))
 
     assert ad.tags == set(tag_set)

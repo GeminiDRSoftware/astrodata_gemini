@@ -40,7 +40,8 @@ class SessionVariables:
     integration_test_dir = Path(__file__).parent / "tests" / "integration"
 
     # pytest options for the test sessions
-    pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
+    pytest_options = []
+    #pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
     unit_pytest_options = pytest_options + [str(unit_test_dir)]
     integration_pytest_options = pytest_options + [str(integration_test_dir)]
 
@@ -81,7 +82,7 @@ def apply_data_caching_environment_variable(session: nox.Session) -> None:
 
     # astrodata.testing.download_from_archive() will download the files
     # into this location.
-    session.env["ADGEMINNI_TESTDATA"] = (
+    session.env["ADGEMINI_TESTDATA"] = (
         os.getenv("ADGEMINI_TESTDATA") or default_data_cache_path
     )
 
