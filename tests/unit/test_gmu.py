@@ -9,7 +9,7 @@ To run:
 """
 from datetime import datetime
 
-from gemini_instruments import gmu
+from astrodata_gemini import gmu
 
 
 class TestGMU:

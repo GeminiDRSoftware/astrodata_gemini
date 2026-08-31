@@ -48,6 +48,7 @@ def test_descriptor(instr, filename, descriptor, value):
                     assert v == mv
 
 
+# Needs to be here because we need the name and location of this file.
 def _get_store_location():
     """Get the list of directories components to build the stored data
     path.
