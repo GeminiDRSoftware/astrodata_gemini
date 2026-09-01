@@ -68,8 +68,11 @@ testpaths = ["tests"]
 
 markers = [
 #    "astrofaker: tests that require the astrofaker package",
+    "cirpass: tests that require the CIRPASS instrument",
     "dragons: tests that require a DRAGONS environment",
     "f2: tests on F2 data",
+    "gemini: tests on Gemini data",
+    "ghost: tests on GHOST data",
     "goa_remote_data: test uses data downloaded from the Gemini Observatory Archive (GOA)",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]

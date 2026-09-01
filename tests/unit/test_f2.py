@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 
 import astrodata_gemini
-from astrodata_gemini.f2 import AstroDataF2
 
 from ..testing import find_test_data, get_storage_location
 
@@ -26,7 +25,6 @@ F2_DESCRIPTORS_TYPES = [
 @pytest.fixture(scope="module", params=test_files)
 def ad(request):
     """Returns an AstroData object for each of the test files in the list."""
-
     current_file = Path(__file__).resolve()
     store_location = get_storage_location(current_file)
     ad = find_test_data(request.param, store_location)
@@ -112,7 +110,7 @@ def test_descriptor_matches_type(descriptor, expected_type, ad):
 
 @pytest.mark.f2
 def test_ra_dec_from_text():
-    ad = AstroDataF2()
+    ad = astrodata_gemini.f2.adclass.AstroDataF2()
     ad.phu["RA"] = "03:48:30.113"
     ad.phu["DEC"] = "+24:20:43.00"
     assert ad.target_ra() == pytest.approx(57.12547083333333)
