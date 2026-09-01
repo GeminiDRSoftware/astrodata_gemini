@@ -67,7 +67,9 @@ local_scheme = "no-local-version"
 testpaths = ["tests"]
 
 markers = [
+#    "astrofaker: tests that require the astrofaker package",
     "dragons: tests that require a DRAGONS environment",
+    "f2: tests on F2 data",
     "goa_remote_data: test uses data downloaded from the Gemini Observatory Archive (GOA)",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]

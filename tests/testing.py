@@ -1,8 +1,17 @@
-from pathlib import Path
 import os
-import pytest
+from pathlib import Path
+
 import astrodata
+import pytest
 from astrodata.testing import download_from_archive
+
+
+@pytest.fixture(scope="session")
+def astrofaker():
+    """
+    Wrapper fixture that prevents undesired behaviour when using astrofaker.
+    """
+    return pytest.importorskip("astrofaker")
 
 
 def find_test_data(filename, store_location):
@@ -83,3 +92,19 @@ def find_test_data(filename, store_location):
             )
 
     return ad
+
+
+def get_storage_location(current_file_path):
+    """Get the list of directories components to build the stored data
+    path.
+    """
+    module_name = "astrodata_gemini"
+
+    path_parts = list(current_file_path.parts)
+    store_location = path_parts[path_parts.index(module_name) + 2 :]
+
+    store_location[-1] = store_location[-1].removesuffix(".py")
+
+    store_location.append("inputs")
+
+    return store_location
