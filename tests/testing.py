@@ -6,14 +6,6 @@ import pytest
 from astrodata.testing import download_from_archive
 
 
-@pytest.fixture(scope="session")
-def astrofaker():
-    """
-    Wrapper fixture that prevents undesired behaviour when using astrofaker.
-    """
-    return pytest.importorskip("astrofaker")
-
-
 def find_test_data(filename, store_location):
     """Find the test data file in the local store.
 

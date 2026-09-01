@@ -27,8 +27,7 @@ def ad(request):
     """Returns an AstroData object for each of the test files in the list."""
     current_file = Path(__file__).resolve()
     store_location = get_storage_location(current_file)
-    ad = find_test_data(request.param, store_location)
-    return ad
+    return find_test_data(request.param, store_location)
 
 
 @pytest.mark.f2

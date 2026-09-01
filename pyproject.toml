@@ -47,7 +47,7 @@ test = [
     "pytest-cov>=7.1.0",
     "nox>=2026.8.17",
     "docutils>=0.21",
-   # "astrofaker @ git+https:/github.com/GeminiDRSoftware/astrofaker.git",
+    "astrofaker @ git+https://github.com/GeminiDRSoftware/AstroFaker.git@feature/astrodata_gemini",
 ]
 build_test = [
     "devpi-server>=6.20.3",
@@ -67,12 +67,13 @@ local_scheme = "no-local-version"
 testpaths = ["tests"]
 
 markers = [
-#    "astrofaker: tests that require the astrofaker package",
+    "astrofaker: tests that require the astrofaker package",
     "cirpass: tests that require the CIRPASS instrument",
     "dragons: tests that require a DRAGONS environment",
     "f2: tests on F2 data",
     "gemini: tests on Gemini data",
     "ghost: tests on GHOST data",
+    "gmos: tests on GMOS data",
     "goa_remote_data: test uses data downloaded from the Gemini Observatory Archive (GOA)",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]

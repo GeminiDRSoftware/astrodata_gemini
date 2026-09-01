@@ -1,11 +1,13 @@
+from pathlib import Path
+
 import pytest
 
-import astrodata
-import astrodata.testing
+import astrofaker
 import astrodata_gemini
 
-import numpy as np
+from ..testing import find_test_data, get_storage_location
 
+STANDARD_TEST_FILE = "S20190215S0188.fits"
 
 GMOS_DESCRIPTORS_TYPES = [
     ('detector_x_offset', float),
@@ -24,38 +26,50 @@ test_files = [
 ]
 
 
-@pytest.fixture(params=test_files)
+@pytest.fixture(scope="module")
 def ad(request):
-    filename = request.param
-    path = astrodata.testing.download_from_archive(filename)
-    return astrodata.open(path)
+    """Returns an AstroData object for each of the test files in the list."""
+    current_file = Path(__file__).resolve()
+    store_location = get_storage_location(current_file)
+    return find_test_data(request.param, store_location)
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gmos
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_is_right_instance(ad):
     assert isinstance(ad, astrodata_gemini.gmos.adclass.AstroDataGmos)
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gmos
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_can_return_instrument(ad):
     assert ad.phu['INSTRUME'] in ['GMOS-N', 'GMOS-S']
     assert ad.instrument() == ad.phu['INSTRUME']
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gmos
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_can_return_ad_length(ad):
     assert len(ad)
 
 
+@pytest.mark.gmos
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 @pytest.mark.parametrize("descriptor,expected_type", GMOS_DESCRIPTORS_TYPES)
-@pytest.mark.dragons_remote_data
 def test_descriptor_matches_type(ad, descriptor, expected_type):
+    print(ad.filename, descriptor, expected_type)
     value = getattr(ad, descriptor)()
     assert isinstance(value, expected_type) or value is None, \
         "Assertion failed for file: {}".format(ad.filename)
 
 
-def test_tag_as_standard_fake(astrofaker):
+@pytest.mark.gmos
+@pytest.mark.astrofaker
+def test_tag_as_standard_fake():
     # LTT4363 (a high proper motion specphot) on Jan 1, 2021
     ad = astrofaker.create('GMOS-S', ['SPECT'],
                            extra_keywords={'RA': 176.46534847,
@@ -66,14 +80,16 @@ def test_tag_as_standard_fake(astrofaker):
     assert 'STANDARD' in ad.tags
 
 
-@pytest.mark.dragons_remote_data
-def test_tag_as_standard_real():
-    path = astrodata.testing.download_from_archive("S20190215S0188.fits")
-    ad = astrodata.open(path)
+@pytest.mark.gmos
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", [STANDARD_TEST_FILE], indirect=True)
+def test_tag_as_standard_real(ad):
     assert 'STANDARD' in ad.tags
 
 
-def test_ra_dec_from_text(astrofaker):
+@pytest.mark.gmos
+@pytest.mark.astrofaker
+def test_ra_dec_from_text():
     ad = astrofaker.create('GMOS-S', ['SPECT'],
                            extra_keywords={'RA': '03:48:30.113',
                                            'DEC': '+24:20:43.00',
@@ -91,7 +107,3 @@ def test_ra_dec_from_text(astrofaker):
     assert ad.ra() is None
     assert ad.dec() is None
 
-
-if __name__ == '__main__':
-
-    pytest.main()
