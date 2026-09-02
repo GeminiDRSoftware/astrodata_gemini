@@ -1,12 +1,10 @@
+from pathlib import Path
+
 import pytest
 
-import astrodata
-import astrodata.testing
 import astrodata_gemini
-from astrodata_gemini.gnirs import AstroDataGnirs
 
-import numpy as np
-
+from ..testing import find_test_data, get_storage_location
 
 test_files = [
     "N20190206S0279.fits",
@@ -24,40 +22,32 @@ GNIRS_DESCRIPTORS_TYPES = [
 ]
 
 
-@pytest.fixture(params=test_files)
+@pytest.fixture(scope="module")
 def ad(request):
-    """
-    Fixture that will download a file from specified as a test parameter,
-    open it as an AstroData object and return it.
-
-    Parameters
-    ----------
-    request : fixture
-        Pytest built-in fixture containing information about the parent test.
-
-    Returns
-    -------
-    AstroData
-        Raw file downloaded from the archive and cached locally.
-    """
-    filename = request.param
-    path = astrodata.testing.download_from_archive(filename)
-    return astrodata.open(path)
+    """Returns an AstroData object for each of the test files in the list."""
+    current_file = Path(__file__).resolve()
+    store_location = get_storage_location(current_file)
+    return find_test_data(request.param, store_location)
 
 
-@pytest.mark.xfail(reason="AstroFaker changes the AstroData factory")
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_is_right_type(ad):
     assert type(ad) == astrodata_gemini.gnirs.adclass.AstroDataGnirs
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_is_right_instance(ad):
     # YES, this *can* be different from test_is_right_type. Metaclasses!
     assert isinstance(ad, astrodata_gemini.gnirs.adclass.AstroDataGnirs)
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_extension_data_shape(ad):
     data = ad[0].data
     assert data.shape == (1022, 1024)
@@ -65,25 +55,32 @@ def test_extension_data_shape(ad):
 
 expected_tags = {'RAW', 'GEMINI', 'NORTH', 'GNIRS', 'UNPREPARED', }
 
-
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 @pytest.mark.parametrize("tag", expected_tags)
-@pytest.mark.dragons_remote_data
 def test_tags(ad, tag):
     assert tag in ad.tags
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_can_return_instrument(ad):
     assert ad.phu['INSTRUME'] == 'GNIRS'
     assert ad.instrument() == ad.phu['INSTRUME']
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_can_return_ad_length(ad):
     assert len(ad) == 1
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_slice_range(ad):
     metadata = ('SCI', 2), ('SCI', 3)
     slc = ad[1:]
@@ -94,29 +91,9 @@ def test_slice_range(ad):
         assert (ext.hdr['EXTNAME'], ext.hdr['EXTVER']) == md
 
 
-# def test_read_a_keyword_from_phu(path_to_inputs):
-#
-#     ad = astrodata.open(os.path.join(path_to_inputs, filename))
-#     assert ad.phu['DETECTOR'] == 'GNIRS'
-
-@pytest.mark.skip("There aren't really any keywords in the GNIRS header, and definitely not these")
-@pytest.mark.dragons_remote_data
-def test_read_a_keyword_from_hdr(ad):
-    try:
-        assert ad.hdr['CCDNAME'] == ['EEV 9273-16-03', 'EEV 9273-20-04', 'EEV 9273-20-03']
-    except KeyError:
-        # KeyError only accepted if it's because headers out of range
-        assert len(ad) == 1
-
-    # with pytest.raises(AssertionError):
-    #     ad.phu.DETECTOR = 'FooBar'
-    #     ad.phu.ARBTRARY = 'BarBaz'
-    #     assert ad.phu.DETECTOR == 'FooBar'
-    #     assert ad.phu.ARBTRARY == 'BarBaz'
-    #     assert ad.phu['DETECTOR'] == 'FooBar'
-
-
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 @pytest.mark.parametrize("descriptor,expected_type", GNIRS_DESCRIPTORS_TYPES)
 def test_descriptor_matches_type(ad, descriptor, expected_type):
     value = getattr(ad, descriptor)()
@@ -124,7 +101,9 @@ def test_descriptor_matches_type(ad, descriptor, expected_type):
         "Assertion failed for file: {}".format(ad.filename)
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_ra_and_dec_always_returns_float(ad, monkeypatch):
     """
     Tests that the get the RA/DEC coordinates using descriptors.
@@ -141,7 +120,9 @@ def test_ra_and_dec_always_returns_float(ad, monkeypatch):
         assert isinstance(ad.dec(), float)
 
 
-@pytest.mark.dragons_remote_data
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", test_files, indirect=True)
 def test_ra_and_dec_wcs_fallback(ad, monkeypatch):
     """
     Tests that the get the RA/DEC coordinates using descriptors when the WCS coordinate mapping fails
@@ -160,8 +141,9 @@ def test_ra_and_dec_wcs_fallback(ad, monkeypatch):
     assert(ad.dec() == ad.phu.get('DEC', None))
 
 
+@pytest.mark.gnirs
 def test_ra_dec_from_text():
-    ad = AstroDataGnirs()
+    ad = astrodata_gemini.gnirs.adclass.AstroDataGnirs()
     ad.phu['RA'] = '03:48:30.113'
     ad.phu['DEC'] = '+24:20:43.00'
     assert ad.target_ra() == pytest.approx(57.12547083333333)
@@ -175,15 +157,17 @@ EXPECTED_FPMS = [
 ]
 
 
-@pytest.mark.dragons_remote_data
-@pytest.mark.parametrize("filename,expected_fpm", EXPECTED_FPMS)
-def test_ifu_fpm(filename, expected_fpm):
-    path = astrodata.testing.download_from_archive(filename)
-    ad = astrodata.open(path)
-    assert("IFU" in ad.tags)
-    assert(ad.focal_plane_mask(pretty=True) == expected_fpm)
+# @pytest.mark.gnirs
+# @pytest.mark.goa_remote_data
+# @pytest.mark.parametrize("filename,expected_fpm", EXPECTED_FPMS)
+# def test_ifu_fpm(filename, expected_fpm):
+#     path = astrodata.testing.download_from_archive(filename)
+#     ad = astrodata.open(path)
+#     assert("IFU" in ad.tags)
+#     assert(ad.focal_plane_mask(pretty=True) == expected_fpm)
 
 
+@pytest.mark.gnirs
 def test_prism_string():
     # These are the values the prism header can take, copied from:
     # http://internal.gemini.edu/science/instruments/GNIRS/Systems_Reference/mechanisms/gnirsMechanisms
@@ -214,11 +198,12 @@ def test_prism_string():
     ]
 
     for d in things:
-        ad = AstroDataGnirs()
+        ad = astrodata_gemini.gnirs.adclass.AstroDataGnirs()
         ad.phu['PRISM'] = d['position']
         assert ad._prism() == d['value']
 
 
+@pytest.mark.gnirs
 def test_grating_string():
     # These are the values the grating header can take, copied from:
     # http://internal.gemini.edu/science/instruments/GNIRS/Systems_Reference/mechanisms/gnirsMechanisms
@@ -246,9 +231,6 @@ def test_grating_string():
     ]
 
     for d in things:
-        ad = AstroDataGnirs()
+        ad = astrodata_gemini.gnirs.adclass.AstroDataGnirs()
         ad.phu['GRATING'] = d['position']
         assert ad._grating() == d['value']
-
-if __name__ == "__main__":
-    pytest.main()

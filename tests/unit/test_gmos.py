@@ -2,10 +2,9 @@ from pathlib import Path
 
 import pytest
 
-import astrofaker
 import astrodata_gemini
 
-from ..testing import find_test_data, get_storage_location
+from ..testing import astrofaker, find_test_data, get_storage_location
 
 STANDARD_TEST_FILE = "S20190215S0188.fits"
 
@@ -69,7 +68,8 @@ def test_descriptor_matches_type(ad, descriptor, expected_type):
 
 @pytest.mark.gmos
 @pytest.mark.astrofaker
-def test_tag_as_standard_fake():
+def test_tag_as_standard_fake(astrofaker):
+
     # LTT4363 (a high proper motion specphot) on Jan 1, 2021
     ad = astrofaker.create('GMOS-S', ['SPECT'],
                            extra_keywords={'RA': 176.46534847,
@@ -89,7 +89,7 @@ def test_tag_as_standard_real(ad):
 
 @pytest.mark.gmos
 @pytest.mark.astrofaker
-def test_ra_dec_from_text():
+def test_ra_dec_from_text(astrofaker):
     ad = astrofaker.create('GMOS-S', ['SPECT'],
                            extra_keywords={'RA': '03:48:30.113',
                                            'DEC': '+24:20:43.00',

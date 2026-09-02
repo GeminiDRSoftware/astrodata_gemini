@@ -1,9 +1,31 @@
 import os
 from pathlib import Path
+import sys
+import copy
+from . import conftest
 
 import astrodata
 import pytest
 from astrodata.testing import download_from_archive
+
+def _purge_astrofaker_from_sys_modules():
+    """Force the next `import astrofaker` to re-execute the module body
+    (and thus re-run registration), instead of returning the cached module."""
+    for name in list(sys.modules):
+        if name == "astrofaker" or name.startswith("astrofaker."):
+            del sys.modules[name]
+
+@pytest.fixture(scope="module")
+def astrofaker():
+    _purge_astrofaker_from_sys_modules()
+    import astrofaker as _astrofaker
+
+    yield _astrofaker
+
+    astrodata.factory._registry.clear()
+    astrodata.factory._registry.update(copy.deepcopy(conftest._CLEAN_REGISTRY))
+    _purge_astrofaker_from_sys_modules()
+
 
 
 def find_test_data(filename, store_location):
