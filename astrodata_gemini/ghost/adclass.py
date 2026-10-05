@@ -693,6 +693,16 @@ class AstroDataGhost(AstroDataGemini):
         return [None if v is None else v if v > 0 else 65535 for v in retval]
 
     @astro_data_descriptor
+    def slit_width(self):
+        """
+        Just return None. It's a pseudo-slit formed by the fibres.
+        It is required here because the gemini.adclass version raises an
+        exception if a SPECT does not have slit_width
+        defined.
+        """
+        return None
+
+    @astro_data_descriptor
     @use_nascent_phu_for_bundle
     def ut_datetime(self, *args, **kwargs):
         return AstroDataGemini.ut_datetime(self, *args, **kwargs)

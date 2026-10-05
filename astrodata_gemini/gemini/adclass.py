@@ -1646,7 +1646,7 @@ class AstroDataGemini(AstroData):
             the slit width in arcseconds
         """
         if 'SPECT' in self.tags:
-            raise NotImplementedError("A slit width is not defined for this instrument")
+            raise NotImplementedError("A slit width must be defined for this instrument")
         return None
 
     @astro_data_descriptor

@@ -1,30 +1,14 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 import astrodata_gemini
 
+from .lut_tags import tags_data
+from .ghost_lut_descriptors import descriptors_data
 from ..testing import find_test_data, get_storage_location
-
-PRIMARY_TEST_FILE = "S20221209S0007.fits"
-BIAS_TEST_FILE = "S20221208S0089.fits"
-FLAT_TEST_FILE = "S20221209S0026.fits"
-ARC_TEST_FILE = "S20221208S0064.fits"
-
-# These files take forever to download.
-test_files = [
-    "S20221209S0007.fits",
-    "S20221209S0009.fits",
-    "S20221209S0010.fits",
-    "S20221209S0011.fits",
-    "S20221209S0012.fits",
-    "S20221209S0049.fits",
-    "S20221209S0054.fits",
-    "S20221209S0057.fits",
-    "S20221209S0061.fits",
-]
-
 
 @pytest.fixture(scope="module")
 def ad(request):
@@ -36,79 +20,60 @@ def ad(request):
 
 @pytest.mark.ghost
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
+@pytest.mark.parametrize(
+    "ad",
+    [pytest.param(fname, id=fname)
+     for (inst, fname), tags in tags_data.items() if inst == 'GHOST'],
+    indirect=["ad"]
+)
 def test_is_right_instance(ad):
+    """
+    Check that the AstroData object is of the correct type for GHOST data.
+    Using the files from the tags LUT to avoid having to maintain a separate
+    list of test files.
+    """
     assert isinstance(ad, astrodata_gemini.ghost.adclass.AstroDataGhost)
 
 
 @pytest.mark.ghost
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_can_return_ad_length(ad):
-    assert len(ad)
+@pytest.mark.parametrize(
+    "ad, expected_tags",
+    [pytest.param(fname, tags, id=fname)
+     for (inst, fname), tags in tags_data.items() if inst == 'GHOST'],
+    indirect=["ad"]
+)
+def test_ghost_tags(ad, expected_tags):
+    """Check all the tags for all the test files in the LUTs."""
+    assert set(ad.tags) == set(expected_tags)
 
 
 @pytest.mark.ghost
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [PRIMARY_TEST_FILE], indirect=True)
-def test_instrument(ad):
-    assert ad.phu["INSTRUME"] == "GHOST"
-    assert ad.instrument() == "GHOST"
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [PRIMARY_TEST_FILE], indirect=True)
-def test_various_tags(ad):
-    assert "GHOST" in ad.tags
-    assert "BUNDLE" in ad.tags
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [PRIMARY_TEST_FILE], indirect=True)
-def test_detector_x_bin(ad):
-    xbin = ad.detector_x_bin()
-    # should be a dict, since we are a bundle
-    assert isinstance(xbin, dict)
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [PRIMARY_TEST_FILE], indirect=True)
-def test_ut_datetime(ad):
-    udt = ad.ut_datetime()
-    # Check against expected UT Datetime, this descriptor also exercises
-    # the nascent PHU logic
-    assert abs(udt - datetime(2022, 12, 8, 20, 52, 22)) < timedelta(seconds=1)
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [PRIMARY_TEST_FILE], indirect=True)
-def test_data_label(ad):
-    dl = ad.data_label()
-    # Check against expected UT Datetime, this descriptor also exercises
-    # the nascent PHU logic
-    assert dl == "GS-ENG-GHOST-COM-3-123-001"
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [BIAS_TEST_FILE], indirect=True)
-def test_tab_bias(ad):
-    assert "BIAS" in ad.tags
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [FLAT_TEST_FILE], indirect=True)
-def test_tab_flat(ad):
-    assert "FLAT" in ad.tags
-
-
-@pytest.mark.ghost
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [ARC_TEST_FILE], indirect=True)
-def test_tab_arc(ad):
-    assert "ARC" in ad.tags
+@pytest.mark.parametrize(
+    "ad, descriptor, expected_value",
+    [pytest.param(fname, descriptor, expected_value, id=fname)
+     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GHOST'
+     for descriptor, expected_value in dvalue_pairs],
+    indirect=["ad"]
+)
+def test_descriptor(ad, descriptor, expected_value):
+    """Check all the descriptors for all the test files in the LUTs."""
+    method = getattr(ad, descriptor)
+    if expected_value is None:
+        assert method() is None
+    else:
+        mvalue = method()
+        if (isinstance(mvalue, (float, np.floating)) or
+            isinstance(expected_value, (float, np.floating))):
+            assert mvalue == pytest.approx(expected_value, abs=1e-7, rel=1e-5)
+        elif isinstance(expected_value, list):
+            assert len(expected_value) == len(mvalue)
+            for v, mv in zip(expected_value, mvalue):
+                if (isinstance(mv, (float, np.floating)) or
+                    isinstance(v, (float, np.floating))):
+                    assert mv == pytest.approx(v, abs=1e-7, rel=1e-5)
+                else:
+                    assert v == mv
+        else:
+            assert mvalue == expected_value

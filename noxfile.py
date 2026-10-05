@@ -41,7 +41,7 @@ class SessionVariables:
 
     # pytest options for the test sessions
     pytest_options = []
-    #pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
+    # pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
     unit_pytest_options = pytest_options + [str(unit_test_dir)]
     integration_pytest_options = pytest_options + [str(integration_test_dir)]
 
@@ -88,7 +88,7 @@ def apply_data_caching_environment_variable(session: nox.Session) -> None:
 
     # Non-downloadable files (e.g. reduced data) are stored in the
     # $ADGEMINI_STORE_TESTDATA directory.
-    session.env['ADGEMINI_STORE_TESTDATA'] = (
+    session.env["ADGEMINI_STORE_TESTDATA"] = (
         os.getenv("ADGEMINI_STORE_TESTDATA") or default_data_cache_path
     )
 
@@ -303,7 +303,7 @@ def pre_download_test_data(session):
 
 @nox.session(python=SessionVariables.python_versions)
 def unit_tests(session):
-    """ Run the unit tests with pytest."""
+    """Run the unit tests with pytest."""
     apply_data_caching_environment_variable(session)
     install_pip_test_dependencies(session, optionals=["test"])
     session.install("-e", ".", "--no-deps")
