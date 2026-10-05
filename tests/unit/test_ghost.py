@@ -51,14 +51,31 @@ def test_ghost_tags(ad, expected_tags):
 @pytest.mark.ghost
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
-    "ad, descriptor, expected_value",
-    [pytest.param(fname, descriptor, expected_value, id=fname)
-     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GHOST'
-     for descriptor, expected_value in dvalue_pairs],
+    "ad, dvalue_pairs",
+    [pytest.param(fname, dvalue_pairs, id=fname)
+     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GHOST'],
     indirect=["ad"]
 )
-def test_descriptor(ad, descriptor, expected_value):
-    """Check all the descriptors for all the test files in the LUTs."""
+def test_descriptors(ad, dvalue_pairs):
+    """
+    Check all the descriptors for all the test files in the LUTs.  The file
+    is opened once and all its descriptors are checked in a loop; the
+    mismatches are collected and reported together.
+    """
+    failures = []
+    for descriptor, expected_value in dvalue_pairs:
+        try:
+            _check_descriptor(ad, descriptor, expected_value)
+        except Exception as err:
+            failures.append(f"{descriptor}: {type(err).__name__}: {err}")
+    assert not failures, (
+        f"{len(failures)} of {len(dvalue_pairs)} descriptors failed for "
+        f"{ad.filename}:\n" + "\n".join(failures)
+    )
+
+
+def _check_descriptor(ad, descriptor, expected_value):
+    """Raise an exception if the descriptor does not match the expected value."""
     method = getattr(ad, descriptor)
     if expected_value is None:
         assert method() is None

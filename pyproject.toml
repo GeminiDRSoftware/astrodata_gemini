@@ -76,6 +76,7 @@ markers = [
     "gmos: tests on GMOS data",
     "gnirs: tests on GNIRS data",
     "goa_remote_data: test uses data downloaded from the Gemini Observatory Archive (GOA)",
+    "niri: tests on NIRI data",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 

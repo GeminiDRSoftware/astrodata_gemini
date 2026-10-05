@@ -132,31 +132,26 @@ tags_data = {
 
     # NIRI Data
     #   NIRI Darks
-    ('NIRI', 'N20131215S0503.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'NIRI', 'DARK', 'NON_SIDEREAL', 'RAW',
-                                      'UNPREPARED', 'AT_ZENITH'],
-    ('NIRI', 'N20130409S0105_dark.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'NIRI', 'DARK',
-                                           'NON_SIDEREAL', 'PREPARED', 'PROCESSED'],
+    ('NIRI', 'N20131215S0503.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'NIRI', 'NON_SIDEREAL',
+                                      'NORTH', 'RAW', 'UNPREPARED'],
+    ('NIRI', 'N20130409S0105_dark.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'NIRI',
+                                           'NON_SIDEREAL', 'NORTH', 'PREPARED', 'PROCESSED'],
 
-    #   NIRI Imaging
-    # FIXME: Not found in archive.
-    # ('NIRI', 'N20131215S0178_prepared.fits'): ['GEMINI', 'NORTH', 'IMAGE', 'NIRI', 'PREPARED', 'SIDEREAL'],
-    ('NIRI', 'N20131215S0178.fits'): ['GEMINI', 'NORTH', 'IMAGE', 'NIRI', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('NIRI', 'N20131215S0427.fits'): ['AZEL_TARGET', 'CAL', 'GCAL_IR_OFF', 'GEMINI', 'NORTH', 'IMAGE', 'NIRI', 'FLAT',
-                                      'GCALFLAT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'LAMPOFF', 'AT_ZENITH'],
-    ('NIRI', 'N20131215S0428.fits'): ['AZEL_TARGET', 'CAL', 'GCAL_IR_ON', 'GEMINI', 'NORTH', 'IMAGE', 'NIRI', 'FLAT',
-                                      'GCALFLAT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'LAMPON', 'AT_ZENITH'],
-    ('NIRI', 'N20130404S0470.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GCAL_IR_OFF', 'GEMINI', 'NORTH', 'IMAGE',
-                                      'NIRI', 'FLAT', 'GCALFLAT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'LAMPOFF'],
-    ('NIRI', 'N20160522S0004.fits') : ['NIRI', 'GEMINI', 'NORTH', 'SIDEREAL', 'IMAGE', 'UNPREPARED', 'RAW'],
+    #   NIRI Imaging (flats with IMAGE are listed here)
+    ('NIRI', 'N20131215S0178.fits'): ['GEMINI', 'IMAGE', 'NIRI', 'NORTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
+    ('NIRI', 'N20131215S0427.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI',
+                                      'IMAGE', 'LAMPOFF', 'NIRI', 'NON_SIDEREAL', 'NORTH', 'RAW', 'UNPREPARED'],
+    ('NIRI', 'N20131215S0428.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI',
+                                      'IMAGE', 'LAMPON', 'NIRI', 'NON_SIDEREAL', 'NORTH', 'RAW', 'UNPREPARED'],
 
-    #   NIRI Longslit
-    ('NIRI', 'N20120505S0147.fits'): ['GEMINI', 'NORTH', 'NIRI', 'LS', 'SPECT', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('NIRI', 'N20100620S0126.fits'): ['GEMINI', 'NORTH', 'NIRI', 'LS', 'ARC', 'SPECT', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    # Arc is not defined for NIRI in the old system.  (How can that be?)
-    ('NIRI', 'N20120505S0564.fits'): ['AZEL_TARGET', 'CAL', 'GCAL_IR_OFF', 'LAMPOFF', 'FLAT', 'GCALFLAT', 'GEMINI',
-                                      'NORTH', 'LS', 'NIRI', 'SPECT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'AT_ZENITH'],
-    ('NIRI', 'N20120505S0552.fits'): ['AZEL_TARGET', 'CAL', 'GCAL_IR_ON', 'LAMPON', 'FLAT', 'GCALFLAT', 'GEMINI',
-                                      'NORTH', 'LS', 'NIRI', 'SPECT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'AT_ZENITH'],
+    #   NIRI Longslit (flats with SPECT are listed here)
+    ('NIRI', 'N20120505S0147.fits'): ['GEMINI', 'LS', 'NIRI', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED'],
+    ('NIRI', 'N20100620S0126.fits'): ['ARC', 'GEMINI', 'LS', 'NIRI', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT',
+                                      'UNPREPARED'],
+    ('NIRI', 'N20120505S0564.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI',
+                                      'LAMPOFF', 'LS', 'NIRI', 'NON_SIDEREAL', 'NORTH', 'RAW', 'SPECT', 'UNPREPARED'],
+    ('NIRI', 'N20120505S0552.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI',
+                                      'LAMPON', 'LS', 'NIRI', 'NON_SIDEREAL', 'NORTH', 'RAW', 'SPECT', 'UNPREPARED'],
 
     # GNIRS Data
     #   GNIRS Darks
