@@ -18,7 +18,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
-    "astrodata>=3",
+    #"astrodata>=3",
+    "astrodata @ git+https://github.com/GeminiDRSoftware/astrodata.git",
     "astropy>=7.1.2",
     "python-dateutil>=2.9.0",
     "numpy>=2.0.0",
