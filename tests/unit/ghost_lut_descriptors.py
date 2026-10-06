@@ -799,6 +799,8 @@ descriptors_data = {
         ('pixel_scale', None),
         ('position_angle', 0.0),
         ('program_id', 'GS-ENG-GHOST-COM-3'),
+        ('pupil_mask', None),
+        ('qa_state', 'Undefined'),
         ('ra', 122.30433333333333),
         ('raw_bg', 20),
         ('raw_cc', 50),

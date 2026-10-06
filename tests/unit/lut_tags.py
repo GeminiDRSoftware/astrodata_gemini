@@ -314,28 +314,37 @@ tags_data = {
                                         'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW', 'LAMPOFF'],
 
     # BHROS Data
-    ('BHROS', 'S20070131S0030.fits') : ['BHROS', 'LAMPOFF', 'GCAL_IR_OFF', 'CAL', 'GCALFLAT', 'FLAT', 'SIDEREAL',
-                                        'GEMINI', 'SOUTH', 'SPECT', 'UNPREPARED', 'RAW'],
-    ('BHROS', 'S20070131S0152.fits') : ['AT_ZENITH', 'BHROS', 'AZEL_TARGET', 'NON_SIDEREAL', 'GEMINI', 'SOUTH', 'SPECT',
-                                        'UNPREPARED', 'RAW'],
+    ('BHROS', 'S20070112S0081.fits'): ['BHROS', 'GEMINI', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    ('BHROS', 'S20070131S0030.fits'): ['BHROS', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI', 'LAMPOFF', 'RAW',
+                                       'SIDEREAL', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    ('BHROS', 'S20070131S0152.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'BHROS', 'GEMINI', 'NON_SIDEREAL', 'RAW', 'SOUTH',
+                                       'SPECT', 'UNPREPARED'],
 
     # GPI Data
-    ('GPI', 'S20160523S0215.fits') : ['GPI', 'IFU', 'NON_SIDEREAL', 'SPECT', 'GEMINI', 'SOUTH', 'DARK', 'UNPREPARED',
-                                      'RAW'],
+    ('GPI', 'S20160523S0215.fits'): ['DARK', 'GEMINI', 'GPI', 'IFU', 'NON_SIDEREAL', 'RAW', 'SOUTH', 'SPECT',
+                                     'UNPREPARED'],
+    ('GPI', 'S20161014S0043.fits'): ['GEMINI', 'GPI', 'H_CORON', 'IFU', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
+                                     'UNPREPARED'],
 
     # MICHELLE Data
-    ('MICHELLE', 'N20030625S0075.fits') : ['GEMINI', 'NORTH', 'MICHELLE', 'SIDEREAL', 'UNPREPARED', 'RAW'],
+    ('MICHELLE', 'N20050116S0119.fits'): ['GEMINI', 'IMAGE', 'MICHELLE', 'NORTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
+    ('MICHELLE', 'N20111112S0316.fits'): ['GEMINI', 'LS', 'MICHELLE', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT',
+                                          'UNPREPARED'],
 
     # NICI Data
-    ('NICI', 'S20091206S0101.fits') : ['AT_ZENITH', 'CAL', 'FLAT', 'IMAGE', 'AZEL_TARGET', 'NON_SIDEREAL', 'NICI',
-                                       'GEMINI', 'SOUTH', 'GCAL_IR_OFF', 'LAMPOFF', 'UNPREPARED', 'RAW'],
-    ('NICI', 'S20130607S0258.fits') : ['ADI_R', 'IMAGE', 'SIDEREAL', 'NICI', 'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW'],
-    ('NICI', 'S20130607S0592.fits') : ['IMAGE', 'AZEL_TARGET', 'DARK', 'CAL', 'NON_SIDEREAL', 'NICI', 'GEMINI',
-                                       'SOUTH', 'UNPREPARED', 'RAW'],
-    ('NICI', 'S20130714S0155.fits') : ['CAL', 'FLAT', 'IMAGE', 'GCAL_IR_ON', 'SIDEREAL', 'NICI', 'GEMINI', 'SOUTH',
-                                       'GCALFLAT', 'LAMPON', 'UNPREPARED', 'RAW'],
-    ('NICI', 'S20130715S0112.fits') : ['IMAGE', 'SIDEREAL', 'NICI', 'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW'],
-    ('NICI', 'S20130806S0071.fits') : ['ASDI', 'IMAGE', 'SIDEREAL', 'NICI', 'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW'],
+    ('NICI', 'S20091206S0101.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCAL_IR_OFF', 'GEMINI', 'IMAGE',
+                                      'LAMPOFF', 'NICI', 'NON_SIDEREAL', 'RAW', 'SOUTH', 'UNPREPARED'],
+    ('NICI', 'S20130607S0258.fits'): ['ADI_R', 'GEMINI', 'IMAGE', 'NICI', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+    ('NICI', 'S20130607S0592.fits'): ['AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'IMAGE', 'NICI', 'NON_SIDEREAL', 'RAW',
+                                      'SOUTH', 'UNPREPARED'],
+    ('NICI', 'S20130714S0155.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI', 'IMAGE', 'LAMPON', 'NICI',
+                                      'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+    ('NICI', 'S20130715S0112.fits'): ['GEMINI', 'IMAGE', 'NICI', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+    ('NICI', 'S20130806S0071.fits'): ['ASDI', 'GEMINI', 'IMAGE', 'NICI', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+
+    # TRECS Data
+    ('TRECS', 'S20121030S0130.fits'): ['GEMINI', 'IMAGE', 'RAW', 'SIDEREAL', 'SOUTH', 'TRECS', 'UNPREPARED'],
+    ('TRECS', 'S20051113S0300.fits'): ['GEMINI', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT', 'TRECS', 'UNPREPARED'],
 
 
         # ('gmos', 'N20160516S0485_bias.fits') : ['GMOS', 'AT_ZENITH', 'GEMINI_NORTH', 'BIAS', 'AZEL_TARGET', 'CAL', 'NON_SIDEREAL', 'PREPARED', 'PROCESSED_BIAS'],

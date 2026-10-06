@@ -94,3 +94,21 @@ def _check_descriptor(ad, descriptor, expected_value):
                     assert v == mv
         else:
             assert mvalue == expected_value
+
+
+@pytest.mark.ghost
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize(
+    "ad",
+    [pytest.param(fname, id=fname)
+     for (inst, fname) in descriptors_data if inst == 'GHOST'],
+    indirect=["ad"]
+)
+def test_all_descriptors_represented(ad):
+    """Check that the LUT has a value for every name in ad.descriptors."""
+    fname = ad.filename
+    represented = {descriptor
+                   for (inst, name), pairs in descriptors_data.items()
+                   if inst == 'GHOST' and name == fname
+                   for descriptor, _ in pairs}
+    assert represented == set(ad.descriptors)
