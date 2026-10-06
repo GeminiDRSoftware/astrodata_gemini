@@ -78,6 +78,7 @@ markers = [
     "gnirs: tests on GNIRS data",
     "goa_remote_data: test uses data downloaded from the Gemini Observatory Archive (GOA)",
     "others: tests on data from the old instruments (BHROS, GPI, MICHELLE, NICI, TRECS, CIRPASS)",
+    "nifs: tests on NIFS data",
     "niri: tests on NIRI data",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]

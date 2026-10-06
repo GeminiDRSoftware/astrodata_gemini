@@ -206,23 +206,26 @@ tags_data = {
 
     # NIFS Data
     #   NIFS Darks
-    ('NIFS', 'N20160727S0077.fits'): ['CAL', 'AZEL_TARGET', 'GEMINI', 'NORTH', 'DARK', 'NIFS', 'NON_SIDEREAL', 'RAW',
-                                      'UNPREPARED', 'AT_ZENITH'],
+    ('NIFS', 'N20160428S0174.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'NIFS', 'NON_SIDEREAL',
+                                      'NORTH', 'RAW', 'UNPREPARED'],
 
-    #   NIFS IFU
-    ('NIFS', 'N20110707S0196.fits'): ['GEMINI', 'NORTH', 'IFU', 'NIFS', 'SPECT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('NIFS', 'N20160708S0134.fits'): ['GEMINI', 'NORTH', 'IFU', 'NIFS', 'SPECT', 'SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('NIFS', 'N20160727S0078.fits'): ['CAL', 'AZEL_TARGET', 'GEMINI', 'NORTH', 'ARC', 'NIFS', 'IFU', 'SPECT',
-                                      'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'AT_ZENITH'],
-    ('NIFS', 'N20160727S0079.fits'): ['CAL', 'AZEL_TARGET', 'GEMINI', 'NORTH', 'FLAT', 'GCALFLAT', 'LAMPON',
-                                      'GCAL_IR_ON', 'IFU', 'NIFS', 'SPECT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('NIFS', 'N20160708S0119.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'IFU', 'NIFS', 'SPECT', 'RAW', 'SIDEREAL',
-                                      'SPECT', 'UNPREPARED'],
-    ('NIFS', 'N20160705S0221.fits'): ['CAL', 'RONCHI', 'AZEL_TARGET', 'GEMINI', 'NORTH', 'IFU', 'NIFS', 'SPECT',
-                                      'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'AT_ZENITH', 'GCAL_IR_OFF', 'LAMPOFF',
-                                      'GCALFLAT', 'FLAT'],
-    ('NIFS', 'N20160428S0174.fits') : ['NIFS', 'CAL', 'AT_ZENITH', 'DARK', 'GEMINI', 'NORTH', 'AZEL_TARGET',
-                                       'NON_SIDEREAL', 'UNPREPARED', 'RAW'],
+    #   NIFS Flats
+    ('NIFS', 'N20160705S0221.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI',
+                                      'IFU', 'LAMPOFF', 'NIFS', 'NON_SIDEREAL', 'NORTH', 'RAW', 'RONCHI', 'SPECT',
+                                      'UNPREPARED'],
+    ('NIFS', 'N20160727S0079.fits'): ['AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI', 'IFU',
+                                      'LAMPON', 'NIFS', 'NON_SIDEREAL', 'NORTH', 'RAW', 'SPECT', 'UNPREPARED'],
+
+    #   NIFS Arcs
+    ('NIFS', 'N20160727S0078.fits'): ['ARC', 'AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'IFU', 'NIFS',
+                                      'NON_SIDEREAL', 'NORTH', 'RAW', 'SPECT', 'UNPREPARED'],
+
+    #   NIFS Acquisition
+    ('NIFS', 'N20160708S0119.fits'): ['ACQUISITION', 'GEMINI', 'IFU', 'NIFS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT',
+                                      'UNPREPARED'],
+
+    #   NIFS IFU science
+    ('NIFS', 'N20160708S0134.fits'): ['GEMINI', 'IFU', 'NIFS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED'],
 
     # F2 Data
     #   F2 Darks

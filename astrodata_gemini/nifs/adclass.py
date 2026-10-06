@@ -204,3 +204,12 @@ class AstroDataNifs(AstroDataGemini):
                        self._from_biaspwr("gain") * self.coadds() / self.gain()[0])
         except TypeError:
             return None
+
+
+    @astro_data_descriptor
+    def slit_width(self):
+        """
+        Return None. NIFS does not have a slit width descriptor, as it is an
+        IFU instrument.
+        """
+        return None
