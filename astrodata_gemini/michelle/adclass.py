@@ -80,3 +80,30 @@ class AstroDataMichelle(AstroDataGemini):
             the pixel scale
         """
         return self.phu.get('PIXELSIZ')
+
+    @astro_data_descriptor
+    def slit(self):
+        """
+        Returns the name of the slit used.
+
+        Returns
+        -------
+        str
+            the slit name
+        """
+        return self.phu.get('SLITNAME') if 'SPECT' in self.tags else None
+
+    @astro_data_descriptor
+    def slit_width(self):
+        """
+        Returns the width of the slit in arcseconds
+
+        Returns
+        -------
+        float
+            the slit width in arcseconds
+        """
+        slit_name = self.slit()
+        if slit_name is not None and 'pixels' in slit_name:
+            return float(slit_name.split('_')[0]) * self.pixel_scale()[0]
+        return None

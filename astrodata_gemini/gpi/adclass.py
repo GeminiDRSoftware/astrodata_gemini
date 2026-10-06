@@ -98,6 +98,21 @@ class AstroDataGpi(AstroDataGemini):
         return filter_name
 
     @astro_data_descriptor
+    def is_in_adu(self):
+        """
+        Returns True if the data is in ADU units, False otherwise.
+        However, the GPI data has science pixels in ADU per coadd in the
+        first extension, and a bitmap in the second extension.
+
+        It is unclear what is_in_adu() is supposed to return here.
+
+        We return None for now.  DRAGONS does not reduce GPI data at this
+        time.
+
+        """
+        return None
+
+    @astro_data_descriptor
     def ra(self):
         """
         Returns the Right Ascension of the center of the field in degrees.
@@ -112,3 +127,10 @@ class AstroDataGpi(AstroDataGemini):
             right ascension in degrees
         """
         return self.target_ra(offset=True, icrs=True)
+
+    @astro_data_descriptor
+    def slit_width(self):
+        """
+        Returns None.  There's is no slit in GPI.
+        """
+        return None

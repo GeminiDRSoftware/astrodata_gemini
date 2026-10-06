@@ -84,3 +84,15 @@ class AstroDataBhros(AstroDataGemini):
         """
         # using the target_ra descriptor since the WCS is not sky coords
         return self.target_ra(offset=True, icrs=True)
+
+    @astro_data_descriptor
+    def slit_width(self):
+        """
+        Returns the width of the slit in arcseconds
+
+        Returns
+        -------
+        float
+            the slit width in arcseconds
+        """
+        return 0.14

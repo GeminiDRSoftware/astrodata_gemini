@@ -135,3 +135,18 @@ class AstroDataTrecs(AstroDataGemini):
             the pixel scale
         """
         return 0.089
+
+    @astro_data_descriptor
+    def slit_width(self):
+        """
+        Returns the width of the slit in arcseconds
+
+        Returns
+        -------
+        float
+            the slit width in arcseconds
+        """
+        slit_name = self.slit()
+        if 'Open' not in slit_name:
+            return float(slit_name.replace('"', ''))
+        return None
