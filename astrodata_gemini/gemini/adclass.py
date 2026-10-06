@@ -9,6 +9,7 @@ import re
 import math
 import datetime
 import dateutil.parser
+from functools import wraps
 from itertools import chain, combinations
 
 import numpy as np
@@ -122,6 +123,7 @@ def use_keyword_if_prepared(fn):
     if this exists in all the headers (if the keyword is missing, it will
     execute the code in the descriptor method).
     """
+    @wraps(fn)
     def gn(self, **kwargs):
         if "PREPARED" in self.tags:
             try:
