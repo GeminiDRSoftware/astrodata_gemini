@@ -236,13 +236,13 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_tag
     def _type_gcal_lamp(self):
         # When flats are processed, they're neither "on" nor "off"
+        if self.phu.get("OBSTYPE").strip() == "FLAT":
+            is_lamp_on = self._check_if_flat_lamp_on()
 
-        is_lamp_on = self._check_if_flat_lamp_on()
-
-        if is_lamp_on:
-            return TagSet(['LAMPON'], blocked_by=['PROCESSED'])
-        else:
-            return TagSet(['LAMPOFF'], blocked_by=['PROCESSED'])
+            if is_lamp_on:
+                return TagSet(['LAMPON'], blocked_by=['PROCESSED'])
+            else:
+                return TagSet(['LAMPOFF'], blocked_by=['PROCESSED'])
 
     @astro_data_tag
     def _tag_sky(self):
