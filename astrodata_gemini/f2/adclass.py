@@ -377,7 +377,8 @@ class AstroDataF2(AstroDataGemini):
         # 2022-02-22:  The lyot wheel now contains filters and stops
         #  Gymnastic is required to figure out which is which.
 
-        if lyot is not None and lyot[0:1] != "f" and lyot[0:4] != "GEMS" and lyot[0:4] != "Hart":
+        if (lyot is not None and lyot[0:1] != "f" and lyot[0:4] != "GEMS" and
+                lyot[0:4] != "Hart" and lyot[0:5] != "Datum"):
             filter3 = lyot
         else:
             filter3 = None
