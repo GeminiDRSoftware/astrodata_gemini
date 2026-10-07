@@ -298,23 +298,20 @@ tags_data = {
 
     # GSAOI Data
     #   GSAOI Darks
-    ('GSAOI', 'S20160422S0150.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'SOUTH', 'GSAOI', 'DARK',
-                                       'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
+    ('GSAOI', 'S20160422S0150.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'GSAOI', 'NON_SIDEREAL',
+                                       'RAW', 'SOUTH', 'UNPREPARED'],
 
-    #   GSAOI Imaging
-    ('GSAOI', 'S20150110S0142.fits'): ['GEMINI', 'SOUTH', 'GSAOI', 'IMAGE', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('GSAOI', 'S20150105S0206.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'SOUTH', 'GSAOI', 'IMAGE', 'FLAT', 'DOMEFLAT',
-                                       'LAMPOFF', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('GSAOI', 'S20150105S0167.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'SOUTH', 'GSAOI', 'IMAGE', 'FLAT', 'DOMEFLAT',
-                                       'LAMPON', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('GSAOI', 'S20130524S0081_flat.fits'): ['CAL', 'GEMINI', 'SOUTH', 'GSAOI', 'IMAGE', 'FLAT', 'DOMEFLAT',
-                                            'NON_SIDEREAL', 'PREPARED', 'PROCESSED', 'LAMPON'],
+    #   GSAOI Flats
+    ('GSAOI', 'S20160613S0316.fits'): ['AZEL_TARGET', 'CAL', 'DOMEFLAT', 'FLAT', 'GEMINI', 'GSAOI', 'IMAGE', 'LAMPOFF',
+                                       'NON_SIDEREAL', 'RAW', 'SOUTH', 'UNPREPARED'],
     # This is a processed image, so we don't care about LAMPON, but it's harmless, and easier to just keep it there
-    ('GSAOI', 'S20150531S0009.fits') : ['FLAT', 'TWILIGHT', 'SIDEREAL', 'CAL', 'IMAGE', 'GSAOI', 'GEMINI', 'SOUTH',
-                                        'UNPREPARED', 'RAW'],
-    ('GSAOI', 'S20160422S0092.fits') : ['SIDEREAL', 'IMAGE', 'GSAOI', 'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW'],
-    ('GSAOI', 'S20160613S0316.fits') : ['DOMEFLAT', 'FLAT', 'AZEL_TARGET', 'CAL', 'IMAGE', 'NON_SIDEREAL', 'GSAOI',
-                                        'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW', 'LAMPOFF'],
+    ('GSAOI', 'S20130524S0081_flat.fits'): ['CAL', 'DOMEFLAT', 'FLAT', 'GEMINI', 'GSAOI', 'IMAGE', 'LAMPON',
+                                            'NON_SIDEREAL', 'PREPARED', 'PROCESSED', 'SOUTH'],
+    ('GSAOI', 'S20150531S0009.fits'): ['CAL', 'FLAT', 'GEMINI', 'GSAOI', 'IMAGE', 'RAW', 'SIDEREAL', 'SOUTH',
+                                       'TWILIGHT', 'UNPREPARED'],
+
+    #   GSAOI Imaging science
+    ('GSAOI', 'S20150110S0142.fits'): ['GEMINI', 'GSAOI', 'IMAGE', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
 
     # BHROS Data
     ('BHROS', 'S20070112S0081.fits'): ['BHROS', 'GEMINI', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT', 'UNPREPARED'],
@@ -362,14 +359,26 @@ tags_data = {
     ('GHOST', 'S20230214S0025_red002.fits'): ['RED', 'GHOST', 'SIDEREAL', 'UNPREPARED', 'SPECT', 'SOUTH', 'RAW', 'GEMINI', 'XD'],
     ('GHOST', 'S20230214S0025_slit.fits'): ['SLIT', 'GHOST', 'SIDEREAL', 'SLITV', 'UNPREPARED', 'SOUTH', 'IMAGE', 'RAW', 'GEMINI'],
 
-    ('IGRINS-2', 'N20260303S0289.fits'):  # arc
-        ['IGRINS-2', 'GEMINI', 'NORTH', 'RAW', 'UNPREPARED', 'BUNDLE', 'LAMPOFF'],
-    ('IGRINS-2', 'N20260303S0290.fits'):  # flat
-        ['IGRINS-2', 'GEMINI', 'NORTH', 'RAW', 'UNPREPARED', 'BUNDLE', 'LAMPOFF', 'CAL', 'FLAT', 'GCALFLAT'],
+    # IGRINS-2 Data
+    #   IGRINS-2 Darks
     ('IGRINS-2', 'N20260228S0506.fits'):  # dark (no DARK?)
-        ['IGRINS-2', 'GEMINI', 'NORTH', 'RAW', 'UNPREPARED', 'BUNDLE', 'LAMPOFF'],
+        ['BUNDLE', 'GEMINI', 'IGRINS-2', 'NORTH', 'RAW', 'UNPREPARED'],
+
+    #   IGRINS-2 Flats
+    ('IGRINS-2', 'N20260303S0290.fits'):  # flat, lamp off
+        ['BUNDLE', 'CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'IGRINS-2', 'LAMPOFF', 'NORTH', 'RAW', 'UNPREPARED'],
+    ('IGRINS-2', 'N20260923S0392.fits'):  # flat, lamp on
+        ['BUNDLE', 'CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'IGRINS-2', 'LAMPON', 'NORTH', 'RAW', 'UNPREPARED'],
+
+    #   IGRINS-2 Telluric standards
     ('IGRINS-2', 'N20260228S0200.fits'):  # telluric standard
-        ['IGRINS-2', 'GEMINI', 'NORTH', 'RAW', 'UNPREPARED', 'BUNDLE', 'LAMPOFF', 'CAL', 'SIDEREAL', 'STANDARD'],
+        ['BUNDLE', 'CAL', 'GEMINI', 'IGRINS-2', 'NORTH', 'RAW', 'SIDEREAL', 'STANDARD', 'UNPREPARED'],
+
+    #   IGRINS-2 Blank sky
     ('IGRINS-2', 'N20260303S0044.fits'):  # blank sky
-        ['IGRINS-2', 'GEMINI', 'NORTH', 'RAW', 'UNPREPARED', 'BUNDLE', 'LAMPOFF', 'CAL', 'SIDEREAL', 'SKY']
+        ['BUNDLE', 'CAL', 'GEMINI', 'IGRINS-2', 'NORTH', 'RAW', 'SIDEREAL', 'SKY', 'UNPREPARED'],
+
+    #   IGRINS-2 Split pieces (H and K bands are separate files cut from a bundle)
+    ('IGRINS-2', 'N20260303S0289_H.fits'):  # H band piece of the bundle N20260303S0289
+        ['GEMINI', 'H', 'IGRINS-2', 'NORTH', 'SPECT', 'UNPREPARED', 'XD'],
 }
