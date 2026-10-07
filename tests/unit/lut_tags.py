@@ -229,72 +229,32 @@ tags_data = {
 
     # F2 Data
     #   F2 Darks
-    ('F2', 'S20150516S0373.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'DARK', 'GEMINI', 'SOUTH', 'NON_SIDEREAL',
-                                    'RAW', 'UNPREPARED'],
-    ('F2', 'S20141031S0274_dark.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'DARK', 'GEMINI', 'SOUTH',
-                                         'NON_SIDEREAL', 'PREPARED', 'PROCESSED'],
+    ('F2', 'S20150516S0373.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'F2', 'GEMINI', 'NON_SIDEREAL', 'RAW',
+                                    'SOUTH', 'UNPREPARED'],
+    ('F2', 'S20141031S0274_dark.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'F2', 'GEMINI', 'NON_SIDEREAL',
+                                         'PREPARED', 'PROCESSED', 'SOUTH'],
 
-    #   F2 Imaging
-    ('F2', 'S20150511S0168.fits'): ['F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('F2', 'S20100122S0063.fits'): ['F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('F2', 'S20150511S0274.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'IMAGE', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON',
-                                    'GEMINI', 'SOUTH', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'LAMPON'],
-    ('F2', 'S20150511S0275.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'IMAGE', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF',
-                                    'GEMINI', 'SOUTH', 'NON_SIDEREAL', 'RAW', 'UNPREPARED', 'LAMPOFF'],
-    # FIXME: Crashes when downloading.
-    # ('F2', 'S20141107S0062_flat.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'IMAGE', 'FLAT', 'GCALFLAT', 'GEMINI',
-    #                                      'SOUTH', 'NON_SIDEREAL', 'PREPARED', 'PROCESSED'],
+    #   F2 Imaging (flats and acquisitions with IMAGE are listed here)
+    ('F2', 'S20150511S0168.fits'): ['F2', 'GEMINI', 'IMAGE', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+    ('F2', 'S20190214S0576.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI',
+                                    'IMAGE', 'LAMPOFF', 'NON_SIDEREAL', 'RAW', 'SOUTH', 'UNPREPARED'],
+    ('F2', 'S20160317S0053.fits'): ['ACQUISITION', 'F2', 'GEMINI', 'IMAGE', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+    ('F2', 'S20160317S0055.fits'): ['ACQUISITION', 'F2', 'GEMINI', 'IMAGE', 'LS', 'RAW', 'SIDEREAL', 'SOUTH',
+                                    'THRUSLIT', 'UNPREPARED'],
+    ('F2', 'S20150622S0004.fits'): ['ACQUISITION', 'F2', 'GEMINI', 'IMAGE', 'MOS', 'RAW', 'SIDEREAL', 'SOUTH',
+                                    'THRUSLIT', 'UNPREPARED'],
 
-    #   F2 Longslit
-    ('F2', 'S20160724S0128.fits'): ['F2', 'LS', 'SPECT', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('F2', 'S20160724S0130.fits'): ['CAL', 'F2', 'LS', 'FLAT', 'GCALFLAT', 'SPECT', 'GCAL_IR_ON', 'LAMPON', 'GEMINI',
-                                    'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('F2', 'S20160724S0129.fits'): ['CAL', 'F2', 'LS', 'ARC', 'SPECT', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL',
+    #   F2 Longslit (flats and arcs with SPECT are listed here)
+    ('F2', 'S20140217S0036.fits'): ['F2', 'GEMINI', 'LS', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    ('F2', 'S20160616S0071.fits'): ['ARC', 'CAL', 'F2', 'GEMINI', 'LS', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
                                     'UNPREPARED'],
-    ('F2', 'S20160317S0053.fits'): ['ACQUISITION', 'F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('F2', 'S20160317S0055.fits'): ['ACQUISITION', 'F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL',
-                                    'UNPREPARED', 'THRUSLIT', 'LS'],
-    # for MASK: MASKNAME != 'None'
 
-    #   F2 MOS
-    ('F2', 'S20120104S0072.fits'): ['F2', 'MOS', 'SPECT', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('F2', 'S20120104S0070.fits'): ['CAL', 'F2', 'MOS', 'FLAT', 'GCALFLAT', 'LAMPOFF', 'SPECT', 'GEMINI', 'SOUTH', 'RAW',
-                                    'SIDEREAL', 'UNPREPARED', 'GCAL_IR_OFF'],
-    ('F2', 'S20120104S0068.fits'): ['CAL', 'F2', 'MOS', 'ARC', 'SPECT', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL',
-                                    'UNPREPARED'],
-    ('F2', 'S20120104S0053.fits'): ['F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    # But the headers are crap, so OBSCLASS not set to "acq", so
-    # won't work.  Needs to be replaced when really data available.
-    # Note that old system does not define F2 ACQUISITION
-    ('F2', 'S20120104S0055.fits'): ['F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED',
-                                    'THRUSLIT', 'MOS'],
-    # For MASK, I think that MASKTYPE != 0 will do.
-    # Same as above regarding ACQUISITION
-
-    # Scientifically not really MOS, but technically should be the same
-    # The headers are more likely to match with post-commissioning setup.
-    ('F2', 'S20150622S0003.fits'): ['ACQUISITION', 'F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    # Should be able to use OBSCLASS to set ACQUISITION.
-    ('F2', 'S20150622S0004.fits'): ['ACQUISITION', 'F2', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'SIDEREAL', 'UNPREPARED',
-                                    'THRUSLIT', 'MOS'],
-    ('F2', 'S20150622S0005.fits'): ['F2', 'MOS', 'SPECT', 'GEMINI', 'SOUTH', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('F2', 'S20150622S0008.fits'): ['CAL', 'F2', 'MOS', 'ARC', 'SPECT', 'GEMINI', 'SOUTH', 'NON_SIDEREAL', 'RAW',
-                                    'UNPREPARED'],
-    ('F2', 'S20150624S0172.fits'): ['CAL', 'F2', 'MOS', 'FLAT', 'GCALFLAT', 'LAMPON', 'GCAL_IR_ON', 'SPECT', 'GEMINI',
-                                    'SOUTH', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('F2', 'S20150629S0208.fits') : ['MOS', 'SPECT', 'F2', 'NON_SIDEREAL', 'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW'],
-    ('F2', 'S20150629S0244.fits') : ['AT_ZENITH', 'ARC', 'AZEL_TARGET', 'MOS', 'SPECT', 'F2', 'CAL', 'NON_SIDEREAL',
-                                     'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW'],
-    ('F2', 'S20150629S0245.fits') : ['FLAT', 'AT_ZENITH', 'GCAL_IR_ON', 'AZEL_TARGET', 'MOS', 'SPECT', 'F2', 'CAL',
-                                     'NON_SIDEREAL', 'GEMINI', 'SOUTH', 'UNPREPARED', 'RAW', 'LAMPON', 'GCALFLAT'],
-    ('F2', 'S20160616S0071.fits') : ['ARC', 'SIDEREAL', 'SPECT', 'F2', 'CAL', 'LS', 'GEMINI', 'SOUTH', 'UNPREPARED',
-                                     'RAW'],
-    ('F2', 'S20160616S0072.fits') : ['GCAL_IR_ON', 'FLAT', 'SIDEREAL', 'SPECT', 'F2', 'CAL', 'LS', 'GEMINI', 'SOUTH',
-                                     'UNPREPARED', 'RAW', 'LAMPON', 'GCALFLAT'],
-    ('F2', 'S20160616S0075.fits') : ['IMAGE', 'SIDEREAL', 'F2', 'ACQUISITION', 'IMAGE', 'GEMINI', 'SOUTH', 'UNPREPARED',
-                                     'RAW', 'THRUSLIT', 'LS'],
-    ('F2', 'S20160708S0025.fits') : ['AT_ZENITH', 'AZEL_TARGET', 'DARK', 'F2', 'CAL', 'NON_SIDEREAL', 'GEMINI', 'SOUTH',
-                                     'UNPREPARED', 'RAW'],
+    #   F2 MOS (flats and arcs with SPECT are listed here)
+    ('F2', 'S20150622S0005.fits'): ['F2', 'GEMINI', 'MOS', 'NON_SIDEREAL', 'RAW', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    ('F2', 'S20150629S0244.fits'): ['ARC', 'AT_ZENITH', 'AZEL_TARGET', 'CAL', 'F2', 'GEMINI', 'MOS', 'NON_SIDEREAL',
+                                    'RAW', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    ('F2', 'S20150624S0172.fits'): ['CAL', 'F2', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI', 'LAMPON', 'MOS',
+                                    'NON_SIDEREAL', 'RAW', 'SOUTH', 'SPECT', 'UNPREPARED'],
 
     # GSAOI Data
     #   GSAOI Darks
