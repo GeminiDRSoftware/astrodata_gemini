@@ -1,134 +1,91 @@
 tags_data = {
-    # GMOS-Level Tags
-    #   Tags: GMOS, BIAS, DARK, FRINGE, FLAT (whether it's GCAL or TWILIGT), GCALFLAT, TWILIGHT, ARC, IMAGE, SPECT,
-    #         IFU, LS, MOS, NODANDSHUFFLE, BLUE, RED, TWO
-    #
     #   GMOS Bias
-    ('GMOS', 'N20110524S0358.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'GMOS', 'BIAS', 'CAL', 'NON_SIDEREAL',
-                                      'RAW', 'UNPREPARED', 'AT_ZENITH'],
-    ('GMOS', 'N20110524S0358_bias.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'GMOS', 'BIAS', 'CAL',
-                                           'NON_SIDEREAL', 'OVERSCAN_SUBTRACTED', 'OVERSCAN_TRIMMED', 'PREPARED',
-                                           'PROCESSED', 'AT_ZENITH'],
-    ('GMOS', 'S20110627S0151.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'SOUTH', 'GMOS', 'BIAS', 'CAL',
-                                      'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('GMOS', 'S20070318S0274_bias.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'SOUTH', 'GMOS', 'BIAS',
-                                           'NON_SIDEREAL', 'OVERSCAN_SUBTRACTED', 'OVERSCAN_TRIMMED', 'PREPARED',
-                                           'PROCESSED'],
-    ('GMOS', 'N20160407S0076.fits') : ['GMOS', 'GEMINI', 'NORTH', 'AT_ZENITH', 'BIAS', 'AZEL_TARGET', 'CAL',
-                                       'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('GMOS', 'N20160516S0485.fits') : ['GMOS', 'AT_ZENITH', 'GEMINI', 'NORTH', 'BIAS', 'AZEL_TARGET', 'CAL',
-                                       'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
+    ('GMOS', 'N20160407S0076.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'BIAS', 'CAL', 'GEMINI', 'GMOS', 'NON_SIDEREAL',
+                                      'NORTH', 'RAW', 'UNPREPARED'],
+    # S20261001S0185_bias: processed bias
+    ('GMOS', 'S20261001S0185_bias.fits'): ['BIAS', 'CAL', 'GEMINI', 'GMOS', 'OVERSCAN_SUBTRACTED', 'OVERSCAN_TRIMMED',
+                                           'PREPARED', 'PROCESSED', 'SOUTH'],
 
     #   GMOS Dark
-    ('GMOS', 'N20160106S0653.fits'): ['AZEL_TARGET', 'GEMINI', 'NORTH', 'GMOS', 'DARK', 'RAW', 'NON_SIDEREAL',
-                                      'UNPREPARED', 'AT_ZENITH', 'CAL', 'MOS'],
-    ('GMOS', 'S20160725S0008.fits'): ['GEMINI', 'SOUTH', 'GMOS', 'DARK', 'RAW', 'SIDEREAL', 'UNPREPARED',
-                                      'NODANDSHUFFLE', 'CAL'],
+    # N20160106S0653: MOS dark
+    ('GMOS', 'N20160106S0653.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'GMOS', 'NON_SIDEREAL',
+                                      'NORTH', 'RAW', 'UNPREPARED'],
+    # S20160905S0003: N&S dark
+    ('GMOS', 'S20160905S0003.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'GMOS', 'NODANDSHUFFLE',
+                                      'NON_SIDEREAL', 'RAW', 'SOUTH', 'UNPREPARED'],
 
-    #   GMOS Arc
-    ('GMOS', 'S20160724S0218.fits'): ['CAL', 'GEMINI', 'SOUTH', 'GMOS', 'LS', 'ARC', 'RAW', 'SPECT', 'SIDEREAL',
-                                      'UNPREPARED'],
-    ('GMOS', 'N20160721S0351.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'GMOS', 'MOS', 'ARC', 'RAW',
-                                      'SPECT', 'NON_SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'N20160706S0220.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IFU', 'ARC', 'ONESLIT_RED', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'S20060131S0131.fits'): ['CAL', 'GEMINI', 'SOUTH', 'GMOS', 'IFU', 'ARC', 'ONESLIT_BLUE', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'N20160421S0217.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IFU', 'ARC', 'TWOSLIT', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'N20020829S0026.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'MOS', 'ARC', 'NODANDSHUFFLE', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
+    #   GMOS Imaging (flats, acquisitions and the Hartmann file with IMAGE are listed here)
+    ('GMOS', 'S20111120S0478.fits'): ['GEMINI', 'GMOS', 'IMAGE', 'RAW', 'SIDEREAL', 'SOUTH', 'UNPREPARED'],
+    # N20110718S0294: twilight flat
+    ('GMOS', 'N20110718S0294.fits'): ['CAL', 'FLAT', 'GEMINI', 'GMOS', 'IMAGE', 'NORTH', 'RAW', 'SIDEREAL',
+                                      'TWILIGHT', 'UNPREPARED'],
+    # S20251207S0094_flat: processed twilight flat
+    ('GMOS', 'S20251207S0094_flat.fits'): ['CAL', 'FLAT', 'GEMINI', 'GMOS', 'IMAGE', 'OVERSCAN_SUBTRACTED',
+                                           'OVERSCAN_TRIMMED', 'PREPARED', 'PROCESSED', 'SIDEREAL', 'SOUTH',
+                                           'TWILIGHT'],
+    # N20190216S0039: Hartmann file (weird)
+    ('GMOS', 'N20190216S0039.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'GMOS', 'IMAGE', 'NORTH', 'RAW',
+                                      'THRUSLIT', 'UNPREPARED'],
+    # N20160708S0085: acquisition, MOS thru-slit
+    ('GMOS', 'N20160708S0085.fits'): ['ACQUISITION', 'GEMINI', 'GMOS', 'IMAGE', 'MOS', 'NORTH', 'RAW', 'SIDEREAL',
+                                      'THRUSLIT', 'UNPREPARED'],
+    # N20160620S0317: acquisition, IFU ONESLIT_RED
+    ('GMOS', 'N20160620S0317.fits'): ['ACQUISITION', 'GEMINI', 'GMOS', 'IFU', 'IMAGE', 'NORTH', 'ONESLIT_RED', 'RAW',
+                                      'SIDEREAL', 'THRUSLIT', 'UNPREPARED'],
 
     #   GMOS Fringe
-    # Those will only be recognized as PROCESSED FRINGE.  As raw, they
-    # cannot be recognized.
-    ('GMOS', 'N20110927S0170_fringe.fits'): ['FRINGE', 'GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'OVERSCAN_SUBTRACTED',
-                                             'OVERSCAN_TRIMMED', 'PREPARED', 'PROCESSED', 'SIDEREAL', 'CAL'],
+    # N20110927S0170_fringe: Those will only be recognized as PROCESSED FRINGE.  As raw, they cannot be recognized.
+    ('GMOS', 'N20110927S0170_fringe.fits'): ['CAL', 'FRINGE', 'GEMINI', 'GMOS', 'IMAGE', 'NORTH',
+                                             'OVERSCAN_SUBTRACTED', 'OVERSCAN_TRIMMED', 'PREPARED', 'PROCESSED',
+                                             'SIDEREAL'],
 
-    #   GMOS Imaging Data
-    ('GMOS', 'N20120203S0284.fits'): ['GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('GMOS', 'S20111120S0478.fits'): ['GEMINI', 'SOUTH', 'GMOS', 'IMAGE', 'SIDEREAL', 'RAW', 'UNPREPARED'],
-    ('GMOS', 'N20120121S0175.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'SIDEREAL', 'RAW',
+    #   GMOS Longslit (flats and arcs with SPECT are listed here)
+    # N20160726S0179: standard
+    ('GMOS', 'N20160726S0179.fits'): ['CAL', 'GEMINI', 'GMOS', 'LS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'STANDARD',
                                       'UNPREPARED'],
-    ('GMOS', 'N20110718S0294.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'FLAT', 'TWILIGHT', 'SIDEREAL', 'RAW',
+    # S20091217S0032: N&S
+    ('GMOS', 'S20091217S0032.fits'): ['GEMINI', 'GMOS', 'LS', 'NODANDSHUFFLE', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
                                       'UNPREPARED'],
-    ('GMOS', 'N20110718S0290_flat.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'FLAT', 'TWILIGHT', 'SIDEREAL',
-                                           'OVERSCAN_SUBTRACTED', 'OVERSCAN_TRIMMED', 'PREPARED', 'PROCESSED'],
-    ('GMOS', 'S20150903S0061.fits'): ['ACQUISITION', 'GEMINI', 'SOUTH', 'GMOS', 'IMAGE', 'SIDEREAL', 'RAW',
+    # N20160722S0284: slit illumination
+    ('GMOS', 'N20160722S0284.fits'): ['CAL', 'GEMINI', 'GMOS', 'LS', 'NORTH', 'RAW', 'SIDEREAL', 'SLITILLUM', 'SPECT',
+                                      'TWILIGHT', 'UNPREPARED'],
+    # N20160726S0180: flat
+    ('GMOS', 'N20160726S0180.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'GMOS', 'LS', 'NORTH', 'RAW', 'SIDEREAL',
+                                      'SPECT', 'UNPREPARED'],
+    # S20160724S0218: arc
+    ('GMOS', 'S20160724S0218.fits'): ['ARC', 'CAL', 'GEMINI', 'GMOS', 'LS', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
                                       'UNPREPARED'],
-    ('GMOS', 'S20140625S0361.fits'): ['CAL', 'GEMINI', 'SOUTH', 'GMOS', 'IMAGE', 'FLAT', 'TWILIGHT', 'SIDEREAL', 'RAW',
-                                      'UNPREPARED'],
-    ('GMOS', 'S20120815S0031.fits') : ['GMOS', 'IMAGE', 'SIDEREAL', 'IMAGE', 'GEMINI', 'SOUTH', 'RAW', 'UNPREPARED'],
 
-    #   GMOS Longslit Data
-    ('GMOS', 'N20160726S0179.fits'): ['GEMINI', 'NORTH', 'GMOS', 'LS', 'RAW', 'SPECT', 'SIDEREAL', 'UNPREPARED',
-                                      'STANDARD', 'CAL'],
-    ('GMOS', 'S20091217S0032.fits'): ['GEMINI', 'SOUTH', 'GMOS', 'LS', 'NODANDSHUFFLE', 'RAW', 'SPECT', 'SIDEREAL',
+    #   GMOS MOS (flats and arcs with SPECT are listed here)
+    # S20150417S0092: N&S
+    ('GMOS', 'S20150417S0092.fits'): ['GEMINI', 'GMOS', 'MOS', 'NODANDSHUFFLE', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
                                       'UNPREPARED'],
-    ('GMOS', 'N20160726S0180.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'LS', 'FLAT', 'GCALFLAT', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'N20160722S0284.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'LS', 'SLITILLUM', 'TWILIGHT', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    # This one is not working in the current system.  Doesn't detect
-    # it as TWILIGHT, nor FLAT.
-    ('GMOS', 'S20160722S0210.fits'): ['ACQUISITION', 'GEMINI', 'SOUTH', 'GMOS', 'IMAGE', 'RAW', 'SIDEREAL',
-                                      'UNPREPARED', 'LS', 'THRUSLIT'],
-    ('GMOS', 'N20160616S0431.fits') : ['GMOS', 'ARC', 'GEMINI', 'NORTH', 'AT_ZENITH', 'LS', 'AZEL_TARGET', 'CAL',
-                                       'SPECT', 'NON_SIDEREAL', 'RAW', 'UNPREPARED'],
-    # New tag: MASK.  I think that
-    # the conditions will be GRATING='MIRROR' and MASKTYP=1.
+    # N20160605S0099: slit illumination
+    ('GMOS', 'N20160605S0099.fits'): ['CAL', 'GEMINI', 'GMOS', 'MOS', 'NORTH', 'RAW', 'SIDEREAL', 'SLITILLUM',
+                                      'SPECT', 'TWILIGHT', 'UNPREPARED'],
+    # S20190217S0211: flat
+    ('GMOS', 'S20190217S0211.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'GMOS', 'MOS',
+                                      'NON_SIDEREAL', 'RAW', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    # N20160721S0351: arc
+    ('GMOS', 'N20160721S0351.fits'): ['ARC', 'AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'GMOS', 'MOS',
+                                      'NON_SIDEREAL', 'NORTH', 'RAW', 'SPECT', 'UNPREPARED'],
 
-    #   GMOS MOS Data
-    ('GMOS', 'N20110826S0336.fits'): ['GEMINI', 'NORTH', 'GMOS', 'MOS', 'RAW', 'SPECT', 'SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'S20150417S0092.fits'): ['GEMINI', 'SOUTH', 'GMOS', 'MOS', 'NODANDSHUFFLE', 'RAW', 'SPECT', 'SIDEREAL',
+    #   GMOS IFU (flats and arcs with SPECT are listed here)
+    # S20060130S0079: N&S, TWOSLIT
+    ('GMOS', 'S20060130S0079.fits'): ['GEMINI', 'GMOS', 'IFU', 'NODANDSHUFFLE', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
+                                      'TWOSLIT', 'UNPREPARED'],
+    # S20051225S0084: ONESLIT_BLUE
+    ('GMOS', 'S20051225S0084.fits'): ['GEMINI', 'GMOS', 'IFU', 'ONESLIT_BLUE', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
                                       'UNPREPARED'],
-    ('GMOS', 'N20160708S0096.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'MOS', 'FLAT', 'GCALFLAT', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    ('GMOS', 'N20160605S0099.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'MOS', 'SLITILLUM', 'TWILIGHT', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED'],
-    # This one is not working in the current system.  Doesn't detect
-    # it as TWILIGHT, nor FLAT.
-    ('GMOS', 'N20160708S0085.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'RAW', 'SIDEREAL',
-                                      'UNPREPARED', 'THRUSLIT', 'MOS'],
-    # New tag: MASK.  I think that
-    # the conditions will be GRATING == 'MIRROR' and MASKTYP != 0.
-
-    #   GMOS IFU Data
-    ('GMOS', 'N20160706S0218.fits'): ['GEMINI', 'NORTH', 'GMOS', 'IFU', 'ONESLIT_RED', 'RAW', 'SPECT', 'SIDEREAL',
-                                      'UNPREPARED'],
-    ('GMOS', 'S20060130S0079.fits'): ['GEMINI', 'SOUTH', 'GMOS', 'IFU', 'NODANDSHUFFLE', 'RAW', 'SPECT', 'SIDEREAL',
-                                      'UNPREPARED', 'TWOSLIT'],
-    ('GMOS', 'N20111124S0203.fits') : ['GMOS', 'IFU', 'GEMINI', 'NORTH', 'GCALFLAT', 'ONESLIT_RED', 'FLAT',
-                                       'CAL', 'SIDEREAL', 'SPECT', 'RAW', 'UNPREPARED'],
-    # The two-slit nature is not identified in the old system.
-    # MASKNAME='IFU-NS-2' in that file.  the rule has 'IFU-2-NS', that
-    # appears to be wrong.
-    ('GMOS', 'N20160716S0148.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IFU', 'FLAT', 'ONESLIT_RED', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED', 'GCALFLAT'],
-    ('GMOS', 'S20060131S0117.fits'): ['CAL', 'GEMINI', 'SOUTH', 'GMOS', 'IFU', 'FLAT', 'ONESLIT_BLUE', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED', 'GCALFLAT'],
-    ('GMOS', 'N20160524S0119.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IFU', 'FLAT', 'TWOSLIT', 'RAW', 'SPECT',
-                                      'SIDEREAL', 'UNPREPARED', 'GCALFLAT'],
-    ('GMOS', 'N20160722S0285.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IFU', 'SLITILLUM', 'TWILIGHT', 'RAW', 'TWOSLIT',
-                                      'SPECT', 'SIDEREAL', 'UNPREPARED'],
-    # This one is not working in the current system.  Doesn't detect
-    # it as TWILIGHT, nor FLAT.
-    ('GMOS', 'N20160620S0373.fits'): ['CAL', 'GEMINI', 'NORTH', 'GMOS', 'IFU', 'SLITILLUM', 'TWILIGHT', 'RAW', 'ONESLIT_RED',
-                                      'SPECT', 'SIDEREAL', 'UNPREPARED'],
-    # This one is not working in the current system.  Doesn't detect
-    # it as TWILIGHT, nor FLAT.
-    ('GMOS', 'S20051226S0033.fits'): ['CAL', 'GEMINI', 'SOUTH', 'GMOS', 'IFU', 'SLITILLUM', 'TWILIGHT', 'RAW',
-                                      'ONESLIT_BLUE', 'SPECT', 'SIDEREAL', 'UNPREPARED'],
-    # This one is not working in the current system.  Doesn't detect
-    # it as TWILIGHT, nor FLAT.
-    ('GMOS', 'N20160620S0317.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'GMOS', 'IMAGE', 'RAW', 'SIDEREAL',
-                                      'UNPREPARED', 'ONESLIT_RED', 'IFU', 'THRUSLIT'],
-    ('GMOS', 'S20051225S0084.fits') : ['GMOS', 'IFU', 'SIDEREAL', 'ONESLIT_BLUE', 'SPECT', 'GEMINI', 'SOUTH',
-                                       'RAW', 'UNPREPARED'],
-    # For tag MASK: GRATING == 'MIRROR' AND MASKTYP != 0
-
-    #   GMOS N&S Data
-    # See in longslit, MOS, and IFU.
+    # N20160620S0373: slit illumination, ONESLIT_RED
+    ('GMOS', 'N20160620S0373.fits'): ['CAL', 'GEMINI', 'GMOS', 'IFU', 'NORTH', 'ONESLIT_RED', 'RAW', 'SIDEREAL',
+                                      'SLITILLUM', 'SPECT', 'TWILIGHT', 'UNPREPARED'],
+    # N20111124S0203: flat, ONESLIT_RED
+    ('GMOS', 'N20111124S0203.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'GMOS', 'IFU', 'NORTH', 'ONESLIT_RED',
+                                      'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED'],
+    # S20060131S0131: arc, ONESLIT_BLUE
+    ('GMOS', 'S20060131S0131.fits'): ['ARC', 'CAL', 'GEMINI', 'GMOS', 'IFU', 'ONESLIT_BLUE', 'RAW', 'SIDEREAL',
+                                      'SOUTH', 'SPECT', 'UNPREPARED'],
 
     # NIRI Data
     #   NIRI Darks

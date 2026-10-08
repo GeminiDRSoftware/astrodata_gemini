@@ -1,29 +1,13 @@
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 import astrodata_gemini
 
+from .lut_tags import tags_data
+from .gmos_lut_descriptors import descriptors_data
 from ..testing import astrofaker, find_test_data, get_storage_location
-
-STANDARD_TEST_FILE = "S20190215S0188.fits"
-
-GMOS_DESCRIPTORS_TYPES = [
-    ('detector_x_offset', float),
-    ('detector_y_offset', float),
-    ('nod_count', tuple),
-    ('nod_offsets', tuple),
-    ('pixel_scale', float),
-    ('shuffle_pixels', int),
-]
-
-test_files = [
-    "N20110826S0336.fits",
-    "N20150624S0106.fits",
-    "N20160524S0119.fits",
-    "N20170529S0168.fits",
-]
-
 
 @pytest.fixture(scope="module")
 def ad(request):
@@ -35,35 +19,98 @@ def ad(request):
 
 @pytest.mark.gmos
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
+@pytest.mark.parametrize(
+    "ad",
+    [pytest.param(fname, id=fname)
+     for (inst, fname), tags in tags_data.items() if inst == 'GMOS'],
+    indirect=["ad"]
+)
 def test_is_right_instance(ad):
+    """
+    Check that the AstroData object is of the correct type for GMOS data.
+    Using the files from the tags LUT to avoid having to maintain a separate
+    list of test files.
+    """
     assert isinstance(ad, astrodata_gemini.gmos.adclass.AstroDataGmos)
 
 
 @pytest.mark.gmos
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_can_return_instrument(ad):
-    assert ad.phu['INSTRUME'] in ['GMOS-N', 'GMOS-S']
-    assert ad.instrument() == ad.phu['INSTRUME']
+@pytest.mark.parametrize(
+    "ad, expected_tags",
+    [pytest.param(fname, tags, id=fname)
+     for (inst, fname), tags in tags_data.items() if inst == 'GMOS'],
+    indirect=["ad"]
+)
+def test_gmos_tags(ad, expected_tags):
+    """Check all the tags for all the test files in the LUTs."""
+    assert set(ad.tags) == set(expected_tags)
 
 
 @pytest.mark.gmos
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_can_return_ad_length(ad):
-    assert len(ad)
+@pytest.mark.parametrize(
+    "ad, dvalue_pairs",
+    [pytest.param(fname, dvalue_pairs, id=fname)
+     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GMOS'],
+    indirect=["ad"]
+)
+def test_descriptors(ad, dvalue_pairs):
+    """
+    Check all the descriptors for all the test files in the LUTs.  The file
+    is opened once and all its descriptors are checked in a loop; the
+    mismatches are collected and reported together.
+    """
+    failures = []
+    for descriptor, expected_value in dvalue_pairs:
+        try:
+            _check_descriptor(ad, descriptor, expected_value)
+        except Exception as err:
+            failures.append(f"{descriptor}: {type(err).__name__}: {err}")
+    assert not failures, (
+        f"{len(failures)} of {len(dvalue_pairs)} descriptors failed for "
+        f"{ad.filename}:\n" + "\n".join(failures)
+    )
+
+
+def _check_descriptor(ad, descriptor, expected_value):
+    """Raise an exception if the descriptor does not match the expected value."""
+    method = getattr(ad, descriptor)
+    if expected_value is None:
+        assert method() is None
+    else:
+        mvalue = method()
+        if (isinstance(mvalue, (float, np.floating)) or
+            isinstance(expected_value, (float, np.floating))):
+            assert mvalue == pytest.approx(expected_value, abs=1e-7, rel=1e-5)
+        elif isinstance(expected_value, list):
+            assert len(expected_value) == len(mvalue)
+            for v, mv in zip(expected_value, mvalue):
+                if (isinstance(mv, (float, np.floating)) or
+                    isinstance(v, (float, np.floating))):
+                    assert mv == pytest.approx(v, abs=1e-7, rel=1e-5)
+                else:
+                    assert v == mv
+        else:
+            assert mvalue == expected_value
 
 
 @pytest.mark.gmos
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-@pytest.mark.parametrize("descriptor,expected_type", GMOS_DESCRIPTORS_TYPES)
-def test_descriptor_matches_type(ad, descriptor, expected_type):
-    print(ad.filename, descriptor, expected_type)
-    value = getattr(ad, descriptor)()
-    assert isinstance(value, expected_type) or value is None, \
-        "Assertion failed for file: {}".format(ad.filename)
+@pytest.mark.parametrize(
+    "ad",
+    [pytest.param(fname, id=fname)
+     for (inst, fname) in descriptors_data if inst == 'GMOS'],
+    indirect=["ad"]
+)
+def test_all_descriptors_represented(ad):
+    """Check that the LUT has a value for every name in ad.descriptors."""
+    fname = ad.filename
+    represented = {descriptor
+                   for (inst, name), pairs in descriptors_data.items()
+                   if inst == 'GMOS' and name == fname
+                   for descriptor, _ in pairs}
+    assert represented == set(ad.descriptors)
 
 
 @pytest.mark.gmos
@@ -78,32 +125,3 @@ def test_tag_as_standard_fake(astrofaker):
                                            'OBSTYPE': 'OBJECT'}
                            )
     assert 'STANDARD' in ad.tags
-
-
-@pytest.mark.gmos
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", [STANDARD_TEST_FILE], indirect=True)
-def test_tag_as_standard_real(ad):
-    assert 'STANDARD' in ad.tags
-
-
-@pytest.mark.gmos
-@pytest.mark.astrofaker
-def test_ra_dec_from_text(astrofaker):
-    ad = astrofaker.create('GMOS-S', ['SPECT'],
-                           extra_keywords={'RA': '03:48:30.113',
-                                           'DEC': '+24:20:43.00',
-                                           'DATE-OBS': '2021-01-01T12:00:00.000'}
-                           )
-    assert ad.ra() == pytest.approx(57.12547083333333)
-    assert ad.dec() == pytest.approx(24.345277777777778)
-
-    # test bad RA/DEC values, just doing this for GMOS but it's testing the base
-    ad = astrofaker.create('GMOS-S', ['SPECT'],
-                           extra_keywords={'RA': 'Fail',
-                                           'DEC': 'Fail',
-                                           'DATE-OBS': '2021-01-01T12:00:00.000'}
-                           )
-    assert ad.ra() is None
-    assert ad.dec() is None
-

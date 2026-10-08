@@ -51,6 +51,12 @@ class AstroDataGmos(AstroDataGemini):
         else:
             return False
 
+    def _tag_is_dark(self):
+        if self.phu.get('OBSTYPE') == 'DARK':
+            return True
+        else:
+            return False
+
     @astro_data_tag
     def _tag_bias(self):
         if self._tag_is_bias():
@@ -62,6 +68,12 @@ class AstroDataGmos(AstroDataGemini):
             if self.phu.get('GRATING') == 'MIRROR':
                 f1, f2 = self.phu.get('FILTER1'), self.phu.get('FILTER2')
                 # This kind of filter prevents imaging to be classified as FLAT
+                # TODO: This clause is never enforced because the
+                #  gemini.adclass _type_gcalflat tag will put the GCALFLAT,
+                #  FLAT, CAL tags on the data anyway.  This needs to be fixed.
+                #  However, if we removed GCALFLAT, FLAT, and CAL, how does it
+                #  impact the archive and whatever migh be using those hartmann
+                #  observations?
                 if any(('Hartmann' in f) for f in (f1, f2)):
                     return
             return TagSet(['GCALFLAT', 'FLAT', 'CAL'])
@@ -106,7 +118,7 @@ class AstroDataGmos(AstroDataGemini):
         # if not self._tag_is_spect():
         #    return
 
-        if self._tag_is_bias():
+        if self._tag_is_bias() or self._tag_is_dark():
             return
 
         mapping = {
@@ -147,7 +159,7 @@ class AstroDataGmos(AstroDataGemini):
         # if not self._tag_is_spect():
         #    return
 
-        if self._tag_is_bias() or self._tag_is_bpm():
+        if self._tag_is_bias() or self._tag_is_dark() or self._tag_is_bpm():
             return
 
         if self.phu.get('MASKTYP') == 1 and self.phu.get('MASKNAME', '').endswith('arcsec'):
@@ -158,7 +170,7 @@ class AstroDataGmos(AstroDataGemini):
         # if not self._tag_is_spect():
         #    return
 
-        if self._tag_is_bias():
+        if self._tag_is_bias() or self._tag_is_dark():
             return
 
         mskt = self.phu.get('MASKTYP')
@@ -1064,6 +1076,8 @@ class AstroDataGmos(AstroDataGemini):
         float/None
             the slit width in arcseconds
         """
+        if 'MOS' in self.tags:
+            return None
         fpmask = self.focal_plane_mask(pretty=True)
         if 'arcsec' in fpmask:
             return float(fpmask.replace('arcsec', '').replace('NS', ''))
