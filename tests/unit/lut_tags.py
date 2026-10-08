@@ -252,6 +252,9 @@ tags_data = {
     ('GPI', 'S20161014S0043.fits'): ['GEMINI', 'GPI', 'H_CORON', 'IFU', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT',
                                      'UNPREPARED'],
 
+    # GRACES Data
+    ('GRACES', 'N20190116G0054i.fits'): ['GEMINI', 'GRACES', 'RAW', 'SPECT', 'UNPREPARED'],
+
     # MICHELLE Data
     ('MICHELLE', 'N20050116S0119.fits'): ['GEMINI', 'IMAGE', 'MICHELLE', 'NORTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
     ('MICHELLE', 'N20111112S0316.fits'): ['GEMINI', 'LS', 'MICHELLE', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT',

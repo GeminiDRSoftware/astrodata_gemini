@@ -14,6 +14,7 @@ from ..testing import find_test_data, get_storage_location
 INSTRUMENT_CLASSES = {
     'BHROS': astrodata_gemini.bhros.adclass.AstroDataBhros,
     'GPI': astrodata_gemini.gpi.adclass.AstroDataGpi,
+    'GRACES': astrodata_gemini.graces.adclass.AstroDataGraces,
     'MICHELLE': astrodata_gemini.michelle.adclass.AstroDataMichelle,
     'NICI': astrodata_gemini.nici.adclass.AstroDataNici,
     'TRECS': astrodata_gemini.trecs.adclass.AstroDataTrecs,

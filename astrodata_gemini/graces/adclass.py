@@ -88,6 +88,20 @@ class AstroDataGraces(AstroDataGemini):
         return 'GRACES'
 
     @astro_data_descriptor
+    def position_angle(self):
+        """
+        GRACES does not have a position angle, so this returns None.
+        """
+        return None
+
+    @astro_data_descriptor
+    def slit_width(self):
+        """
+        Return None. There are no slits in GRACES.
+        """
+        return None
+
+    @astro_data_descriptor
     def ra(self):
         """
         Returns the Right Ascension of the center of field in degrees.  Since a
