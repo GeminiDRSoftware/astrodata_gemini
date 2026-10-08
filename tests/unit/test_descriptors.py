@@ -95,16 +95,12 @@ DESCRIPTORS_TYPES = [
 
 test_files = [
     "gS20190219S0207_bias.fits",
-    "N20190216S0092.fits",
     "S20180211S0294.fits",
     "N20190112S0005.fits",
     "N20190219S0072.fits",
-    "N20190214S0058.fits",
     "N20190221S0001.fits",
     "N20190216S0039.fits",
-    "N20190221S0032.fits",
     "S20190217S0211.fits",
-    "N20190216S0060.fits",
     "S20160905S0003.fits",
     "S20190221S0251.fits",
 ]

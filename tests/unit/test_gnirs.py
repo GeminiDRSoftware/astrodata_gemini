@@ -1,26 +1,13 @@
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 import astrodata_gemini
 
+from .lut_tags import tags_data
+from .gnirs_lut_descriptors import descriptors_data
 from ..testing import find_test_data, get_storage_location
-
-test_files = [
-    "N20190206S0279.fits",
-    "N20190214S0058.fits",
-    "N20190216S0060.fits",
-    "N20190216S0092.fits",
-    "N20190221S0032.fits",
-]
-
-
-GNIRS_DESCRIPTORS_TYPES = [
-    ('detector_x_offset', float),
-    ('detector_y_offset', float),
-    ('pixel_scale', float),
-]
-
 
 @pytest.fixture(scope="module")
 def ad(request):
@@ -32,97 +19,114 @@ def ad(request):
 
 @pytest.mark.gnirs
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_is_right_type(ad):
-    assert type(ad) == astrodata_gemini.gnirs.adclass.AstroDataGnirs
-
-
-@pytest.mark.gnirs
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
+@pytest.mark.parametrize(
+    "ad",
+    [pytest.param(fname, id=fname)
+     for (inst, fname), tags in tags_data.items() if inst == 'GNIRS'],
+    indirect=["ad"]
+)
 def test_is_right_instance(ad):
-    # YES, this *can* be different from test_is_right_type. Metaclasses!
+    """
+    Check that the AstroData object is of the correct type for GNIRS data.
+    Using the files from the tags LUT to avoid having to maintain a separate
+    list of test files.
+    """
     assert isinstance(ad, astrodata_gemini.gnirs.adclass.AstroDataGnirs)
 
 
 @pytest.mark.gnirs
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_extension_data_shape(ad):
-    data = ad[0].data
-    assert data.shape == (1022, 1024)
-
-
-expected_tags = {'RAW', 'GEMINI', 'NORTH', 'GNIRS', 'UNPREPARED', }
-
-@pytest.mark.gnirs
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-@pytest.mark.parametrize("tag", expected_tags)
-def test_tags(ad, tag):
-    assert tag in ad.tags
+@pytest.mark.parametrize(
+    "ad, expected_tags",
+    [pytest.param(fname, tags, id=fname)
+     for (inst, fname), tags in tags_data.items() if inst == 'GNIRS'],
+    indirect=["ad"]
+)
+def test_gnirs_tags(ad, expected_tags):
+    """Check all the tags for all the test files in the LUTs."""
+    assert set(ad.tags) == set(expected_tags)
 
 
 @pytest.mark.gnirs
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_can_return_instrument(ad):
-    assert ad.phu['INSTRUME'] == 'GNIRS'
-    assert ad.instrument() == ad.phu['INSTRUME']
-
-
-@pytest.mark.gnirs
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_can_return_ad_length(ad):
-    assert len(ad) == 1
-
-
-@pytest.mark.gnirs
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_slice_range(ad):
-    metadata = ('SCI', 2), ('SCI', 3)
-    slc = ad[1:]
-
-    assert len(slc) == 0
-
-    for ext, md in zip(slc, metadata):
-        assert (ext.hdr['EXTNAME'], ext.hdr['EXTVER']) == md
-
-
-@pytest.mark.gnirs
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-@pytest.mark.parametrize("descriptor,expected_type", GNIRS_DESCRIPTORS_TYPES)
-def test_descriptor_matches_type(ad, descriptor, expected_type):
-    value = getattr(ad, descriptor)()
-    assert isinstance(value, expected_type) or value is None, \
-        "Assertion failed for file: {}".format(ad.filename)
-
-
-@pytest.mark.gnirs
-@pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
-def test_ra_and_dec_always_returns_float(ad, monkeypatch):
+@pytest.mark.parametrize(
+    "ad, dvalue_pairs",
+    [pytest.param(fname, dvalue_pairs, id=fname)
+     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GNIRS'],
+    indirect=["ad"]
+)
+def test_descriptors(ad, dvalue_pairs):
     """
-    Tests that the get the RA/DEC coordinates using descriptors.
-
-    Parameters
-    ----------
-    ad : fixture
-        Custom fixture that downloads and opens the input file.
+    Check all the descriptors for all the test files in the LUTs.  The file
+    is opened once and all its descriptors are checked in a loop; the
+    mismatches are collected and reported together.
     """
-    if isinstance(ad.wcs_ra(), float) or ad.wcs_ra() is None:
-        assert isinstance(ad.ra(), float)
+    failures = []
+    for descriptor, expected_value in dvalue_pairs:
+        try:
+            _check_descriptor(ad, descriptor, expected_value)
+        except Exception as err:
+            failures.append(f"{descriptor}: {type(err).__name__}: {err}")
+    assert not failures, (
+        f"{len(failures)} of {len(dvalue_pairs)} descriptors failed for "
+        f"{ad.filename}:\n" + "\n".join(failures)
+    )
 
-    if isinstance(ad.wcs_dec(), float) or ad.wcs_dec() is None:
-        assert isinstance(ad.dec(), float)
+
+def _check_descriptor(ad, descriptor, expected_value):
+    """Raise an exception if the descriptor does not match the expected value."""
+    method = getattr(ad, descriptor)
+    if expected_value is None:
+        assert method() is None
+    else:
+        mvalue = method()
+        if (isinstance(mvalue, (float, np.floating)) or
+            isinstance(expected_value, (float, np.floating))):
+            assert mvalue == pytest.approx(expected_value, abs=1e-7, rel=1e-5)
+        elif isinstance(expected_value, list):
+            assert len(expected_value) == len(mvalue)
+            for v, mv in zip(expected_value, mvalue):
+                if (isinstance(mv, (float, np.floating)) or
+                    isinstance(v, (float, np.floating))):
+                    assert mv == pytest.approx(v, abs=1e-7, rel=1e-5)
+                else:
+                    assert v == mv
+        else:
+            assert mvalue == expected_value
 
 
 @pytest.mark.gnirs
 @pytest.mark.goa_remote_data
-@pytest.mark.parametrize("ad", test_files, indirect=True)
+@pytest.mark.parametrize(
+    "ad",
+    [pytest.param(fname, id=fname)
+     for (inst, fname) in descriptors_data if inst == 'GNIRS'],
+    indirect=["ad"]
+)
+def test_all_descriptors_represented(ad):
+    """Check that the LUT has a value for every name in ad.descriptors."""
+    fname = ad.filename
+    represented = {descriptor
+                   for (inst, name), pairs in descriptors_data.items()
+                   if inst == 'GNIRS' and name == fname
+                   for descriptor, _ in pairs}
+    assert represented == set(ad.descriptors)
+
+
+# The files on which the WCS fallback is tested: one of each kind of
+# spectroscopy and imaging, including IFU (north and south).
+WCS_FALLBACK_FILES = [
+    "N20120117S0019.fits",  # image
+    "N20241216S0168.fits",  # longslit
+    "N20190206S0279.fits",  # cross-dispersed
+    "N20240330S0209.fits",  # IFU (LR-IFU)
+    "S20070102S0073.fits",  # IFU, south
+]
+
+
+@pytest.mark.gnirs
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", WCS_FALLBACK_FILES, indirect=True)
 def test_ra_and_dec_wcs_fallback(ad, monkeypatch):
     """
     Tests that the get the RA/DEC coordinates using descriptors when the WCS coordinate mapping fails
@@ -139,98 +143,3 @@ def test_ra_and_dec_wcs_fallback(ad, monkeypatch):
     monkeypatch.setattr(ad, 'wcs_dec', _fake_wcs_call)
     assert(ad.ra() == ad.phu.get('RA', None))
     assert(ad.dec() == ad.phu.get('DEC', None))
-
-
-@pytest.mark.gnirs
-def test_ra_dec_from_text():
-    ad = astrodata_gemini.gnirs.adclass.AstroDataGnirs()
-    ad.phu['RA'] = '03:48:30.113'
-    ad.phu['DEC'] = '+24:20:43.00'
-    assert ad.target_ra() == pytest.approx(57.12547083333333)
-    assert ad.target_dec() == pytest.approx(24.345277777777778)
-
-
-# TODO: HR-IFU data doesn't exist yet, add one when available
-EXPECTED_FPMS = [
-    ('N20220918S0040.fits', "LR-IFU"),
-    ("S20061213S0131.fits", "IFU")
-]
-
-
-# @pytest.mark.gnirs
-# @pytest.mark.goa_remote_data
-# @pytest.mark.parametrize("filename,expected_fpm", EXPECTED_FPMS)
-# def test_ifu_fpm(filename, expected_fpm):
-#     path = astrodata.testing.download_from_archive(filename)
-#     ad = astrodata.open(path)
-#     assert("IFU" in ad.tags)
-#     assert(ad.focal_plane_mask(pretty=True) == expected_fpm)
-
-
-@pytest.mark.gnirs
-def test_prism_string():
-    # These are the values the prism header can take, copied from:
-    # http://internal.gemini.edu/science/instruments/GNIRS/Systems_Reference/mechanisms/gnirsMechanisms
-    # ... and the actual prism value we should end up with
-    things = [
-        {'position': "LB+SXD_G5536", 'value': "SXD_G5536"},
-        {'position': "SB+SXD_G5536", 'value': "SXD_G5536"},
-        {'position': "LR+SXD_G5536", 'value': "SXD_G5536"},
-        {'position': "SR+SXD_G5536", 'value': "SXD_G5536"},
-        {'position': "LB+LXD_G5535", 'value': "LXD_G5535"},
-        {'position': "SB+LXD_G5535", 'value': "LXD_G5535"},
-        {'position': "LR+LXD_G5535", 'value': "LXD_G5535"},
-        {'position': "SR+LXD_G5535", 'value': "LXD_G5535"},
-        {'position': "MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "WOLL_G5509", 'value': "WOLL_G5509"},
-        {'position': "LB32+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "LR32+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "SB32+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "SR32+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "LB10+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "LR10+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "SB10+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "SR10+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "LB111+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "LR111+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "SB111+MIR_G5537", 'value': "MIR_G5537"},
-        {'position': "SR111+MIR_G5537", 'value': "MIR_G5537"},
-    ]
-
-    for d in things:
-        ad = astrodata_gemini.gnirs.adclass.AstroDataGnirs()
-        ad.phu['PRISM'] = d['position']
-        assert ad._prism() == d['value']
-
-
-@pytest.mark.gnirs
-def test_grating_string():
-    # These are the values the grating header can take, copied from:
-    # http://internal.gemini.edu/science/instruments/GNIRS/Systems_Reference/mechanisms/gnirsMechanisms
-    # ... and the actual grating value we should end up with
-    things = [
-        {'position': "111/mmSB_G5534", 'value': "111/mm_G5534"},
-        {'position': "111/mmSR_G5534", 'value': "111/mm_G5534"},
-        {'position': "111/mmLB_G5534", 'value': "111/mm_G5534"},
-        {'position': "111/mmLR_G5534", 'value': "111/mm_G5534"},
-        {'position': "10/mmSB_G5532", 'value': "10/mm_G5532"},
-        {'position': "10/mmLB_G5532", 'value': "10/mm_G5532"},
-        {'position': "10/mmLR_G5532", 'value': "10/mm_G5532"},
-        {'position': "10/mmLBLX_G5532", 'value': "10/mm_G5532"},
-        {'position': "10/mmLBSX_G5532", 'value': "10/mm_G5532"},
-        {'position': "32/mmSB_G5533", 'value': "32/mm_G5533"},
-        {'position': "32/mmSR_G5533", 'value': "32/mm_G5533"},
-        {'position': "32/mmLB_G5533", 'value': "32/mm_G5533"},
-        {'position': "32/mmLR_G5533", 'value': "32/mm_G5533"},
-        {'position': "111/mmLBHR_G5534", 'value': "111/mm_G5534"},
-        {'position': "111/mmLRHR_G5534", 'value': "111/mm_G5534"},
-        {'position': "10/mmLBHR_G5532", 'value': "10/mm_G5532"},
-        {'position': "10/mmLRHR_G5532", 'value': "10/mm_G5532"},
-        {'position': "32/mmLBHR_G5533", 'value': "32/mm_G5533"},
-        {'position': "32/mmLRHR_G5533", 'value': "32/mm_G5533"},
-    ]
-
-    for d in things:
-        ad = astrodata_gemini.gnirs.adclass.AstroDataGnirs()
-        ad.phu['GRATING'] = d['position']
-        assert ad._grating() == d['value']

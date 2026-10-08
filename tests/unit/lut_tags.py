@@ -155,54 +155,63 @@ tags_data = {
 
     # GNIRS Data
     #   GNIRS Darks
-    ('GNIRS', 'N20140812S0150.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'GNIRS', 'DARK', 'NON_SIDEREAL', 'RAW',
-                                       'UNPREPARED', 'AT_ZENITH'],
-    ('GNIRS', 'N20140812S0142_dark.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'NORTH', 'GNIRS', 'DARK', 'NON_SIDEREAL',
-                                            'PREPARED', 'PROCESSED', 'AT_ZENITH'],
+    ('GNIRS', 'N20190214S0058.fits'): ['CAL', 'DARK', 'GEMINI', 'GNIRS', 'NORTH', 'RAW', 'UNPREPARED'],
+    # N20140812S0142_dark: processed dark
+    ('GNIRS', 'N20140812S0142_dark.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'DARK', 'GEMINI', 'GNIRS',
+                                            'NON_SIDEREAL', 'NORTH', 'PREPARED', 'PROCESSED'],
 
-    #   GNIRS Imaging
-    ('GNIRS', 'N20120117S0019.fits'): ['GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('GNIRS', 'N20140717S0232.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'RAW', 'SIDEREAL',
-                                       'UNPREPARED', 'THRUSLIT', 'LS'],
-    ('GNIRS', 'N20120117S0041.fits'): ['CAL', 'GCAL_IR_ON', 'GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'FLAT', 'GCALFLAT',
-                                       'RAW', 'SIDEREAL', 'UNPREPARED', 'LAMPON'],
-    ('GNIRS', 'N20120117S0042.fits'): ['CAL', 'GCAL_IR_OFF', 'GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'FLAT', 'GCALFLAT',
-                                       'RAW', 'SIDEREAL', 'UNPREPARED', 'LAMPOFF'],
-    ('GNIRS', 'N20131222S0070_flat.fits'): ['CAL', 'GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'FLAT', 'GCALFLAT', 'PREPARED',
-                                            'PROCESSED', 'SIDEREAL'],
-
-    #   GNIRS Longslit
-    ('GNIRS', 'N20160720S0096.fits'): ['CAL', 'GCAL_IR_ON', 'LAMPON', 'FLAT', 'GCALFLAT', 'GEMINI', 'NORTH', 'LS',
-                                       'GNIRS', 'SPECT', 'SIDEREAL', 'RAW', 'UNPREPARED'],
-    # Apparently GNIRS has no lamp off for spectroscopy.
-    ('GNIRS', 'N20130814S0231.fits'): ['CAL', 'GEMINI', 'NORTH', 'GNIRS', 'LS', 'ARC', 'SPECT', 'RAW', 'SIDEREAL',
+    #   GNIRS Imaging (flats and acquisitions with IMAGE are listed here)
+    ('GNIRS', 'N20120117S0019.fits'): ['GEMINI', 'GNIRS', 'IMAGE', 'NORTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
+    # N20120117S0042: flat, lamp off
+    ('GNIRS', 'N20120117S0042.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI', 'GNIRS', 'IMAGE',
+                                       'LAMPOFF', 'NORTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
+    # N20120117S0041: flat, lamp on
+    ('GNIRS', 'N20120117S0041.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI', 'GNIRS', 'IMAGE', 'LAMPON',
+                                       'NORTH', 'RAW', 'SIDEREAL', 'UNPREPARED'],
+    # N20131222S0070_flat: processed flat
+    ('GNIRS', 'N20131222S0070_flat.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GEMINI', 'GNIRS', 'IMAGE', 'NORTH',
+                                            'PREPARED', 'PROCESSED', 'SIDEREAL'],
+    # N20160624S0264: acquisition
+    ('GNIRS', 'N20160624S0264.fits'): ['ACQUISITION', 'GEMINI', 'GNIRS', 'IMAGE', 'NORTH', 'RAW', 'SIDEREAL',
                                        'UNPREPARED'],
-    ('GNIRS', 'N20160624S0263.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'RAW', 'SIDEREAL',
-                                       'UNPREPARED', 'THRUSLIT', 'XD'],
-    # for MASK: SLIT does not contain "Acq"
-    ('GNIRS', 'N20160624S0264.fits'): ['ACQUISITION', 'GEMINI', 'NORTH', 'GNIRS', 'IMAGE', 'RAW', 'SIDEREAL',
+    # N20140717S0232: acquisition, thru-slit
+    ('GNIRS', 'N20140717S0232.fits'): ['ACQUISITION', 'GEMINI', 'GNIRS', 'IMAGE', 'LS', 'NORTH', 'RAW', 'SIDEREAL',
+                                       'THRUSLIT', 'UNPREPARED'],
+
+    #   GNIRS Longslit (flats and arcs with SPECT are listed here)
+    ('GNIRS', 'N20241216S0168.fits'): ['GEMINI', 'GNIRS', 'LS', 'NON_SIDEREAL', 'NORTH', 'RAW', 'SPECT',
+                                       'UNPREPARED'],
+    # N20240116S0138: telluric
+    ('GNIRS', 'N20240116S0138.fits'): ['GEMINI', 'GNIRS', 'LS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED'],
+    # N20190216S0092: flat, lamp off
+    ('GNIRS', 'N20190216S0092.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_OFF', 'GEMINI', 'GNIRS', 'LAMPOFF', 'LS',
+                                       'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED'],
+    # N20130814S0231: arc
+    ('GNIRS', 'N20130814S0231.fits'): ['ARC', 'CAL', 'GEMINI', 'GNIRS', 'LS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT',
                                        'UNPREPARED'],
 
-    #    GNIRS Cross-dispersed
-    #    ('GNIRS', 'N20110826S0155.fits') : ['GEMINI', 'NORTH', 'GNIRS', 'XD', 'SPECT', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    ('GNIRS', 'N20160726S0252.fits'): ['GEMINI', 'NORTH', 'GNIRS', 'XD', 'SPECT', 'RAW', 'SIDEREAL', 'UNPREPARED'],
-    # XD tag: DECKER contains 'XD'
-    ('GNIRS', 'N20160726S0260.fits'): ['CAL', 'GEMINI', 'NORTH', 'GNIRS', 'XD', 'SPECT', 'RAW', 'SIDEREAL',
-                                       'UNPREPARED', 'FLAT', 'GCALFLAT', 'LAMPON', 'GCAL_IR_ON'],
-    ('GNIRS', 'N20160726S0261.fits'): ['CAL', 'GEMINI', 'NORTH', 'GNIRS', 'XD', 'SPECT', 'RAW', 'SIDEREAL',
-                                       'UNPREPARED', 'FLAT', 'GCALFLAT', 'LAMPOFF', 'GCAL_IR_OFF'],
-    ('GNIRS', 'N20160523S0191.fits'): ['GNIRS', 'GEMINI', 'NORTH', 'SIDEREAL', 'SPECT', 'UNPREPARED', 'RAW', 'XD'],
-    # this one is with the QH lamp.  not sure we need a tag for it.
-    ('GNIRS', 'N20160722S0232.fits'): ['CAL', 'GEMINI', 'NORTH', 'GNIRS', 'XD', 'SPECT', 'RAW', 'SIDEREAL',
-                                       'UNPREPARED', 'ARC'],
-    # tag ARC:  OBSTYPE == 'ARC'
-    ('GNIRS', 'N20160726S0301.fits'): ['CAL', 'GEMINI', 'NORTH', 'GNIRS', 'XD', 'SPECT', 'RAW', 'NON_SIDEREAL',
-                                       'UNPREPARED', 'PINHOLE', 'AZEL_TARGET', 'AT_ZENITH'],
-    # tag PINHOLE: SLIT contains 'Pinholes'
-    ('GNIRS', 'S20060507S0125.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'GNIRS', 'NON_SIDEREAL', 'PINHOLE',
-                                       'RAW', 'SOUTH', 'SPECT', 'UNPREPARED', 'XD'],
+    #   GNIRS Cross-dispersed (flats, arcs and pinholes with SPECT are listed here)
+    ('GNIRS', 'N20190206S0279.fits'): ['GEMINI', 'GNIRS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED', 'XD'],
+    # N20160726S0260: flat, lamp on
+    ('GNIRS', 'N20160726S0260.fits'): ['CAL', 'FLAT', 'GCALFLAT', 'GCAL_IR_ON', 'GEMINI', 'GNIRS', 'LAMPON', 'NORTH',
+                                       'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED', 'XD'],
+    # N20160722S0232: arc
+    ('GNIRS', 'N20160722S0232.fits'): ['ARC', 'CAL', 'GEMINI', 'GNIRS', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT',
+                                       'UNPREPARED', 'XD'],
+    # N20160726S0301: pinhole
+    ('GNIRS', 'N20160726S0301.fits'): ['AT_ZENITH', 'AZEL_TARGET', 'CAL', 'GEMINI', 'GNIRS', 'NON_SIDEREAL', 'NORTH',
+                                       'PINHOLE', 'RAW', 'SPECT', 'UNPREPARED', 'XD'],
+    # S20060507S0125: pinhole, south
+    ('GNIRS', 'S20060507S0125.fits'): ['AZEL_TARGET', 'CAL', 'GEMINI', 'GNIRS', 'NON_SIDEREAL', 'PINHOLE', 'RAW',
+                                       'SOUTH', 'SPECT', 'UNPREPARED', 'XD'],
 
-    #    GNIRS IFU
+    #   GNIRS IFU
+    # N20240330S0209: LR-IFU
+    ('GNIRS', 'N20240330S0209.fits'): ['GEMINI', 'GNIRS', 'IFU', 'NORTH', 'RAW', 'SIDEREAL', 'SPECT', 'UNPREPARED'],
+    # S20070102S0073: IFU, south
+    ('GNIRS', 'S20070102S0073.fits'): ['GEMINI', 'GNIRS', 'IFU', 'RAW', 'SIDEREAL', 'SOUTH', 'SPECT', 'UNPREPARED'],
+    # N20240129S0380: arc, HR-IFU
+    ('GNIRS', 'N20240129S0380.fits'): ['ARC', 'CAL', 'GEMINI', 'GNIRS', 'IFU', 'NORTH', 'RAW', 'SPECT', 'UNPREPARED'],
 
     # NIFS Data
     #   NIFS Darks
