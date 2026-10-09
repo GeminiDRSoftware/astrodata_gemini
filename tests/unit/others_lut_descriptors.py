@@ -6,7 +6,7 @@ from astrodata import Section
 # test files.  Every name in ad.descriptors is represented for every file.
 descriptors_data = {
     # BHROS
-    ('BHROS', 'S20070112S0081.fits'): [
+    ('bHROS', 'S20070112S0081.fits'): [
         ('airmass', 1.128),
         ('amp_read_area', [None]),
         ('ao_seeing', None),
@@ -93,7 +93,7 @@ descriptors_data = {
         ('wcs_ra', None),
         ('well_depth_setting', None),
         ],
-    ('BHROS', 'S20070131S0030.fits'): [
+    ('bHROS', 'S20070131S0030.fits'): [
         ('airmass', 1.332),
         ('amp_read_area', [None]),
         ('ao_seeing', None),
@@ -180,7 +180,7 @@ descriptors_data = {
         ('wcs_ra', None),
         ('well_depth_setting', None),
         ],
-    ('BHROS', 'S20070131S0152.fits'): [
+    ('bHROS', 'S20070131S0152.fits'): [
         ('airmass', 1.0),
         ('amp_read_area', [None]),
         ('ao_seeing', None),
@@ -532,7 +532,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # MICHELLE
-    ('MICHELLE', 'N20050116S0119.fits'): [
+    ('michelle', 'N20050116S0119.fits'): [
         ('airmass', 1.231),
         ('amp_read_area', [None, None, None, None]),
         ('ao_seeing', None),
@@ -619,7 +619,7 @@ descriptors_data = {
         ('wcs_ra', 112.696888),
         ('well_depth_setting', None),
         ],
-    ('MICHELLE', 'N20111112S0316.fits'): [
+    ('michelle', 'N20111112S0316.fits'): [
         ('airmass', 1.315),
         ('amp_read_area', [None, None, None, None, None, None, None, None, None, None, None, None]),
         ('ao_seeing', None),
@@ -1252,7 +1252,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # TRECS
-    ('TRECS', 'S20051113S0300.fits'): [
+    ('TReCS', 'S20051113S0300.fits'): [
         ('airmass', 1.037),
         ('amp_read_area', [None, None, None, None, None, None, None, None]),
         ('ao_seeing', None),
@@ -1339,7 +1339,7 @@ descriptors_data = {
         ('wcs_ra', 101.28475189209),
         ('well_depth_setting', None),
         ],
-    ('TRECS', 'S20121030S0130.fits'): [
+    ('TReCS', 'S20121030S0130.fits'): [
         ('airmass', 1.593),
         ('amp_read_area', [None, None, None, None, None, None, None, None, None, None, None, None]),
         ('ao_seeing', None),

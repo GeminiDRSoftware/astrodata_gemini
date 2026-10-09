@@ -6,7 +6,7 @@ from astrodata import Section
 # test files.  Every name in ad.descriptors is represented for every file.
 descriptors_data = {
     # BIAS
-    ('GMOS', 'N20160407S0076.fits'): [  # BIAS
+    ('GMOS-N', 'N20160407S0076.fits'): [  # BIAS
         ('airmass', 1.0),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1793:2816]",
              "'e2v 10031-23-05, left':[1:1024,1793:2816]",
@@ -131,7 +131,7 @@ descriptors_data = {
         ('wcs_ra', 272.972741654042),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20261001S0185_bias.fits'): [  # BIAS
+    ('GMOS-S', 'S20261001S0185_bias.fits'): [  # BIAS
         ('airmass', 1.0000003618456803),
         ('amp_read_area', ["'BI11-41-4k-2, 4':[1:512,1625:2648]",
              "'BI11-41-4k-2, 3':[513:1024,1625:2648]",
@@ -339,7 +339,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # DARK
-    ('GMOS', 'N20160106S0653.fits'): [  # DARK
+    ('GMOS-N', 'N20160106S0653.fits'): [  # DARK
         ('airmass', 1.0),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1824:2791]",
              "'e2v 10031-23-05, left':[1:1024,1824:2791]",
@@ -470,7 +470,7 @@ descriptors_data = {
         ('wcs_ra', 220.573841429704),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20160905S0003.fits'): [  # DARK
+    ('GMOS-S', 'S20160905S0003.fits'): [  # DARK
         ('airmass', 1.0),
         ('amp_read_area', ["'BI5-36-4k-2, 4':[1:512,1:4224]",
              "'BI5-36-4k-2, 3':[513:1024,1:4224]",
@@ -678,7 +678,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # IMAGE
-    ('GMOS', 'S20111120S0478.fits'): [  # IMAGE
+    ('GMOS-S', 'S20111120S0478.fits'): [  # IMAGE
         ('airmass', 1.949),
         ('amp_read_area', ["'EEV 2037-06-03, left':[1:2048,1:4608]",
              "'EEV 8194-19-04, left':[2049:4096,1:4608]",
@@ -780,7 +780,7 @@ descriptors_data = {
         ('wcs_ra', 314.582708537411),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20110718S0294.fits'): [  # IMAGE
+    ('GMOS-N', 'N20110718S0294.fits'): [  # IMAGE
         ('airmass', 1.318),
         ('amp_read_area', ["'EEV 9273-16-03, right':[1:2048,1:4608]",
              "'EEV 9273-20-04, right':[2049:4096,1:4608]",
@@ -882,7 +882,7 @@ descriptors_data = {
         ('wcs_ra', 359.155058400273),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20251207S0094_flat.fits'): [  # IMAGE
+    ('GMOS-S', 'S20251207S0094_flat.fits'): [  # IMAGE
         ('airmass', 1.08431899917836),
         ('amp_read_area', ["'BI11-41-4k-2, 4':[1:512,1:4224]",
              "'BI11-41-4k-2, 3':[513:1024,1:4224]",
@@ -1067,7 +1067,7 @@ descriptors_data = {
         ('wcs_ra', 138.001793139845),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20190216S0039.fits'): [  # IMAGE
+    ('GMOS-N', 'N20190216S0039.fits'): [  # IMAGE
         ('airmass', 1.00000000001116),
         ('amp_read_area', ["'BI12-09-4k-2, 3':[2923:3072,1987:2294]",
              "'BI12-09-4k-2, 2':[3073:3222,1987:2294]"]),
@@ -1161,7 +1161,7 @@ descriptors_data = {
         ('wcs_ra', 351.309985559606),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160708S0085.fits'): [  # IMAGE
+    ('GMOS-N', 'N20160708S0085.fits'): [  # IMAGE
         ('airmass', 1.224),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,325:574]",
              "'e2v 10031-23-05, left':[1:1024,325:574]",
@@ -1362,7 +1362,7 @@ descriptors_data = {
         ('wcs_ra', 186.350462945374),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160620S0317.fits'): [  # IMAGE
+    ('GMOS-N', 'N20160620S0317.fits'): [  # IMAGE
         ('airmass', 1.358),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1:4608]",
              "'e2v 10031-23-05, left':[1:1024,1:4608]",
@@ -1502,7 +1502,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # FRINGE
-    ('GMOS', 'N20110927S0170_fringe.fits'): [  # FRINGE
+    ('GMOS-N', 'N20110927S0170_fringe.fits'): [  # FRINGE
         ('airmass', 1.245),
         ('amp_read_area', ["'EEV 9273-16-03, right':[1:2048,1:4608]",
              "'EEV 9273-20-04, right':[2049:4096,1:4608]",
@@ -1605,7 +1605,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # LS
-    ('GMOS', 'N20160726S0179.fits'): [  # LS
+    ('GMOS-N', 'N20160726S0179.fits'): [  # LS
         ('airmass', 1.017),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1793:2816]",
              "'e2v 10031-23-05, left':[1:1024,1793:2816]",
@@ -1736,7 +1736,7 @@ descriptors_data = {
         ('wcs_ra', 327.795668478761),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20091217S0032.fits'): [  # LS
+    ('GMOS-S', 'S20091217S0032.fits'): [  # LS
         ('airmass', 1.95),
         ('amp_read_area', ["'EEV 2037-06-03, left':[1:2048,1:4608]",
              "'EEV 8194-19-04, left':[2049:4096,1:4608]",
@@ -1838,7 +1838,7 @@ descriptors_data = {
         ('wcs_ra', 32.5519559866063),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160722S0284.fits'): [  # LS
+    ('GMOS-N', 'N20160722S0284.fits'): [  # LS
         ('airmass', 1.363),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1:4608]",
              "'e2v 10031-23-05, left':[1:1024,1:4608]",
@@ -1967,7 +1967,7 @@ descriptors_data = {
         ('wcs_ra', 359.152537952891),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160726S0180.fits'): [  # LS
+    ('GMOS-N', 'N20160726S0180.fits'): [  # LS
         ('airmass', 1.017),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1793:2816]",
              "'e2v 10031-23-05, left':[1:1024,1793:2816]",
@@ -2097,7 +2097,7 @@ descriptors_data = {
         ('wcs_ra', 327.795668500106),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20160724S0218.fits'): [  # LS
+    ('GMOS-S', 'S20160724S0218.fits'): [  # LS
         ('airmass', 1.246),
         ('amp_read_area', ["'BI5-36-4k-2, 4':[1:512,1625:2648]",
              "'BI5-36-4k-2, 3':[513:1024,1625:2648]",
@@ -2306,7 +2306,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # MOS
-    ('GMOS', 'S20150417S0092.fits'): [  # MOS
+    ('GMOS-S', 'S20150417S0092.fits'): [  # MOS
         ('airmass', 1.332),
         ('amp_read_area', ["'BI5-36-4k-2, 4':[1:512,1:4224]",
              "'BI5-36-4k-2, 3':[513:1024,1:4224]",
@@ -2503,7 +2503,7 @@ descriptors_data = {
         ('wcs_ra', 163.791389848286),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160605S0099.fits'): [  # MOS
+    ('GMOS-N', 'N20160605S0099.fits'): [  # MOS
         ('airmass', 1.269),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1:4608]",
              "'e2v 10031-23-05, left':[1:1024,1:4608]",
@@ -2632,7 +2632,7 @@ descriptors_data = {
         ('wcs_ra', 290.370708361446),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20190217S0211.fits'): [  # MOS
+    ('GMOS-S', 'S20190217S0211.fits'): [  # MOS
         ('airmass', 1.0),
         ('amp_read_area', ["'BI5-36-4k-2, 4':[1:512,1:4224]",
              "'BI5-36-4k-2, 3':[513:1024,1:4224]",
@@ -2840,7 +2840,7 @@ descriptors_data = {
         ('wcs_ra', 224.020993034756),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160721S0351.fits'): [  # MOS
+    ('GMOS-N', 'N20160721S0351.fits'): [  # MOS
         ('airmass', 1.0),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,260:795]",
              "'e2v 10031-23-05, left':[1:1024,260:795]",
@@ -3154,7 +3154,7 @@ descriptors_data = {
         ('well_depth_setting', None),
         ],
     # IFU
-    ('GMOS', 'S20060130S0079.fits'): [  # IFU
+    ('GMOS-S', 'S20060130S0079.fits'): [  # IFU
         ('airmass', 1.206),
         ('amp_read_area', ["'EEV 2037-06-03, left':[1:2048,1:4608]",
              "'EEV 8194-19-04, left':[2049:4096,1:4608]",
@@ -3256,7 +3256,7 @@ descriptors_data = {
         ('wcs_ra', 147.07439882849),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20051225S0084.fits'): [  # IFU
+    ('GMOS-S', 'S20051225S0084.fits'): [  # IFU
         ('airmass', 1.3),
         ('amp_read_area', ["'EEV 2037-06-03, left':[1:2048,1:4608]",
              "'EEV 8194-19-04, left':[2049:4096,1:4608]",
@@ -3358,7 +3358,7 @@ descriptors_data = {
         ('wcs_ra', 40.1448417303128),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20160620S0373.fits'): [  # IFU
+    ('GMOS-N', 'N20160620S0373.fits'): [  # IFU
         ('airmass', 1.27),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1:4608]",
              "'e2v 10031-23-05, left':[1:1024,1:4608]",
@@ -3497,7 +3497,7 @@ descriptors_data = {
         ('wcs_ra', 322.401748212145),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'N20111124S0203.fits'): [  # IFU
+    ('GMOS-N', 'N20111124S0203.fits'): [  # IFU
         ('airmass', 1.079),
         ('amp_read_area', ["'e2v 10031-23-05, right':[1025:2048,1:4608]",
              "'e2v 10031-23-05, left':[1:1024,1:4608]",
@@ -3636,7 +3636,7 @@ descriptors_data = {
         ('wcs_ra', 51.8202856890168),
         ('well_depth_setting', None),
         ],
-    ('GMOS', 'S20060131S0131.fits'): [  # IFU
+    ('GMOS-S', 'S20060131S0131.fits'): [  # IFU
         ('airmass', 1.221),
         ('amp_read_area', ["'EEV 2037-06-03, left':[1:2048,1:4608]",
              "'EEV 8194-19-04, left':[2049:4096,1:4608]",

@@ -9,6 +9,9 @@ from .lut_tags import tags_data
 from .gmos_lut_descriptors import descriptors_data
 from ..testing import astrofaker, find_test_data, get_storage_location
 
+# The LUTs key GMOS files by site.
+GMOS_KEYS = ('GMOS-N', 'GMOS-S')
+
 @pytest.fixture(scope="module")
 def ad(request):
     """Returns an AstroData object for each of the test files in the list."""
@@ -22,7 +25,7 @@ def ad(request):
 @pytest.mark.parametrize(
     "ad",
     [pytest.param(fname, id=fname)
-     for (inst, fname), tags in tags_data.items() if inst == 'GMOS'],
+     for (inst, fname), tags in tags_data.items() if inst in GMOS_KEYS],
     indirect=["ad"]
 )
 def test_is_right_instance(ad):
@@ -39,7 +42,7 @@ def test_is_right_instance(ad):
 @pytest.mark.parametrize(
     "ad, expected_tags",
     [pytest.param(fname, tags, id=fname)
-     for (inst, fname), tags in tags_data.items() if inst == 'GMOS'],
+     for (inst, fname), tags in tags_data.items() if inst in GMOS_KEYS],
     indirect=["ad"]
 )
 def test_gmos_tags(ad, expected_tags):
@@ -52,7 +55,7 @@ def test_gmos_tags(ad, expected_tags):
 @pytest.mark.parametrize(
     "ad, dvalue_pairs",
     [pytest.param(fname, dvalue_pairs, id=fname)
-     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GMOS'],
+     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst in GMOS_KEYS],
     indirect=["ad"]
 )
 def test_descriptors(ad, dvalue_pairs):
@@ -100,7 +103,7 @@ def _check_descriptor(ad, descriptor, expected_value):
 @pytest.mark.parametrize(
     "ad",
     [pytest.param(fname, id=fname)
-     for (inst, fname) in descriptors_data if inst == 'GMOS'],
+     for (inst, fname) in descriptors_data if inst in GMOS_KEYS],
     indirect=["ad"]
 )
 def test_all_descriptors_represented(ad):
@@ -108,7 +111,7 @@ def test_all_descriptors_represented(ad):
     fname = ad.filename
     represented = {descriptor
                    for (inst, name), pairs in descriptors_data.items()
-                   if inst == 'GMOS' and name == fname
+                   if inst in GMOS_KEYS and name == fname
                    for descriptor, _ in pairs}
     assert represented == set(ad.descriptors)
 

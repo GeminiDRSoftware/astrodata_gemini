@@ -82,6 +82,7 @@ markers = [
     "others: tests on data from the old instruments (BHROS, GPI, GRACES, MICHELLE, NICI, TRECS, CIRPASS)",
     "nifs: tests on NIFS data",
     "niri: tests on NIRI data",
+    "github: tests to be run on GitHub Actions",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 

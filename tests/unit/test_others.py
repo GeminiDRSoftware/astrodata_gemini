@@ -12,12 +12,12 @@ from ..testing import find_test_data, get_storage_location
 
 # Instruments covered by this module and their AstroData class.
 INSTRUMENT_CLASSES = {
-    'BHROS': astrodata_gemini.bhros.adclass.AstroDataBhros,
+    'bHROS': astrodata_gemini.bhros.adclass.AstroDataBhros,
     'GPI': astrodata_gemini.gpi.adclass.AstroDataGpi,
     'GRACES': astrodata_gemini.graces.adclass.AstroDataGraces,
-    'MICHELLE': astrodata_gemini.michelle.adclass.AstroDataMichelle,
+    'michelle': astrodata_gemini.michelle.adclass.AstroDataMichelle,
     'NICI': astrodata_gemini.nici.adclass.AstroDataNici,
-    'TRECS': astrodata_gemini.trecs.adclass.AstroDataTrecs,
+    'TReCS': astrodata_gemini.trecs.adclass.AstroDataTrecs,
 }
 
 # Mark every test in this module.
