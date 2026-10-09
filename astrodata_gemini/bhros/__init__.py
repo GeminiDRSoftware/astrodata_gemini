@@ -1,6 +1,9 @@
-__all__ = ['AstroDataBhros']
+"""AstroData class for BhROS data."""
+
+__all__ = ["AstroDataBhros"]
 
 from astrodata import factory
+
 from .adclass import AstroDataBhros
 
 factory.add_class(AstroDataBhros)

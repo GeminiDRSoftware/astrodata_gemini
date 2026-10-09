@@ -1,9 +1,12 @@
-__all__ = ['AstroDataGnirs']
+"""AstroData class for GNIRS data."""
+
+__all__ = ["AstroDataGnirs"]
 
 from astrodata import factory
+
 from ..gemini import addInstrumentFilterWavelengths
 from .adclass import AstroDataGnirs
 from .lookup import filter_wavelengths
 
 factory.add_class(AstroDataGnirs)
-addInstrumentFilterWavelengths('GNIRS', filter_wavelengths)
+addInstrumentFilterWavelengths("GNIRS", filter_wavelengths)

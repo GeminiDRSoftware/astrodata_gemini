@@ -1,6 +1,9 @@
-__all__ = ['AstroDataCirpass']
+"""AstroData class for CIRPASS data."""
+
+__all__ = ["AstroDataCirpass"]
 
 from astrodata import factory
+
 from .adclass import AstroDataCirpass
 
 factory.add_class(AstroDataCirpass)
