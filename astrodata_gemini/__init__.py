@@ -1,5 +1,10 @@
-# Import the modules under this package, to trigger any class
-# registering that may be needed
+"""
+Plugin for accessing Gemini Observatory data through astrodata.
+
+The modules under this package are imported here to trigger any class
+registering that may be needed.
+"""
+# isort: skip_file
 
 from importlib.metadata import PackageNotFoundError, version
 
@@ -9,7 +14,7 @@ except PackageNotFoundError:
     # Running from a source tree that was never installed.
     __version__ = "unknown"
 
-from . import gemini
+from . import gemini  # parent class
 
 from . import bhros
 from . import cirpass

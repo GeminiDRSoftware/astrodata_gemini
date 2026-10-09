@@ -158,6 +158,11 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+# The package __init__ imports the subpackages only to register the AstroData
+# classes, so the imports look unused:
+#  + F401: Imported but unused
+"astrodata_gemini/__init__.py" = ["F401"]
+
 # Tests should not be worried about:
 #  + ERA001: Commented out code
 #  + S101: Use of assert
