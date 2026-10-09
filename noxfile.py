@@ -3,6 +3,7 @@
 
 import fileinput
 import functools
+import glob
 import importlib.util
 import os
 import sys
@@ -262,41 +263,42 @@ def pre_download_test_data(session):
     lut_tag_path = SessionVariables.unit_test_dir / "lut_tags.py"
     lut_tags_dict = get_lut_data("lut_tags", lut_tag_path).tags_data
 
-    lut_descriptor_path = SessionVariables.unit_test_dir / "lut_descriptors.py"
-    lut_descriptors_dict = get_lut_data(
-        "lut_descriptors", lut_descriptor_path
-    ).descriptors_data
-
-    lut_ghost_descriptor_path = (
-        SessionVariables.unit_test_dir / "ghost_lut_descriptors.py"
+    # Get list of descriptor LUTs
+    desc_luts_paths = glob.glob(
+        str(SessionVariables.unit_test_dir / "*_lut_descriptors.py")
     )
-    lut_ghost_descriptors_dict = get_lut_data(
-        "ghost_lut_descriptors", lut_ghost_descriptor_path
-    ).descriptors_data
 
-    all_keys = (
-        set(lut_tags_dict.keys())
-        | set(lut_descriptors_dict.keys())
-        | set(lut_ghost_descriptors_dict.keys())
-    )
+    # Get the descriptor LUTs data
+    desc_all_keys = set()
+    for lut_path in desc_luts_paths:
+        lut_name = Path(lut_path).stem
+        lut_descriptors_dict = get_lut_data(lut_name, lut_path).descriptors_data
+        desc_all_keys = desc_all_keys | set(lut_descriptors_dict.keys())
+
+    all_keys = set(lut_tags_dict.keys()) | desc_all_keys
 
     failed_to_download = []
-    for junk, filename in all_keys:
-        try:
-            print(f"Downloading file: {filename}")
-            cmd = (
-                "import astrodata; "
-                f"astrodata.testing.download_from_archive('{filename}', "
-                "env_var='ASTRODATA_TEST')"
-            )
-            session.run("python", "-c", cmd)
-        except CommandFailed as e:
-            print(f"Error downloading file {filename}: {e}")
+    for _, filename in all_keys:
+        cmd = (
+            "import astrodata; "
+            "path = astrodata.testing.download_from_archive("
+            f"'{filename}', env_var='ADGEMINI_TESTDATA', "
+            "fail_on_error=False); "
+            "print('DOWNLOAD_FAILED' if path is None else path)"
+        )
+        output = session.run("python", "-c", cmd, silent=True)
+        RED = "\033[31m"
+        GREEN = "\033[32m"
+        RESET = "\033[0m"
+        if "DOWNLOAD_FAILED" in output:
             failed_to_download.append(filename)
+            session.log(f"{RED}Not downloadable: {filename}{RESET}")
+        else:
+            session.log(f"{GREEN}Downloaded: {filename}{RESET}")
 
     if failed_to_download:
         session.log(
-            "Failed to download the following files: "
+            f"{RED}Failed to download the following files (they might be derivatives: {RESET}"
             f"\n{'\n'.join(failed_to_download)}\n"
         )
 
