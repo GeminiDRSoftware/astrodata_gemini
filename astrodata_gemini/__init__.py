@@ -1,8 +1,13 @@
 # Import the modules under this package, to trigger any class
 # registering that may be needed
 
-from astrodata import version
-__version__ = version()
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("astrodata_gemini")
+except PackageNotFoundError:
+    # Running from a source tree that was never installed.
+    __version__ = "unknown"
 
 from . import gemini
 
