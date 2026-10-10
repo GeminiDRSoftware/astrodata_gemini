@@ -1,3 +1,5 @@
+"""Lookup tables for NIFS data."""
+
 from collections import namedtuple
 
 # Data structures used by this module

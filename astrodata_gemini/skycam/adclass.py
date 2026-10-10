@@ -1,17 +1,12 @@
-#
-#                                                             Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                              skycam.adclass.py
-# ------------------------------------------------------------------------------
+"""Tags and descriptors for SkyCam data."""
 
-from astrodata import astro_data_tag, astro_data_descriptor, TagSet
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from ..gemini import AstroDataGemini
 
-# ------------------------------------------------------------------------------
+
 class AstroDataSkyCam(AstroDataGemini):
+    """AstroData class for SkyCam data."""
 
     @staticmethod
     def _matches_data(source):
@@ -29,8 +24,10 @@ class AstroDataSkyCam(AstroDataGemini):
 
     @astro_data_descriptor
     def instrument(self):
+        """Return the name of the instrument, from the TELESCOP keyword."""
         return self.phu['TELESCOP'].strip('"')
 
     @astro_data_descriptor
     def object(self):
+        """Return the object name, always 'ZENITH'."""
         return 'ZENITH'

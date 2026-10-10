@@ -1,3 +1,5 @@
+"""Lookup tables for Flamingos-2 data."""
+
 from collections import namedtuple
 ArrayProperties = namedtuple("ArrayProperties",
                              "readnoise gain welldepth linlimit nonlinlimit coeffs")

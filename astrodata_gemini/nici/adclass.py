@@ -1,8 +1,19 @@
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
-from ..gemini import AstroDataGemini
+"""Tags and descriptors for NICI data."""
+
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
+from ..gemini import AstroDataGemini
+
 
 class AstroDataNici(AstroDataGemini):
+    """AstroData class for NICI data."""
+
     @staticmethod
     def _matches_data(source):
         return source[0].header.get('INSTRUME', '').upper() == 'NICI'
@@ -39,7 +50,7 @@ class AstroDataNici(AstroDataGemini):
     @astro_data_descriptor
     def exposure_time(self):
         """
-        Returns the exposure time in seconds.
+        Return the exposure time in seconds.
 
         Returns
         -------
@@ -66,12 +77,13 @@ class AstroDataNici(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         """
-        Returns the name of the filter(s) used.  The component ID can be
-        removed with either 'stripID' or 'pretty'.  If a combination of filters
-        is used, the filter names will be join into a unique string with '&' as
-        separator.  If 'pretty' is True, filter positions such as 'Open',
-        'Dark', 'blank', and others are removed leaving only the relevant
-        filters in the string.
+        Return the name of the filter(s) used.
+
+        The component ID can be removed with either 'stripID' or 'pretty'.  If
+        a combination of filters is used, the filter names will be join into a
+        unique string with '&' as separator.  If 'pretty' is True, filter
+        positions such as 'Open', 'Dark', 'blank', and others are removed
+        leaving only the relevant filters in the string.
 
         NICI has filter names in the extension HDUs, so this can return a list
 
@@ -104,7 +116,7 @@ class AstroDataNici(AstroDataGemini):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Returns the image scale in arcseconds per pixel
+        Return the image scale in arcseconds per pixel.
 
         Returns
         -------

@@ -1,3 +1,5 @@
+"""Lookup tables for IGRINS-2 data."""
+
 import numpy as np
 
 # If the filter names and central wavelength are different from

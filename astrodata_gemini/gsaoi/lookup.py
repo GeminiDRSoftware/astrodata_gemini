@@ -1,3 +1,5 @@
+"""Lookup tables for GSAOI data."""
+
 from collections import namedtuple
 
 ArrayProperties = namedtuple("ArrayProperties", "readnoise gain welldepth "

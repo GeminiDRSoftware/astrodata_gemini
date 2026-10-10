@@ -1,8 +1,18 @@
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
-from ..gemini import AstroDataGemini
+"""Tags and descriptors for BhROS data."""
+
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
+from ..gemini import AstroDataGemini
+
 
 class AstroDataBhros(AstroDataGemini):
+    """AstroData class for BhROS data."""
 
     __keyword_dict = dict(array_section = 'CCDSEC',
                           central_wavelength = 'WAVELENG',
@@ -20,7 +30,7 @@ class AstroDataBhros(AstroDataGemini):
     @gmu.return_requested_units(input_units="AA")
     def central_wavelength(self):
         """
-        Returns the central wavelength
+        Return the central wavelength.
 
         Returns
         -------
@@ -37,10 +47,11 @@ class AstroDataBhros(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of field in degrees.  Since a
-        fiber is used it coincides with the position of the target. For code
-        re-used, use target_dec() if you really want the position of the target
-        rather than the center of the field.
+        Return the Declination of the center of field in degrees.
+
+        Since a fiber is used it coincides with the position of the target. For
+        code re-used, use target_dec() if you really want the position of the
+        target rather than the center of the field.
 
         Returns
         -------
@@ -53,7 +64,7 @@ class AstroDataBhros(AstroDataGemini):
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser. This is always 'bHROS'
+        Return the name of the disperser. This is always 'bHROS'.
 
         Parameters
         ----------
@@ -72,7 +83,8 @@ class AstroDataBhros(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of field in degrees.
+        Return the Right Ascension of the center of field in degrees.
+
         Since a fiber is used it coincides with the position of the target.
         For code re-used, use target_ra() if you really want the position of
         the target rather than the center of the field.
@@ -88,7 +100,7 @@ class AstroDataBhros(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------

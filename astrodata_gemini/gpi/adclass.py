@@ -1,8 +1,12 @@
-from astrodata import astro_data_tag, astro_data_descriptor, TagSet
+"""Tags and descriptors for GPI data."""
+
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
+
 from ..gemini import AstroDataGemini
 
 
 class AstroDataGpi(AstroDataGemini):
+    """AstroData class for GPI data."""
 
     __keyword_dict = dict(array_section='DATASEC',
                           detector_section='DATASEC',
@@ -13,6 +17,7 @@ class AstroDataGpi(AstroDataGemini):
 
     @classmethod
     def read(cls, source):
+        """Read the source, renaming the DQ extension 3 as SCI extension 2."""
         def gpi_parser(hdu):
             if hdu.header.get('EXTNAME') == 'DQ' and hdu.header.get('EXTVER') == 3:
                 hdu.header['EXTNAME'] = ('SCI', 'BPM renamed by AstroData')
@@ -39,7 +44,8 @@ class AstroDataGpi(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of the field in degrees.
+        Return the Declination of the center of the field in degrees.
+
         It coincides with the position of the target, so that is used since
         the WCS in GPI data is completely bogus. For code re-used, use
         target_dec() if you really want the position of the target rather
@@ -55,7 +61,7 @@ class AstroDataGpi(AstroDataGemini):
     @astro_data_descriptor
     def exposure_time(self):
         """
-        Returns the exposure time in seconds.
+        Return the exposure time in seconds.
 
         Returns
         -------
@@ -75,9 +81,10 @@ class AstroDataGpi(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         """
-        Returns the name of the filter(s) used.  The component ID can be
-        removed with either 'stripID' or 'pretty'. If 'pretty' is True,
-        'IFSFILT' is stripped from the start of the name.
+        Return the name of the filter(s) used.
+
+        The component ID can be removed with either 'stripID' or 'pretty'. If
+        'pretty' is True, 'IFSFILT' is stripped from the start of the name.
 
         Parameters
         ----------
@@ -100,7 +107,8 @@ class AstroDataGpi(AstroDataGemini):
     @astro_data_descriptor
     def is_in_adu(self):
         """
-        Returns True if the data is in ADU units, False otherwise.
+        Return True if the data is in ADU units, False otherwise.
+
         However, the GPI data has science pixels in ADU per coadd in the
         first extension, and a bitmap in the second extension.
 
@@ -115,7 +123,8 @@ class AstroDataGpi(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of the field in degrees.
+        Return the Right Ascension of the center of the field in degrees.
+
         It coincides with the position of the target, so that is used since
         the WCS in GPI data is completely bogus. For code re-used, use
         target_ra() if you really want the position of the target rather
@@ -130,7 +139,5 @@ class AstroDataGpi(AstroDataGemini):
 
     @astro_data_descriptor
     def slit_width(self):
-        """
-        Returns None.  There's is no slit in GPI.
-        """
+        """Return None.  There's is no slit in GPI."""
         return None

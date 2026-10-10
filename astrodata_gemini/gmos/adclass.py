@@ -1,17 +1,31 @@
+"""Tags and descriptors for GMOS data."""
+
 import math
-import numpy as np
 import re
 from datetime import date
 
-from astrodata import (astro_data_tag, astro_data_descriptor, returns_list,
-                       TagSet, Section)
-from .pixel_functions import get_bias_level
-from . import lookup
+import numpy as np
+from astrodata import (
+    Section,
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
-from ..gemini import AstroDataGemini, use_keyword_if_prepared, get_specphot_name
+from ..gemini import (
+    AstroDataGemini,
+    get_specphot_name,
+    use_keyword_if_prepared,
+)
+from . import lookup
+from .pixel_functions import get_bias_level
 
 
 class AstroDataGmos(AstroDataGemini):
+    """AstroData class for GMOS data."""
+
     __keyword_dict = dict(array_name='AMPNAME',
                           array_section='CCDSEC',
                           camera='INSTRUME',
@@ -186,9 +200,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def amp_read_area(self):
         """
-        Returns a list of amplifier read areas, one per extension, made by
-        combining the amplifier name and detector section. Or returns a
-        string if called on a single-extension slice.
+        Return the amplifier read areas, one per extension.
+
+        Each is made by combining the amplifier name and detector section. A
+        string is returned if called on a single-extension slice.
 
         Returns
         -------
@@ -208,8 +223,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def array_name(self):
         """
-        Returns a list of the names of the arrays of the extensions, or
-        a string if called on a single-extension slice
+        Return the names of the arrays of the extensions.
+
+        A list is returned, or a string if called on a single-extension
+        slice.
 
         Returns
         -------
@@ -222,7 +239,7 @@ class AstroDataGmos(AstroDataGemini):
     @gmu.return_requested_units()
     def central_wavelength(self, pretty=False):
         """
-        Returns the central wavelength in nm
+        Return the central wavelength in nm.
 
         Returns
         -------
@@ -248,7 +265,8 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_name(self, pretty=False):
         """
-        Returns the name(s) of the detector(s), from the PHU DETID keyword.
+        Return the name(s) of the detector(s), from the PHU DETID keyword.
+
         Calling with pretty=True will provide a single descriptive string.
 
         Parameters
@@ -275,8 +293,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_rois_requested(self):
         """
-        Returns a list of ROIs, as tuples in a 1-based inclusive (IRAF-like)
-        format (x1, x2, y1, y2), in physical (unbinned) pixels.
+        Return a list of ROIs, as tuples.
+
+        The format is 1-based inclusive (IRAF-like), (x1, x2, y1, y2), in
+        physical (unbinned) pixels.
 
         Returns
         -------
@@ -301,8 +321,9 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_roi_setting(self):
         """
-        Looks at the first ROI and returns a descriptive string describing it
-        These are more or less the options in the OT
+        Return a descriptive string for the first ROI.
+
+        These are more or less the options in the OT.
 
         Returns
         -------
@@ -326,7 +347,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_x_bin(self):
         """
-        Returns the detector binning in the x-direction
+        Return the detector binning in the x-direction.
 
         Returns
         -------
@@ -351,7 +372,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_y_bin(self):
         """
-        Returns the detector binning in the y-direction
+        Return the detector binning in the y-direction.
 
         Returns
         -------
@@ -376,8 +397,9 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_x_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive x-direction of the detector
+        Return the offset along the positive x-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -395,8 +417,9 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def detector_y_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive y-direction of the detector
+        Return the offset along the positive y-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -414,16 +437,18 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser used for the observation.  In GMOS,
-        the disperser is a grating.
+        Return the name of the disperser used for the observation.
+
+        In GMOS, the disperser is a grating.
 
         Parameters
         ----------
         stripID : bool
             If True, removes the component ID and returns only the name of
             the disperser.
-        pretty : bool, also removed the trailing '+'
-            If True,
+        pretty : bool
+            If True, removed the trailing '+'
+
         Returns
         -------
         str
@@ -445,9 +470,11 @@ class AstroDataGmos(AstroDataGemini):
     @gmu.return_requested_units()
     def dispersion(self):
         """
-        Returns the dispersion in nm per binned pixel as a list (one value per
-        extension) or a float if used on a single-extension slice.  It is
-        possible to control the units of wavelength using the input arguments.
+        Return the dispersion in nm per binned pixel.
+
+        A list (one value per extension) is returned, or a float if used on a
+        single-extension slice. It is possible to control the units of
+        wavelength using the input arguments.
 
         Returns
         -------
@@ -497,19 +524,19 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def dispersion_axis(self):
         """
-        Returns the axis along which the light is dispersed.
+        Return the axis along which the light is dispersed.
 
         Returns
         -------
         (list of) int (1)
             Dispersion axis.
-       """
+        """
         return 1
 
     @astro_data_descriptor
     def exposure_time(self):
         """
-        Returns the exposure time in seconds.
+        Return the exposure time in seconds.
 
         Returns
         -------
@@ -523,7 +550,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def focal_plane_mask(self, stripID=False, pretty=False):
         """
-        Returns the name of the focal plane mask.
+        Return the name of the focal plane mask.
 
         Parameters
         ----------
@@ -545,7 +572,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain (electrons/data unit) for each extension
+        Return the gain (electrons/data unit) for each extension.
 
         Returns
         -------
@@ -558,9 +585,10 @@ class AstroDataGmos(AstroDataGemini):
 
     @returns_list
     def _electrons_per_adu(self):
-        """"
-        Return the conversion between electrons and ADU for this observation,
-        from the LUT
+        """
+        Return the conversion between electrons and ADU for this observation.
+
+        The conversion comes from the LUT.
         """
         # Get the correct dict of gain values
         ut_date = self.ut_date()
@@ -593,7 +621,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def gain_setting(self):
         """
-        Returns the gain settings of the observation.
+        Return the gain settings of the observation.
 
         Returns
         -------
@@ -648,9 +676,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument and mode of observation will have its own rules.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument and mode of
+        observation will have its own rules.
 
         GMOS uses the detector binning, amp_read_area, gain_setting, and
         read_speed_setting. Flats and twilights have the pretty version of
@@ -717,7 +746,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def instrument(self, generic=False):
         """
-        Returns the name of the instrument making the observation
+        Return the name of the instrument making the observation.
 
         Parameters
         ----------
@@ -735,8 +764,9 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def nod_count(self):
         """
-        Returns a tuple with the number of integrations made in each
-        of the nod-and-shuffle positions
+        Return the number of integrations in each nod-and-shuffle position.
+
+        The result is a tuple.
 
         Returns
         -------
@@ -751,8 +781,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def nod_offsets(self):
         """
-        Returns a tuple with the offsets from the default telescope position
-        of the A and B nod-and-shuffle positions (in arcseconds)
+        Return the A and B nod-and-shuffle offsets, in arcseconds.
+
+        The result is a tuple of the offsets from the default telescope
+        position of the A and B nod-and-shuffle positions.
 
         Returns
         -------
@@ -781,7 +813,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def position_angle(self):
         """
-        Returns the position angle of the instruement
+        Return the position angle of the instruement.
 
         Returns
         -------
@@ -793,8 +825,9 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def shuffle_pixels(self):
         """
-        Returns the number of rows that the charge has been shuffled, in
-        nod-and-shuffle data
+        Return the number of rows that the charge has been shuffled.
+
+        This applies to nod-and-shuffle data.
 
         Returns
         -------
@@ -806,10 +839,11 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
         """
-        Returns the nominal zeropoints (i.e., the magnitude corresponding to
-        a pixel value of 1) for the extensions in an AD object.
-        Zeropoints in table are for electrons, so subtract 2.5*lg(gain)
-        if the data are in ADU
+        Return the nominal photometric zeropoint for each extension.
+
+        The zeropoint is the magnitude corresponding to 1 pixel count.
+        This descriptor uses a lookup table.  The zeropoints in the table are
+        for electrons, so 2.5*lg(gain) is subtracted if the data are in ADU.
 
         Returns
         -------
@@ -839,8 +873,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the data become non-linear, in the
-        units of the data. For GMOS, this is just the saturation level.
+        Return the level at which the data become non-linear.
+
+        The value is in the same units as the data. For GMOS, this is just the
+        saturation level.
 
         Returns
         -------
@@ -852,10 +888,12 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def overscan_section(self, pretty=False):
         """
-        Returns the overscan (or bias) section.  If pretty is False, a
-        tuple of 0-based coordinates is returned with format (x1, x2, y1, y2).
-        If pretty is True, a keyword value is returned without parsing as a
-        string.  In this format, the coordinates are generally 1-based.
+        Return the overscan (or bias) section.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2). If pretty is True, a keyword value is returned
+        without parsing as a string.  In this format, the coordinates are
+        generally 1-based.
 
         One tuple or string is return per extension/array.  If more than one
         array, the tuples/strings are return in a list.  Otherwise, the
@@ -880,7 +918,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Returns the image scale in arcsec per pixel, accounting for binning
+        Return the image scale in arcsec per pixel, accounting for binning.
 
         Returns
         -------
@@ -901,8 +939,9 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def read_mode(self):
         """
-        Returns a string describing the readout mode, which sets the
-        gain and readout speed
+        Return a string describing the readout mode.
+
+        The readout mode sets the gain and readout speed.
 
         Returns
         -------
@@ -922,8 +961,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the read noise in electrons. Returns a list if multiple
-        extensions, or a float on a single-extension slice.
+        Return the read noise in electrons.
+
+        Returns a list if multiple extensions, or a float on a single-extension
+        slice.
 
         Returns
         -------
@@ -962,7 +1003,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def read_speed_setting(self):
         """
-        Returns the setting for the readout speed (slow or fast)
+        Return the setting for the readout speed (slow or fast).
 
         Returns
         -------
@@ -985,10 +1026,11 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level in the same units as the data. This is
-        only guaranteed to work for raw data, and the value should be placed
-        in the headers and propagated as required; however, it attempts to
-        produce a sensible result for partially-processed data.
+        Return the saturation level in the same units as the data.
+
+        This is only guaranteed to work for raw data, and the value should be
+        placed in the headers and propagated as required; however, it attempts
+        to produce a sensible result for partially-processed data.
 
         Returns
         -------
@@ -1069,7 +1111,7 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------
@@ -1086,8 +1128,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def wcs_ra(self):
         """
-        Returns the Right Ascension of the center of the field based on the
-        WCS rather than the RA keyword. This just uses the CRVAL1 keyword.
+        Return the Right Ascension of the field center, based on the WCS.
+
+        This is used rather than the RA keyword. This just uses the CRVAL1
+        keyword.
 
         Returns
         -------
@@ -1107,8 +1151,10 @@ class AstroDataGmos(AstroDataGemini):
     @astro_data_descriptor
     def wcs_dec(self):
         """
-        Returns the Declination of the center of the field based on the
-        WCS rather than the DEC keyword. This just uses the CRVAL2 keyword.
+        Return the Declination of the field center, based on the WCS.
+
+        This is used rather than the DEC keyword. This just uses the CRVAL2
+        keyword.
 
         Returns
         -------
@@ -1127,7 +1173,7 @@ class AstroDataGmos(AstroDataGemini):
 
     @gmu.return_requested_units(input_units="nm")
     def actual_central_wavelength(self):
-        """GMOS-S has not been properly calibrated for red spectra"""
+        """GMOS-S has not been properly calibrated for red spectra."""
         cenwave = self.central_wavelength(asNanometers=True)
         if self.instrument() == "GMOS-S" and cenwave > 950:
             cenwave += (6.89483617 - 0.00332086 * cenwave) * cenwave - 3555.048

@@ -1,4 +1,6 @@
 """
+AstroData classes for the IGRINS instruments.
+
 This module defines AstroData classes for IGRINS instruments, extending
 `astrodata_gemini.igrins.AstroDataIgrins` to provide instrument-specific
 metadata handling and data descriptors for IGRINS and IGRINS-2 data.
@@ -6,13 +8,19 @@ metadata handling and data descriptors for IGRINS and IGRINS-2 data.
 import datetime
 
 import numpy as np
-from astropy.table import Table
-from astrodata import (astro_data_tag, astro_data_descriptor,
-                       returns_list, TagSet)
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 from astrodata.fits import ad_to_hdulist
+from astropy.table import Table
+
 from astrodata_gemini.common import Section
-from ..gemini import AstroDataGemini, use_keyword_if_prepared
+
 from .. import gmu
+from ..gemini import AstroDataGemini, use_keyword_if_prepared
 from . import lookup
 
 
@@ -118,7 +126,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_descriptor
     def observation_class(self):
         """
-        Returns 'class' the observation; one of,
+        Return 'class' the observation; one of,.
 
             'science', 'acq', 'projCal', 'dayCal', 'partnerCal', 'acqCal'
 
@@ -156,7 +164,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_descriptor
     def observation_type(self):
         """
-        Returns 'type' the observation. For IGRINS, this will be one of,
+        Return 'type' the observation. For IGRINS, this will be one of,.
 
             'OBJECT', 'DARK', 'FLAT_OFF', 'FLAT_ON', 'ARC'
 
@@ -191,6 +199,12 @@ class AstroDataIgrins2(AstroDataGemini):
     #@use_keyword_if_prepared
     @astro_data_descriptor
     def exposure_time(self):
+        """
+        Return the exposure time.
+
+        For a bundle, the exposure times of all the extensions must be
+        identical.
+        """
         if self.is_single:
             return self.hdr.get('EXPTIME')
         exptimes = list(set(self.hdr.get('EXPTIME')) - {None})
@@ -292,6 +306,7 @@ class AstroDataIgrins2(AstroDataGemini):
 
     @astro_data_descriptor
     def array_name(self):
+        """Return the name of the detector array(s)."""
         if self.is_single:
             return list(self.hdr.get('DETECT_?').values()).pop()
         return [h[0] if h else None for h in self.hdr.get('DETECT_?')]
@@ -300,11 +315,12 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_descriptor
     def array_section(self, pretty=False):
         """
-        Returns the rectangular section that includes the pixels that would be
-        exposed to light.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the rectangular section of pixels exposed to light.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -332,6 +348,11 @@ class AstroDataIgrins2(AstroDataGemini):
 
     @astro_data_descriptor
     def band(self):
+        """
+        Return the band, from the FILTER keyword.
+
+        A list, one value per extension, is returned only for bundles.
+        """
         # return a list only for BUNDLEs to avoid breaking existing code
         # which expects a single value for band().
         if self.is_single:
@@ -344,6 +365,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_descriptor
     @gmu.return_requested_units()
     def central_wavelength(self):
+        """Return the approximate central wavelength of the central order."""
         # These are approximate values for the central order in each band
         if self.band() == "K":
             return 2120.674
@@ -353,6 +375,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @returns_list
     @astro_data_descriptor
     def data_section(self, pretty=False):
+        """Return the data section, the full 2048x2048 array for raw data."""
         if 'PREPARED' in self.tags:
             return super().data_section(pretty=pretty)
 
@@ -361,11 +384,13 @@ class AstroDataIgrins2(AstroDataGemini):
 
     @astro_data_descriptor
     def detector_name(self):
+        """Return the name of the detector, always 'IGRINS-2'."""
         return "IGRINS-2"
 
     @returns_list
     @astro_data_descriptor
     def detector_section(self, pretty=False):
+        """Return the detector section, 2048x2048 pixels for raw data."""
         if 'PREPARED' in self.tags:
             return super().detector_section(pretty=pretty)
 
@@ -376,6 +401,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_descriptor
     @gmu.return_requested_units()
     def dispersion(self):
+        """Return the approximate dispersion of the central order."""
         # These are approximate values for the central order in each band
         if self.band() == "K":
             return 0.01430
@@ -385,19 +411,23 @@ class AstroDataIgrins2(AstroDataGemini):
     @returns_list
     @astro_data_descriptor
     def dispersion_axis(self):
+        """Return the dispersion axis, always 1."""
         return 1
 
     @use_keyword_if_prepared
     @astro_data_descriptor
     def filter_name(self, pretty=True):
-        """IGRINS-2 doesn't have physical filters, so there's no component
-        number and pretty does nothing."""
+        """
+        IGRINS-2 doesn't have physical filters.
+
+        There is no component number and pretty does nothing.
+        """
         return "|".join(sorted(set(self.hdr.get('FILTER')) - {None}))
 
     @astro_data_descriptor
     def instrument(self, generic=False):
         """
-        Returns the name of the instrument making the observation
+        Return the name of the instrument making the observation.
 
         Parameters
         ----------
@@ -449,6 +479,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @returns_list
     @astro_data_descriptor
     def pixel_scale(self):
+        """Return the pixel scale in arcseconds per pixel, always 0.1."""
         return 0.1
 
     @returns_list
@@ -456,7 +487,7 @@ class AstroDataIgrins2(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the read noise in electrons.
+        Return the read noise in electrons.
 
         Returns
         -------
@@ -476,21 +507,19 @@ class AstroDataIgrins2(AstroDataGemini):
 
     @astro_data_descriptor
     def slit_width(self):
-        """
-        Return the slit width in arcseconds.
-        """
+        """Return the slit width in arcseconds."""
         return 0.33
 
     @astro_data_descriptor
     def wavelength_band(self):
-        """Avoids the round-the-houses calculation of AstroDataGemini"""
+        """Avoids the round-the-houses calculation of AstroDataGemini."""
         return self.filter_name(pretty=True)
 
 
         return self.filter_name(pretty=True)
 
     def write(self, filename=None, overwrite=False):
-        """Hijack the standard method to allow a WAVE-TAB to be written"""
+        """Hijack the standard method to allow a WAVE-TAB to be written."""
         if filename is None:
             if self.path is None:
                 raise ValueError("A filename needs to be specified")

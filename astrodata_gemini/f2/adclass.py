@@ -1,18 +1,30 @@
-import re
+"""Tags and descriptors for Flamingos-2 data."""
+
 import math
+import re
 
 import numpy as np
+from astrodata import (
+    Section,
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 
-from astrodata import (astro_data_tag, TagSet, astro_data_descriptor,
-                       returns_list, Section)
-from ..gemini import AstroDataGemini, use_keyword_if_prepared
-from .lookup import array_properties, nominal_zeropoints, dispersion_offset_mask
-
-from ..common import build_group_id
 from .. import gmu
+from ..common import build_group_id
+from ..gemini import AstroDataGemini, use_keyword_if_prepared
+from .lookup import (
+    array_properties,
+    dispersion_offset_mask,
+    nominal_zeropoints,
+)
 
 
 class AstroDataF2(AstroDataGemini):
+    """AstroData class for Flamingos-2 data."""
+
     __keyword_dict = dict(central_wavelength='WAVELENG',
                           disperser='GRISM',
                           lyot_stop='LYOT',
@@ -106,11 +118,12 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def array_section(self, pretty=False):
         """
-        Returns the rectangular section that includes the pixels that would be
-        exposed to light.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the rectangular section of pixels exposed to light.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -138,7 +151,7 @@ class AstroDataF2(AstroDataGemini):
 
     def camera(self, stripID=False, pretty=False):
         """
-        Returns the string defining the f-ratio being used.
+        Return the string defining the f-ratio being used.
 
         Returns
         -------
@@ -146,7 +159,6 @@ class AstroDataF2(AstroDataGemini):
             The string that defines the f-ratio which changes depending on
             whether AO is used or not.  Historical value.
         """
-
         # [2022-02-22] The LYOT keyword is now being used to store filters as
         # well as LYOT mask.  Therefore, that keyword cannot be reliably used
         # to return the camera string.
@@ -173,7 +185,7 @@ class AstroDataF2(AstroDataGemini):
     @gmu.return_requested_units()
     def central_wavelength(self):
         """
-        Returns the central wavelength in nm
+        Return the central wavelength in nm.
 
         Returns
         -------
@@ -202,11 +214,12 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def data_section(self, pretty=False):
         """
-        Returns the rectangular section that includes the pixels that would be
-        exposed to light.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the rectangular section of pixels exposed to light.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -234,11 +247,12 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def detector_section(self, pretty=False):
         """
-        Returns the section covered by the detector relative to the whole
-        mosaic of detectors.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the detector relative to the mosaic.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -266,7 +280,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def dispersion_axis(self):
         """
-        Returns the axis along which the light is dispersed.
+        Return the axis along which the light is dispersed.
 
         Returns
         -------
@@ -278,8 +292,9 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def detector_x_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive x-direction of the detector
+        Return the offset along the positive x-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -294,8 +309,9 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def detector_y_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive y-direction of the detector
+        Return the offset along the positive y-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -313,9 +329,11 @@ class AstroDataF2(AstroDataGemini):
     @gmu.return_requested_units()
     def dispersion(self):
         """
-        Returns the dispersion in nm per pixel as a list (one value per
-        extension) or a float if used on a single-extension slice. It is
-        possible to control the units of wavelength using the input arguments.
+        Return the dispersion in nm per pixel.
+
+        A list (one value per extension) is returned, or a float if used on a
+        single-extension slice. It is possible to control the units of
+        wavelength using the input arguments.
 
         Returns
         -------
@@ -336,12 +354,13 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False, keepID=False):
         """
-        Returns the name of the filter(s) used.  The component ID can be
-        removed with either 'stripID' or 'pretty'.  If a combination of filters
-        is used, the filter names will be join into a unique string with '&' as
-        separator.  If 'pretty' is True, filter positions such as 'Open',
-        'Dark', 'blank', and others are removed leaving only the relevant
-        filters in the string.
+        Return the name of the filter(s) used.
+
+        The component ID can be removed with either 'stripID' or 'pretty'.  If
+        a combination of filters is used, the filter names will be join into a
+        unique string with '&' as separator.  If 'pretty' is True, filter
+        positions such as 'Open', 'Dark', 'blank', and others are removed
+        leaving only the relevant filters in the string.
 
         Parameters
         ----------
@@ -360,7 +379,6 @@ class AstroDataF2(AstroDataGemini):
             The name of the filter combination with or without the component ID.
 
         """
-
         try:
             filter1 = self.phu['FILTER1']
             filter2 = self.phu['FILTER2']
@@ -427,8 +445,10 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain used for the observation.  This is read from a
-        lookup table using the read_mode and the well_depth.
+        Return the gain used for the observation.
+
+        This is read from a lookup table using the read_mode and the
+        well_depth.
 
         Returns
         -------
@@ -445,10 +465,10 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument and mode of observation will have its own rules. F2's
-        is quite a mouthful.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument and mode of
+        observation will have its own rules. F2's is quite a mouthful.
 
         Returns
         -------
@@ -513,8 +533,9 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def lyot_stop(self):
         """
-        Returns the LYOT stop used for the observation.  This works around
-        inconsistencies in the header keywords.
+        Return the LYOT stop used for the observation.
+
+        This works around inconsistencies in the header keywords.
 
         Returns
         -------
@@ -529,10 +550,11 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def focal_plane_mask(self, stripID=False, pretty=False):
         """
-        Returns the focal plane mask used for the observation. This is generally
-        the MASKNAME header. For imaging data, MASKNAME sometimes has strange
-        values, so we check MOSPOS and if MOSPOS is 'Open' we return that
-        for consistency.
+        Return the focal plane mask used for the observation.
+
+        This is generally the MASKNAME header. For imaging data, MASKNAME
+        sometimes has strange values, so we check MOSPOS and if MOSPOS is
+        'Open' we return that for consistency.
 
         The stripID and pretty arguments are ignored.
 
@@ -550,8 +572,9 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
         """
-        Returns the nominal zeropoints (i.e., the magnitude corresponding to
-        a pixel value of 1) for the extensions in an AD object.
+        Return the nominal zeropoints for the extensions in an AD object.
+
+        The zeropoint is the magnitude corresponding to a pixel value of 1.
 
         Returns
         -------
@@ -580,8 +603,9 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the data become non-linear, in the units
-        of the image.
+        Return the level at which the data become non-linear.
+
+        The value is in the same units as the data.
 
         Returns
         -------
@@ -607,7 +631,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def observation_type(self):
         """
-        Returns the observation type (OBJECT, DARK, BIAS, etc.)
+        Return the observation type (OBJECT, DARK, BIAS, etc.).
 
         Returns
         -------
@@ -618,13 +642,14 @@ class AstroDataF2(AstroDataGemini):
 
     @astro_data_descriptor
     def pixel_scale(self):
+        """Return the pixel scale, falling back on the PIXSCALE keyword."""
         pix_scale = super().pixel_scale()
         return pix_scale or self.phu['PIXSCALE']
 
     @astro_data_descriptor
     def position_angle(self):
         """
-        Returns the position angle of the instruement
+        Return the position angle of the instruement.
 
         Returns
         -------
@@ -636,7 +661,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def read_mode(self):
         """
-        Returns the read mode (i.e., the number of non-destructive read pairs)
+        Return the read mode (i.e., the number of non-destructive read pairs).
 
         Returns
         -------
@@ -651,7 +676,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the read noise in electrons.
+        Return the read noise in electrons.
 
         Returns
         -------
@@ -666,7 +691,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level, in the units of the image
+        Return the saturation level, in the units of the image.
 
         Returns
         -------
@@ -689,7 +714,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------
@@ -711,7 +736,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def telescope_x_offset(self):
         """
-        Returns the x offset from origin of this image
+        Return the x offset from origin of this image.
 
         Returns
         -------
@@ -726,7 +751,7 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_descriptor
     def telescope_y_offset(self):
         """
-        Returns the y offset from origin of this image
+        Return the y offset from origin of this image.
 
         Returns
         -------
@@ -762,6 +787,7 @@ class AstroDataF2(AstroDataGemini):
 
     @gmu.return_requested_units(input_units="nm")
     def actual_central_wavelength(self):
+        """Return the central wavelength corrected for its mask offset."""
         index = (self.disperser(pretty=True), self.filter_name(keepID=True))
         mask = dispersion_offset_mask[index]
         disp = (self.dispersion(asNanometers=True) if self.is_single else

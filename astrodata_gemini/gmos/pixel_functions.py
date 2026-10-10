@@ -1,21 +1,37 @@
-#
-#                                                                  gemini_python
-#
-#                                                                   gempy.gemini
-#                                                    pixel_functions.py
-# ------------------------------------------------------------------------------
-# $Id$
-# ------------------------------------------------------------------------------
-# The gemini_data_calculations module contains functions that calculate values
-# from Gemini data, only get_bias_level() needs to be called
+"""Functions to calculate values from GMOS data, e.g. the bias level."""
 
 import numpy as np
 from datetime import date
 from astrodata_gemini.gmos import lookup
-# ------------------------------------------------------------------------------
 
 
 def get_bias_level(adinput=None, estimate=True):
+    """
+    Return the bias level of a GMOS AstroData object.
+
+    The bias level is measured from the overscan region, or estimated.  It
+    is estimated if `estimate` is True, or if the overscan section keyword
+    is missing from the headers (the keyword gets deleted when trimming).
+
+    Parameters
+    ----------
+    adinput : AstroDataGmos
+        The AstroData object to measure the bias level of.
+    estimate : bool
+        If True, estimate the bias level instead of measuring it from the
+        overscan region.
+
+    Returns
+    -------
+    float or list of float
+        The bias level(s), one per extension unless the input is a
+        single-extension slice.
+
+    Raises
+    ------
+    NotImplementedError
+        If the input is not GMOS data.
+    """
     # Temporarily only do this for GMOS data. It would be better if we could do
     # checks on oberving band / type (e.g., OPTICAL / IR) and have this
     # function call an appropriate function. This is in place due to the call
@@ -40,10 +56,12 @@ def get_bias_level(adinput=None, estimate=True):
 
 def _get_bias_level(adinput=None):
     """
-    Determine the bias level value from the science extensions of the input
-    AstroData object. The bias level is equal to the median of the overscan
-    region. A float or list of floats is returned, depdending on whether the
-    input is a single-extension slice.
+    Determine the bias level value of an AstroData object.
+
+    The value is determined from the science extensions of the input object.
+    The bias level is equal to the median of the overscan region. A float or
+    list of floats is returned, depending on whether the input is a
+    single-extension slice.
 
     Parameters
     ----------

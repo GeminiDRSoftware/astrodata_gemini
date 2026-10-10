@@ -1,3 +1,5 @@
+"""Lookup tables for the Gemini instruments."""
+
 # Gives the effective wavelength in microns for the standard wavelength regimes
 wavelength_band = {
     "None": 0.000,

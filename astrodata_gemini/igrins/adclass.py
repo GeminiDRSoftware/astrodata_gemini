@@ -1,20 +1,18 @@
-#
-#                                                            Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                              igrins.adclass.py
-# ------------------------------------------------------------------------------
+"""Tags and descriptors for IGRINS data."""
 
-from astrodata import astro_data_tag
-from astrodata import astro_data_descriptor
-from astrodata import returns_list
-from astrodata import TagSet
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 
 from ..gemini import AstroDataGemini
-#from .. import gmu
-# ------------------------------------------------------------------------------
+
+
 class AstroDataIgrins(AstroDataGemini):
+    """AstroData class for IGRINS data."""
+
     __keyword_dict = dict(
         airmass = 'AMSTART',
         wavelength_band = 'BAND',
@@ -78,6 +76,7 @@ class AstroDataIgrins(AstroDataGemini):
 
     @astro_data_descriptor
     def airmass(self):
+        """Return the airmass, from the PHU or else the first extension."""
         aim = self.phu.get(self._keyword_for('airmass'))
         if not aim:
             aim = self[0].hdr.get(self._keyword_for('airmass'))
@@ -86,7 +85,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def detector_name(self, pretty=False):
         """
-        Returns the name of the detector
+        Return the name of the detector.
 
         Returns
         -------
@@ -102,10 +101,11 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, pretty=False):
         """
-        IGRINS has no filters or filter names. But this descriptor is
-        used to display 'WaveBand' in the archive. So, IGRINS data
-        needs to "fake it." wavelength_band() returns a string exactly
-        equal to a call on filter_name(pretty=True).
+        IGRINS has no filters or filter names.
+
+        But this descriptor is used to display 'WaveBand' in the archive. So,
+        IGRINS data needs to "fake it." wavelength_band() returns a string
+        exactly equal to a call on filter_name(pretty=True).
 
         Parameters
         ----------
@@ -124,7 +124,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def instrument(self, generic=False):
         """
-        Returns the name of the instrument making the observation
+        Return the name of the instrument making the observation.
 
         Parameters
         ----------
@@ -146,7 +146,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def observation_class(self):
         """
-        Returns 'class' the observation; one of,
+        Return 'class' the observation; one of,.
 
             'science', 'acq', 'projCal', 'dayCal', 'partnerCal', 'acqCal'
 
@@ -177,7 +177,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def observation_type(self):
         """
-        Returns 'type' the observation. For IGRINS, this will be one of,
+        Return 'type' the observation. For IGRINS, this will be one of,.
 
             'OBJECT', 'DARK', 'FLAT', 'ARC'
 
@@ -199,7 +199,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the RA of the observation.
+        Return the RA of the observation.
 
         Returns
         -------
@@ -215,7 +215,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the declination of observation.
+        Return the declination of observation.
 
         Returns
         -------
@@ -231,7 +231,7 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_descriptor
     def wavelength_band(self):
         """
-        Returns the name of the bandpass of the observation.
+        Return the name of the bandpass of the observation.
 
         Returns
         -------
@@ -247,7 +247,7 @@ class AstroDataIgrins(AstroDataGemini):
     #@astro_data_descriptor
     def _slit_x_center(self):
         """
-        Returns Center x position of slit in the SVC image
+        Return Center x position of slit in the SVC image.
 
         Returns
         -------
@@ -260,7 +260,7 @@ class AstroDataIgrins(AstroDataGemini):
     #@astro_data_descriptor
     def _slit_y_center(self):
         """
-        Returns Center y position of slit in the SVC image
+        Return Center y position of slit in the SVC image.
 
         Returns
         -------
@@ -273,7 +273,7 @@ class AstroDataIgrins(AstroDataGemini):
     #@astro_data_descriptor
     def _slit_width(self):
         """
-        Returns slit width in the SVC image
+        Return slit width in the SVC image.
 
         Returns
         -------
@@ -286,7 +286,7 @@ class AstroDataIgrins(AstroDataGemini):
     #@astro_data_descriptor
     def _slit_length(self):
         """
-        Returns slit length in the SVC image
+        Return slit length in the SVC image.
 
         Returns
         -------
@@ -299,7 +299,7 @@ class AstroDataIgrins(AstroDataGemini):
     #@astro_data_descriptor
     def _slit_angle(self):
         """
-        Returns slit length in the SVC image
+        Return slit length in the SVC image.
 
         Returns
         -------
@@ -311,8 +311,10 @@ class AstroDataIgrins(AstroDataGemini):
 
     @astro_data_descriptor
     def target_ra(self):
+        """Return the Right Ascension of the target, from the WCS."""
         return self.wcs_ra()
 
     @astro_data_descriptor
     def target_dec(self):
+        """Return the Declination of the target, from the WCS."""
         return self.wcs_dec()

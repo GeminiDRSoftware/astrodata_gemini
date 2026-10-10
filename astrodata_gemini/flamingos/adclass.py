@@ -1,8 +1,18 @@
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
-from ..gemini import AstroDataGemini
+"""Tags and descriptors for FLAMINGOS data."""
+
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
+from ..gemini import AstroDataGemini
+
 
 class AstroDataFlamingos(AstroDataGemini):
+    """AstroData class for FLAMINGOS data."""
 
     __keyword_dict = dict(detector = 'DETECTOR',
                           filter_name = 'FILTER',
@@ -44,7 +54,7 @@ class AstroDataFlamingos(AstroDataGemini):
     @gmu.return_requested_units()
     def central_wavelength(self):
         """
-        Returns the central wavelength
+        Return the central wavelength.
 
         Returns
         -------
@@ -56,10 +66,11 @@ class AstroDataFlamingos(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of field in degrees.  Since a
-        fiber is used it coincides with the position of the target. For code
-        re-used, use target_dec() if you really want the position of the target
-        rather than the center of the field.
+        Return the Declination of the center of field in degrees.
+
+        Since a fiber is used it coincides with the position of the target. For
+        code re-used, use target_dec() if you really want the position of the
+        target rather than the center of the field.
 
         Returns
         -------
@@ -70,12 +81,13 @@ class AstroDataFlamingos(AstroDataGemini):
 
     @astro_data_descriptor
     def detector(self):
+        """Return the name of the detector."""
         return self.phu.get(self._keyword_for('detector'))
 
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser.
+        Return the name of the disperser.
 
         Parameters
         ----------
@@ -101,7 +113,7 @@ class AstroDataFlamingos(AstroDataGemini):
     @astro_data_descriptor
     def exposure_time(self):
         """
-        Returns the exposure time in seconds.
+        Return the exposure time in seconds.
 
         Returns
         -------
@@ -112,15 +124,17 @@ class AstroDataFlamingos(AstroDataGemini):
 
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
+        """Return the filter name; stripID and pretty have no effect."""
         return self.phu.get(self._keyword_for('filter_name'))    
 
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of field in degrees.  Since a
-        fiber is used it coincides with the position of the target. For code
-        re-used, use target_ra() if you really want the position of the target
-        rather than the center of the field.
+        Return the Right Ascension of the center of field in degrees.
+
+        Since a fiber is used it coincides with the position of the target. For
+        code re-used, use target_ra() if you really want the position of the
+        target rather than the center of the field.
 
         Returns
         -------

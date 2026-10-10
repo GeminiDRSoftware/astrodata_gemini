@@ -1,13 +1,23 @@
-from astrodata import astro_data_tag, TagSet, astro_data_descriptor, returns_list
-from ..gemini import AstroDataGemini, use_keyword_if_prepared
+"""Tags and descriptors for NIRI data."""
+
 import math
 import re
 
-from . import lookup
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
-from ..common import build_ir_section, build_group_id
+from ..common import build_group_id, build_ir_section
+from ..gemini import AstroDataGemini, use_keyword_if_prepared
+from . import lookup
+
 
 class AstroDataNiri(AstroDataGemini):
+    """AstroData class for NIRI data."""
 
     # NIRI has no specific keyword overrides
 
@@ -51,12 +61,13 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def array_section(self, pretty=False):
         """
-        Returns the section covered by the array(s) relative to the detector
-        frame.  For example, this can be the position of multiple amps read
-        within a CCD.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the array(s) in the detector frame.
+
+        For example, this can be the position of multiple amps read within a
+        CCD.  If pretty is False, a tuple of 0-based coordinates is returned
+        with format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -81,7 +92,7 @@ class AstroDataNiri(AstroDataGemini):
     @gmu.return_requested_units()
     def central_wavelength(self):
         """
-        Returns the central wavelength in nm
+        Return the central wavelength in nm.
 
         Returns
         -------
@@ -104,11 +115,12 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def data_section(self, pretty=False):
         """
-        Returns the rectangular section that includes the pixels that would be
-        exposed to light.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the rectangular section of pixels exposed to light.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -134,8 +146,10 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def detector_roi_setting(self):
         """
-        Returns the ROI setting. Most instruments don't allow this to be
-        changed, so at the Gemini level it just returns 'Fixed'
+        Return the ROI setting.
+
+        Most instruments don't allow this to be changed, so at the Gemini
+        level it just returns 'Fixed'.
 
         Returns
         -------
@@ -162,11 +176,12 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def detector_section(self, pretty=False):
         """
-        Returns the section covered by the detector relative to the whole
-        mosaic of detectors.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the detector relative to the mosaic.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -190,8 +205,9 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def detector_x_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive x-direction of the detector
+        Return the offset along the positive x-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -208,8 +224,9 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def detector_y_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive y-direction of the detector
+        Return the offset along the positive y-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -224,8 +241,10 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser.  The component ID can be removed
-        with either 'stripID' or 'pretty' set to True.
+        Return the name of the disperser.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------
@@ -254,9 +273,11 @@ class AstroDataNiri(AstroDataGemini):
     @gmu.return_requested_units()
     def dispersion(self):
         """
-        Returns the dispersion in nm per pixel as a list (one value per
-        extension) or a float if used on a single-extension slice. It is
-        possible to control the units of wavelength using the input arguments.
+        Return the dispersion in nm per pixel.
+
+        A list (one value per extension) is returned, or a float if used on a
+        single-extension slice. It is possible to control the units of
+        wavelength using the input arguments.
 
         Returns
         -------
@@ -282,17 +303,19 @@ class AstroDataNiri(AstroDataGemini):
     @returns_list
     @astro_data_descriptor
     def dispersion_axis(self):
+        """Return the dispersion axis, always 1 for NIRI."""
         return 1
 
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         #TODO: Complete rewrite here so serious testing required
         """
-        Returns the name of the filter(s) used. If a combination of filters
-        is used, the filter names will be join into a unique string with '&' as
-        separator. The component IDs can be removed from the filter names.
-        Alternatively, a single descriptive filter name can be returned,
-        based on a lookup table.
+        Return the name of the filter(s) used.
+
+        If a combination of filters is used, the filter names will be join into
+        a unique string with '&' as separator. The component IDs can be removed
+        from the filter names. Alternatively, a single descriptive filter name
+        can be returned, based on a lookup table.
 
         Parameters
         ----------
@@ -332,7 +355,7 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain (electrons/ADU) for each extension
+        Return the gain (electrons/ADU) for each extension.
 
         Returns
         -------
@@ -344,9 +367,10 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument, mode of observation, and data type will have its own rules.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument, mode of
+        observation, and data type will have its own rules.
 
         Returns
         -------
@@ -377,8 +401,9 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
         """
-        Returns the nominal photometric zeropoint (i.e., magnitude
-        corresponding to 1 pixel count) for each extension
+        Return the nominal photometric zeropoint for each extension.
+
+        The zeropoint is the magnitude corresponding to 1 pixel count.
 
         Returns
         -------
@@ -406,8 +431,9 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the data become non-linear, in units of the
-        data.
+        Return the level at which the data become non-linear.
+
+        The value is in the same units as the data.
 
         Returns
         -------
@@ -424,7 +450,7 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def pupil_mask(self, stripID=False, pretty=False):
         """
-        Returns the name of the pupil mask used for the observation
+        Return the name of the pupil mask used for the observation.
 
         Returns
         -------
@@ -444,9 +470,11 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def read_mode(self):
         """
-        Returns the readout mode used for the observation. This has one of 3
-        settings, depending on the number of reads and averages. If these
-        numbers do not conform to a standard setting, 'Invalid' is returned
+        Return the readout mode used for the observation.
+
+        This has one of 3 settings, depending on the number of reads and
+        averages. If these numbers do not conform to a standard setting,
+        'Invalid' is returned.
 
         Returns
         -------
@@ -468,8 +496,9 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the read noise in electrons, as a list unless called on
-        a single-extension slice.
+        Return the read noise in electrons.
+
+        A list is returned unless called on a single-extension slice.
 
         Returns
         -------
@@ -494,7 +523,7 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level of the data, in the units of the data
+        Return the saturation level of the data, in the units of the data.
 
         Returns
         -------
@@ -515,7 +544,7 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------
@@ -531,7 +560,8 @@ class AstroDataNiri(AstroDataGemini):
     @astro_data_descriptor
     def well_depth_setting(self):
         """
-        Returns a string describing the well-depth setting of the instrument.
+        Return a string describing the well-depth setting of the instrument.
+
         NIRI has 'Shallow' and 'Deep' options. 'Invalid' is returned if the
         bias voltage doesn't match either setting.
 
@@ -552,6 +582,7 @@ class AstroDataNiri(AstroDataGemini):
 
     @gmu.return_requested_units(input_units="nm")
     def actual_central_wavelength(self):
+        """Return the central pixel wavelength from a lookup table, or None."""
         camera = self.camera()
         try:
             disperser = self.disperser(stripID=True)[0:6]

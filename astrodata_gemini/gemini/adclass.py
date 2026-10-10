@@ -1,35 +1,31 @@
-#
-#                                                            Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                              gemini.adclass.py
-# ------------------------------------------------------------------------------
-import re
-import math
+"""Tags and descriptors for Gemini data."""
+
 import datetime
-import dateutil.parser
+import math
+import re
 from functools import wraps
 from itertools import chain, combinations
 
+import dateutil.parser
 import numpy as np
-
+from astrodata import (
+    AstroData,
+    Section,
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+)
 from astropy import units as u
-from astropy.coordinates import SkyCoord, Angle
+from astropy.coordinates import Angle, SkyCoord
 
-from astrodata import AstroData
-from astrodata import astro_data_tag
-from astrodata import astro_data_descriptor
-from astrodata import TagSet, Section
-
-from .lookup import (wavelength_band, nominal_extinction,
-                     filter_wavelengths, specphot_standards)
-
-# NOTE: Temporary functions for test. gempy imports astrodata and
-#       won't work with this implementation
 from .. import gmu
+from .lookup import (
+    filter_wavelengths,
+    nominal_extinction,
+    specphot_standards,
+    wavelength_band,
+)
 
-# ------------------------------------------------------------------------------
 # TODO: Some of these should go to AstroDataFITS
 gemini_keyword_names = dict(
     airmass = 'AIRMASS',
@@ -118,11 +114,13 @@ gemini_keyword_names = dict(
 
 def use_keyword_if_prepared(fn):
     """
-    A decorator for descriptors. If decorated, the descriptor will bypass its
-    main code on "PREPARED" data in favour of simply returning the value of
-    the associated header keyword (as defined by the "_keyword_for" method)
-    if this exists in all the headers (if the keyword is missing, it will
-    execute the code in the descriptor method).
+    Decorate a descriptor to bypass its code on PREPARED data.
+
+    If decorated, the descriptor will bypass its main code on "PREPARED" data
+    in favour of simply returning the value of the associated header keyword
+    (as defined by the "_keyword_for" method) if this exists in all the headers
+    (if the keyword is missing, it will execute the code in the descriptor
+    method).
     """
     @wraps(fn)
     def gn(self, **kwargs):
@@ -137,11 +135,12 @@ def use_keyword_if_prepared(fn):
 
 def get_specphot_name(ad):
     """
-    Return the name of the specphotometric standard of which this AD object
-    is an observation, or None if it is not an observation of a specphot.
+    Return the name of the specphotometric standard observed, or None.
+
+    None is returned if this AD object is not an observation of a specphot.
     The name is returned in a whitespace-stripped, all-lowercase format
     corresponding to the filename containing the specphot data in
-    geminidr.gemini.lookups.spectrophotometric_standards
+    geminidr.gemini.lookups.spectrophotometric_standards.
 
     We match to within 2" regardless of name, or a 5' (sic) match if the
     name matches. We have found cases where the PMRA/PMDEC keywords in the
@@ -184,8 +183,9 @@ def get_specphot_name(ad):
         return all_names[i]
 
 
-# ------------------------------------------------------------------------------
 class AstroDataGemini(AstroData):
+    """Parent AstroData class for the Gemini instruments."""
+
     __keyword_dict = gemini_keyword_names
 
     @staticmethod
@@ -439,7 +439,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def airmass(self):
         """
-        Returns the airmass of the observation.
+        Return the airmass of the observation.
 
         Returns
         -------
@@ -459,8 +459,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def ao_seeing(self):
         """
-        Returns an estimate of the natural seeing as calculated from the
-        adaptive optics systems.
+        Return an estimate of the natural seeing.
+
+        The seeing is calculated from the adaptive optics systems.
 
         Returns
         -------
@@ -487,8 +488,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def amp_read_area(self, pretty=False):
         """
-        Returns the readout area of each amplifier, as a 0-based tuple or
-        1-based string
+        Return the readout area of each amplifier.
+
+        The area is returned as a 0-based tuple, or as a 1-based string.
 
         Returns
         -------
@@ -500,7 +502,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def array_name(self):
         """
-        Returns the name of each array
+        Return the name of each array.
 
         Returns
         -------
@@ -513,12 +515,13 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def array_section(self, pretty=False):
         """
-        Returns the section covered by the array(s) relative to the detector
-        frame.  For example, this can be the position of multiple amps read
-        within a CCD.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the array(s) in the detector frame.
+
+        For example, this can be the position of multiple amps read within a
+        CCD.  If pretty is False, a tuple of 0-based coordinates is returned
+        with format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -542,7 +545,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def azimuth(self):
         """
-        Returns the azimuth of the telescope, in degrees
+        Return the azimuth of the telescope, in degrees.
 
         Returns
         -------
@@ -554,15 +557,14 @@ class AstroDataGemini(AstroData):
 
     @astro_data_descriptor
     def binning(self):
-        """
-        Returns an "MxN"-style string because CJS is fed up with not having this!
-        """
+        """Return an "MxN"-style string."""
         return f"{self.detector_x_bin()}x{self.detector_y_bin()}"
 
     @astro_data_descriptor
     def calibration_key(self):
         """
-        Returns an object to be used as a key in the Calibrations dict.
+        Return an object to be used as a key in the Calibrations dict.
+
         Multiple ADs can share a key but there can be only one of each type
         of calibration for each key. data_label() is the default.
         "_stack" is removed to avoid making a new request for a stacked
@@ -583,8 +585,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def camera(self, stripID=False, pretty=False):
         """
-        Returns the name of the camera.  The component ID can be removed
-        with either 'stripID' or 'pretty' set to True.
+        Return the name of the camera.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------
@@ -606,7 +610,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def cass_rotator_pa(self):
         """
-        Returns the position angle of the Cassegrain rotator, in degrees.
+        Return the position angle of the Cassegrain rotator, in degrees.
 
         Returns
         -------
@@ -621,7 +625,7 @@ class AstroDataGemini(AstroData):
     @gmu.return_requested_units(input_units="um")
     def central_wavelength(self):
         """
-        Returns the central wavelength
+        Return the central wavelength.
 
         Returns
         -------
@@ -639,7 +643,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def coadds(self):
         """
-        Returns the number of co-adds used for the observation.
+        Return the number of co-adds used for the observation.
 
         Returns
         -------
@@ -652,7 +656,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def data_label(self):
         """
-        Returns the data label of an observation.
+        Return the data label of an observation.
 
         Returns
         -------
@@ -664,11 +668,12 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def data_section(self, pretty=False):
         """
-        Returns the rectangular section that includes the pixels that would be
-        exposed to light.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the rectangular section of pixels exposed to light.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -693,7 +698,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of the field, in degrees.
+        Return the Declination of the center of the field, in degrees.
 
         Returns
         -------
@@ -708,8 +713,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def decker(self, stripID=False, pretty=False):
         """
-        Returns the name of the decker.  The component ID can be removed
-        with either 'stripID' or 'pretty' set to True.
+        Return the name of the decker.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------
@@ -730,7 +737,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_name(self, pretty=False):
         """
-        Returns the name of the detector
+        Return the name of the detector.
 
         Returns
         -------
@@ -742,8 +749,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_roi_setting(self):
         """
-        Returns the ROI setting. Most instruments don't allow this to be
-        changed, so at the Gemini level it just returns 'Fixed'
+        Return the ROI setting.
+
+        Most instruments don't allow this to be changed, so at the Gemini
+        level it just returns 'Fixed'.
 
         Returns
         -------
@@ -755,8 +764,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_rois_requested(self):
         """
-        Returns the ROIs requested. Since most instruments don't have
-        selectable ROIs, it returns None at the Gemini level
+        Return the ROIs requested.
+
+        Since most instruments don't have selectable ROIs, it returns None at
+        the Gemini level.
 
         Returns
         -------
@@ -768,11 +779,12 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_section(self, pretty=False):
         """
-        Returns the section covered by the detector relative to the whole
-        mosaic of detectors.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the detector relative to the mosaic.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -796,7 +808,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_x_bin(self):
         """
-        Returns the detector binning in the x-direction
+        Return the detector binning in the x-direction.
 
         Returns
         -------
@@ -808,7 +820,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_y_bin(self):
         """
-        Returns the detector binning in the y-direction
+        Return the detector binning in the y-direction.
 
         Returns
         -------
@@ -820,8 +832,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_x_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive x-direction of the detector
+        Return the offset along the positive x-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -838,8 +851,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def detector_y_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive y-direction of the detector
+        Return the offset along the positive y-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -854,8 +868,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser.  The "disperser" is a combination of
-        all the dispersing elements along the light path.
+        Return the name of the disperser.
+
+        The "disperser" is a combination of all the dispersing elements along
+        the light path.
 
         The component ID can be removed with either 'stripID' or 'pretty' set
         to True.
@@ -881,9 +897,11 @@ class AstroDataGemini(AstroData):
     @gmu.return_requested_units(input_units="m")
     def dispersion(self):
         """
-        Returns the dispersion in nm per pixel as a list (one value per
-        extension) or a float if used on a single-extension slice.  It is
-        possible to control the units of wavelength using the input arguments.
+        Return the dispersion in nm per pixel.
+
+        A list (one value per extension) is returned, or a float if used on a
+        single-extension slice. It is possible to control the units of
+        wavelength using the input arguments.
 
         Returns
         -------
@@ -905,7 +923,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def dispersion_axis(self):
         """
-        Returns the axis along which the light is dispersed.
+        Return the axis along which the light is dispersed.
 
         Returns
         -------
@@ -931,7 +949,8 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def effective_wavelength(self, output_units=None):
         """
-        Returns the wavelength representing the bandpass or the spectrum.
+        Return the wavelength representing the bandpass or the spectrum.
+
         For imaging data this normally is the wavelength at the center of
         the bandpass as defined by the filter used.  For spectra, this is
         the central wavelength.  The returned value is in meters.
@@ -962,7 +981,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def elevation(self):
         """
-        Returns the elevation of the telescope, in degrees
+        Return the elevation of the telescope, in degrees.
 
         Returns
         -------
@@ -974,7 +993,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def exposure_time(self):
         """
-        Returns the exposure time in seconds.
+        Return the exposure time in seconds.
 
         Returns
         -------
@@ -993,12 +1012,13 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False, keepID=False):
         """
-        Returns the name of the filter(s) used.  The component ID can be
-        removed with either 'stripID' or 'pretty'.  If a combination of filters
-        is used, the filter names will be join into a unique string with '&' as
-        separator.  If 'pretty' is True, filter positions such as 'Open',
-        'Dark', 'blank', and others are removed leaving only the relevant
-        filters in the string.
+        Return the name of the filter(s) used.
+
+        The component ID can be removed with either 'stripID' or 'pretty'.  If
+        a combination of filters is used, the filter names will be join into a
+        unique string with '&' as separator.  If 'pretty' is True, filter
+        positions such as 'Open', 'Dark', 'blank', and others are removed
+        leaving only the relevant filters in the string.
 
         Parameters
         ----------
@@ -1048,8 +1068,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def focal_plane_mask(self, stripID=False, pretty=False):
         """
-        Returns the name of the focal plane mask.  The component ID can be
-        removed with either 'stripID' or 'pretty' set to True.
+        Return the name of the focal plane mask.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------
@@ -1070,7 +1092,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain (electrons/ADU) for each extension
+        Return the gain (electrons/ADU) for each extension.
 
         Returns
         -------
@@ -1082,7 +1104,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def gain_setting(self):
         """
-        Returns the gain setting for this observation (e.g., 'high', 'low')
+        Return the gain setting for this observation (e.g., 'high', 'low').
 
         Returns
         -------
@@ -1094,9 +1116,11 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def gcal_lamp(self):
         """
-        Returns the name of the GCAL lamp being used, or "Off" if no lamp is
-        in used.  This applies to flats and arc observations when a lamp is
-        used.  For other types observation, None is returned.
+        Return the name of the GCAL lamp being used.
+
+        The name is "Off" if no lamp is in use. This applies to flats and arc
+        observations when a lamp is used.  For other types observation, None is
+        returned.
 
         Returns
         -------
@@ -1115,9 +1139,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument and mode of observation will have its own rules.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument and mode of
+        observation will have its own rules.
 
         At the Gemini class level, the default is to group by the Gemini
         observation ID.
@@ -1132,7 +1157,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def instrument(self, generic=False):
         """
-        Returns the name of the instrument making the observation
+        Return the name of the instrument making the observation.
 
         Parameters
         ----------
@@ -1163,8 +1188,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def is_coadds_summed(self):
         """
-        Tells whether or not the co-adds have been summed.  If not, they
-        have been averaged.
+        Tells whether or not the co-adds have been summed.
+
+        If not, they have been averaged.
 
         At the Gemini level, this descriptor is hardcoded to True as it is
         the default at the observatory.
@@ -1179,8 +1205,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def is_in_adu(self):
         """
-        Tells whether the data are in ADU (likely to be superseded by use of
-        NDData's unit attribute)
+        Tell whether the data are in ADU.
+
+        This is likely to be superseded by use of NDData's unit attribute.
 
         Returns
         -------
@@ -1198,7 +1225,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def local_time(self):
         """
-        Returns the local time stored at the time of the observation.
+        Return the local time stored at the time of the observation.
 
         Returns
         -------
@@ -1214,7 +1241,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def lyot_stop(self, stripID=False, pretty=False):
         """
-        Returns the Lyot stop used for the observation
+        Return the Lyot stop used for the observation.
 
         Parameters
         ----------
@@ -1234,8 +1261,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def mdf_row_id(self):
         """
-        Returns row ID from the MDF (Mask Definition File) table associated
-        with the spectrum.  Applies to "cut" MOS or X-dispersed data.
+        Return the row ID from the MDF table associated with the spectrum.
+
+        MDF is the Mask Definition File. Applies to "cut" MOS or X-dispersed
+        data.
 
         Returns
         -------
@@ -1250,8 +1279,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def nominal_atmospheric_extinction(self):
         """
-        Returns the nominal atmospheric extinction at observation airmass
-        and bandpass.
+        Return the nominal atmospheric extinction.
+
+        The extinction is for the airmass and bandpass of the observation.
 
         Returns
         -------
@@ -1266,8 +1296,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
         """
-        Returns the nominal photometric zeropoint (i.e., magnitude
-        corresponding to 1 pixel count) for each extension
+        Return the nominal photometric zeropoint for each extension.
+
+        The zeropoint is the magnitude corresponding to 1 pixel count.
 
         Returns
         -------
@@ -1279,10 +1310,11 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the data become non-linear, in ADU.
+        Return the level at which the data become non-linear, in ADU.
+
         This is expected to be overridden by the individual instruments,
         so at the Gemini level it returns the values of the NONLINEA keywords
-        (or None)
+        (or None).
 
         Returns
         -------
@@ -1294,7 +1326,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def observation_class(self):
         """
-        Returns the class of an observation, e.g., 'science', 'acq', 'dayCal'.
+        Return the class of an observation, e.g., 'science', 'acq', 'dayCal'.
 
         Returns
         -------
@@ -1306,7 +1338,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def observation_id(self):
         """
-        Returns the ID of an observation.
+        Return the ID of an observation.
 
         Returns
         -------
@@ -1318,7 +1350,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def observation_epoch(self):
         """
-        Returns the observation's epoch.
+        Return the observation's epoch.
 
         Returns
         -------
@@ -1330,7 +1362,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def observation_type(self):
         """
-        Returns the type of an observation, e.g., 'OBJECT', 'FLAT', 'ARC'.
+        Return the type of an observation, e.g., 'OBJECT', 'FLAT', 'ARC'.
 
         Returns
         -------
@@ -1342,11 +1374,12 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def overscan_section(self, pretty=False):
         """
-        Returns the section covered by the overscan regions relative to the
-        detector frame. If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the overscan regions.
+
+        The section is relative to the detector frame. If pretty is False, a
+        tuple of 0-based coordinates is returned with format (x1, x2, y1, y2).
+        If pretty is True, a keyword value is returned without parsing as a
+        string.  In this format, the coordinates are generally 1-based.
 
         One tuple or string is return per extension/array.  If more than one
         array, the tuples/strings are return in a list.  Otherwise, the
@@ -1370,8 +1403,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Returns the image scale in arcseconds per pixel, as an average over
-        the extensions
+        Return the image scale in arcseconds per pixel.
+
+        The scale is an average over the extensions.
 
         Returns
         -------
@@ -1383,7 +1417,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def position_angle(self):
         """
-        Returns the position angle of the instruement
+        Return the position angle of the instruement.
 
         Returns
         -------
@@ -1395,7 +1429,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def processing_level(self):
         """
-        Returns the processing level of this data
+        Return the processing level of this data.
 
         Returns
         -------
@@ -1407,7 +1441,6 @@ class AstroDataGemini(AstroData):
             raw data products are level 1. Returns None if the PROCLEVL header
             is undefined and the data is not tagged as 'RAW'
         """
-
         proclevl = self.phu.get(self._keyword_for('processing_level'))
 
         if proclevl is None:
@@ -1424,7 +1457,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def program_id(self):
         """
-        Returns the ID of the program the observation was taken for
+        Return the ID of the program the observation was taken for.
 
         Returns
         -------
@@ -1436,8 +1469,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def pupil_mask(self, stripID=False, pretty=False):
         """
-        Returns the name of the focal plane mask.  The component ID can be
-        removed with either 'stripID' or 'pretty' set to True.
+        Return the name of the focal plane mask.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------
@@ -1458,7 +1493,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def qa_state(self):
         """
-        Returns the Gemini quality assessment flags.
+        Return the Gemini quality assessment flags.
 
         Returns
         -------
@@ -1487,7 +1522,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of the field, in degrees.
+        Return the Right Ascension of the center of the field, in degrees.
 
         Returns
         -------
@@ -1502,8 +1537,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def raw_bg(self):
         """
-        Returns the BG percentile band of the observation.  BG refers to the
-        sky/background brightness.
+        Return the BG percentile band of the observation.
+
+        BG refers to the sky/background brightness.
 
         Returns
         -------
@@ -1515,8 +1551,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def raw_cc(self):
         """
-        Returns the CC percentile band of the observation.  CC refers to the
-        cloud coverage.
+        Return the CC percentile band of the observation.
+
+        CC refers to the cloud coverage.
 
         Returns
         -------
@@ -1528,8 +1565,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def raw_iq(self):
         """
-        Returns the IQ percentile band of the observation.  IQ refers to the
-        image quality or seeing.
+        Return the IQ percentile band of the observation.
+
+        IQ refers to the image quality or seeing.
 
         Returns
         -------
@@ -1541,8 +1579,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def raw_wv(self):
         """
-        Returns the WV percentile band of the observation.  WV refers to the
-        water vapor.
+        Return the WV percentile band of the observation.
+
+        WV refers to the water vapor.
 
         Returns
         -------
@@ -1554,7 +1593,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def read_mode(self):
         """
-        Returns the readout mode used for the observation
+        Return the readout mode used for the observation.
 
         Returns
         -------
@@ -1566,8 +1605,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the read noise in electrons for each extension. A list is
-        returned unless called on a single-extension slice, when a float
+        Return the read noise in electrons for each extension.
+
+        A list is returned unless called on a single-extension slice, when a
+        float is returned.
 
         Returns
         -------
@@ -1579,7 +1620,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def read_speed_setting(self):
         """
-        Returns the read speed setting for the observation
+        Return the read speed setting for the observation.
 
         Returns
         -------
@@ -1591,8 +1632,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def requested_bg(self):
         """
-        Returns the BG percentile band requested by the PI.  BG refers to the
-        sky/background brightness.
+        Return the BG percentile band requested by the PI.
+
+        BG refers to the sky/background brightness.
 
         Returns
         -------
@@ -1604,8 +1646,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def requested_cc(self):
         """
-        Returns the CC percentile band requested by the PI.  CC refers to the
-        cloud coverage.
+        Return the CC percentile band requested by the PI.
+
+        CC refers to the cloud coverage.
 
         Returns
         -------
@@ -1617,8 +1660,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def requested_iq(self):
         """
-        Returns the IQ percentile band requested by the PI.  IQ refers to the
-        image quality or seeing.
+        Return the IQ percentile band requested by the PI.
+
+        IQ refers to the image quality or seeing.
 
         Returns
         -------
@@ -1630,8 +1674,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def requested_wv(self):
         """
-        Returns the WV percentile band requested by the PI.  WV refers to the
-        water vapor.
+        Return the WV percentile band requested by the PI.
+
+        WV refers to the water vapor.
 
         Returns
         -------
@@ -1643,7 +1688,8 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level of the data, in the units of the data.
+        Return the saturation level of the data, in the units of the data.
+
         This is expected to be overridden by the individual instruments,
         so at the Gemini level it returns the values of the SATLEVEL keyword
         (or None).
@@ -1658,7 +1704,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def slit(self):
         """
-        Returns the name of the entrance slit used for the observation
+        Return the name of the entrance slit used for the observation.
 
         Returns
         -------
@@ -1670,7 +1716,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------
@@ -1684,10 +1730,11 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def target_ra(self, offset=False, pm=True, icrs=False):
         """
-        Returns the Right Ascension of the target in degrees. Optionally, the
-        telescope offsets can be applied.  The proper motion can also be
-        applied if requested.  Finally, the RA can be converted to ICRS
-        coordinates.
+        Return the Right Ascension of the target in degrees.
+
+        Optionally, the telescope offsets can be applied.  The proper motion
+        can also be applied if requested.  Finally, the RA can be converted to
+        ICRS coordinates.
 
         Parameters
         ----------
@@ -1703,7 +1750,6 @@ class AstroDataGemini(AstroData):
         float
             Right Ascension of the target in degrees.
         """
-
         try:
             ra = self._ra()
         except KeyError:
@@ -1755,10 +1801,11 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def target_dec(self, offset=False, pm=True, icrs=False):
         """
-        Returns the Declination of the target in degrees. Optionally, the
-        telescope offsets can be applied.  The proper motion can also be
-        applied if requested.  Finally, the RA can be converted to ICRS
-        coordinates.
+        Return the Declination of the target in degrees.
+
+        Optionally, the telescope offsets can be applied.  The proper motion
+        can also be applied if requested.  Finally, the RA can be converted to
+        ICRS coordinates.
 
         Parameters
         ----------
@@ -1821,7 +1868,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def telescope_x_offset(self):
         """
-        Returns the telescope offset along the telescope x-axis, in arcseconds.
+        Return the telescope offset along the telescope x-axis, in arcseconds.
 
         Returns
         -------
@@ -1833,7 +1880,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def telescope_y_offset(self):
         """
-        Returns the telescope offset along the telescope y-axis, in arcseconds.
+        Return the telescope offset along the telescope y-axis, in arcseconds.
 
         Returns
         -------
@@ -1845,7 +1892,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def ut_date(self):
         """
-        Returns the UT date of the observation as a datetime object.
+        Return the UT date of the observation as a datetime object.
 
         Returns
         -------
@@ -1860,8 +1907,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def ut_datetime(self, strict=False, dateonly=False, timeonly=False):
         """
-        Returns the UT date and/or time of the observation as a datetime
-        or date or time object.
+        Return the UT date and/or time of the observation.
+
+        The result is a datetime, date or time object.
 
         Parameters
         ----------
@@ -1997,7 +2045,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def ut_time(self):
         """
-        Returns the UT time of the observation as a datetime object.
+        Return the UT time of the observation as a datetime object.
 
         Returns
         -------
@@ -2013,7 +2061,8 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def wavefront_sensor(self):
         """
-        Returns the name of the wavefront sensor used for the observation.
+        Return the name of the wavefront sensor used for the observation.
+
         If more than one is being used, the names will be joined with '&'.
 
         Returns
@@ -2038,9 +2087,10 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def wavelength_band(self):
         """
-        Returns the name of the bandpass of the observation.  This is just
-        to broadly know what type of data one is working with, eg. K band,
-        H band, B band, etc.
+        Return the name of the bandpass of the observation.
+
+        This is just to broadly know what type of data one is working with, eg.
+        K band, H band, B band, etc.
 
         Returns
         -------
@@ -2062,8 +2112,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def wcs_ra(self):
         """
-        Returns the Right Ascension of the center of the field based on the
-        WCS rather than the RA header keyword.
+        Return the Right Ascension of the field center, based on the WCS.
+
+        This is used rather than the RA header keyword.
 
         Returns
         -------
@@ -2079,8 +2130,9 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def wcs_dec(self):
         """
-        Returns the Declination of the center of the field based on the
-        WCS rather than the DEC header keyword.
+        Return the Declination of the field center, based on the WCS.
+
+        This is used rather than the DEC header keyword.
 
         Returns
         -------
@@ -2096,7 +2148,7 @@ class AstroDataGemini(AstroData):
     @astro_data_descriptor
     def well_depth_setting(self):
         """
-        Returns a string describing the well-depth setting of the instrument
+        Return a string describing the well-depth setting of the instrument.
 
         Returns
         -------
@@ -2107,8 +2159,10 @@ class AstroDataGemini(AstroData):
 
     def _get_wcs_coords(self):
         """
-        Returns the RA and dec of the location around which the celestial
-        sphere is being projected (CRVALi in a FITS representation)
+        Return the RA and dec of the projection center.
+
+        This is the location around which the celestial sphere is being
+        projected (CRVALi in a FITS representation).
 
         Returns
         -------
@@ -2138,8 +2192,9 @@ class AstroDataGemini(AstroData):
     # TODO: Move to AstroDataFITS?
     def _get_wcs_pixel_scale(self, mean=True):
         """
-        Returns a list of pixel scales (in arcseconds), derived from the
-        CD matrices of the image extensions
+        Return a list of pixel scales, in arcseconds.
+
+        The scales are derived from the CD matrices of the image extensions.
 
         Parameters
         ----------
@@ -2152,7 +2207,7 @@ class AstroDataGemini(AstroData):
             List of pixel scales, one per extension
         """
         def empirical_pixel_scale(ext):
-            """Brute-force calculation of pixel scale"""
+            """Brute-force calculation of pixel scale."""
             if ext.wcs is None:
                 return None
             yc, xc = [0.5 * l for l in ext.shape]
@@ -2196,7 +2251,7 @@ class AstroDataGemini(AstroData):
 
     def _grating(self):
         """
-        Returns the grating used for the observation
+        Return the grating used for the observation.
 
         Returns
         -------
@@ -2207,7 +2262,7 @@ class AstroDataGemini(AstroData):
 
     def _grating_order(self):
         """
-        Returns the grating order for the observation
+        Return the grating order for the observation.
 
         Returns
         -------
@@ -2226,7 +2281,7 @@ class AstroDataGemini(AstroData):
 
     def _prism(self):
         """
-        Returns the name of the prism used for the observation
+        Return the name of the prism used for the observation.
 
         Returns
         -------
@@ -2237,8 +2292,7 @@ class AstroDataGemini(AstroData):
 
     def _raw_to_percentile(self, descriptor, raw_value):
         """
-        Parses the Gemini constraint bands, and returns the percentile
-        part as an integer.
+        Return the percentile part of a Gemini constraint band as an integer.
 
         Parameters
         ----------
@@ -2258,8 +2312,9 @@ class AstroDataGemini(AstroData):
 
     def actual_central_wavelength(self, *args, **kwargs):
         """
-        Return the true central wavelength (in the middle of the detector),
-        to avoid messing the descriptor around. We probably want to revisit
+        Return the true central wavelength, in the middle of the detector.
+
+        This avoids messing the descriptor around. We probably want to revisit
         what "central wavelength" means, but we don't want to upset the
         archive.
 

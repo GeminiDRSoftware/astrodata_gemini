@@ -1,20 +1,13 @@
-#
-#                                                             Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                               texes.adclass.py
-# ------------------------------------------------------------------------------
-from astrodata import astro_data_tag
-from astrodata import astro_data_descriptor
-from astrodata import TagSet
+"""Tags and descriptors for TEXES data."""
+
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from ..gemini import AstroDataGemini
 
-# ------------------------------------------------------------------------------
-
 
 class AstroDataTexes(AstroDataGemini):
+    """AstroData class for TEXES data."""
+
     __keyword_dict = dict(
         ra='RA',
         dec='DEC',
@@ -26,6 +19,7 @@ class AstroDataTexes(AstroDataGemini):
 
     @classmethod
     def read(cls, source):
+        """Read the source, renaming the extensions as AstroData expects."""
         def texes_parser(hdu):
             xnam, xver = hdu.header.get('EXTNAME'), hdu.header.get('EXTVER')
             if 'RAWFRAME' in [xnam] and xver:
@@ -72,22 +66,26 @@ class AstroDataTexes(AstroDataGemini):
     @astro_data_descriptor
     def exposure_time(self):
         """
+        Return the exposure time.
+
         Returns
         -------
-        exposure_time: <float>
+        float
             Exposure time.
-
         """
         return self.phu.get(self._keyword_for('exposure_time'))
 
     @astro_data_descriptor
     def observation_type(self):
+        """Return the observation type, in upper case."""
         return self.phu.get('OBSTYPE').upper()
 
     @astro_data_descriptor
     def ra(self):
+        """Return the Right Ascension of the field center, in degrees."""
         return self._ra()
 
     @astro_data_descriptor
     def dec(self):
+        """Return the Declination of the field center, in degrees."""
         return self._dec()

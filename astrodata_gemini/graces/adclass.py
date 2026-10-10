@@ -1,8 +1,18 @@
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
-from ..gemini import AstroDataGemini
+"""Tags and descriptors for GRACES data."""
+
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
+from ..gemini import AstroDataGemini
+
 
 class AstroDataGraces(AstroDataGemini):
+    """AstroData class for GRACES data."""
 
     __keyword_dict = dict(detector = 'DETECTOR',
                           )
@@ -38,7 +48,7 @@ class AstroDataGraces(AstroDataGemini):
     @gmu.return_requested_units()
     def central_wavelength(self):
         """
-        Returns the central wavelength
+        Return the central wavelength.
 
         Returns
         -------
@@ -50,10 +60,11 @@ class AstroDataGraces(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of field in degrees.  Since a
-        fiber is used it coincides with the position of the target. For code
-        re-used, use target_dec() if you really want the position of the target
-        rather than the center of the field.
+        Return the Declination of the center of field in degrees.
+
+        Since a fiber is used it coincides with the position of the target. For
+        code re-used, use target_dec() if you really want the position of the
+        target rather than the center of the field.
 
         Returns
         -------
@@ -64,13 +75,15 @@ class AstroDataGraces(AstroDataGemini):
 
     @astro_data_descriptor
     def detector(self):
+        """Return the name of the detector."""
         return self.phu.get(self._keyword_for('detector'))
 
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser.  For GRACES, this is always
-        "GRACES".
+        Return the name of the disperser.
+
+        For GRACES, this is always "GRACES".
 
         Parameters
         ----------
@@ -89,25 +102,22 @@ class AstroDataGraces(AstroDataGemini):
 
     @astro_data_descriptor
     def position_angle(self):
-        """
-        GRACES does not have a position angle, so this returns None.
-        """
+        """GRACES does not have a position angle, so this returns None."""
         return None
 
     @astro_data_descriptor
     def slit_width(self):
-        """
-        Return None. There are no slits in GRACES.
-        """
+        """Return None. There are no slits in GRACES."""
         return None
 
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of field in degrees.  Since a
-        fiber is used it coincides with the position of the target. For code
-        re-used, use target_ra() if you really want the position of the target
-        rather than the center of the field.
+        Return the Right Ascension of the center of field in degrees.
+
+        Since a fiber is used it coincides with the position of the target. For
+        code re-used, use target_ra() if you really want the position of the
+        target rather than the center of the field.
 
         Returns
         -------

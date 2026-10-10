@@ -1,20 +1,18 @@
-#
-#                                                            Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                       hokupaa_QUIRC.adclass.py
-# ------------------------------------------------------------------------------
+"""Tags and descriptors for Hokupa'a+QUIRC data."""
 
-from astrodata import astro_data_tag
-from astrodata import astro_data_descriptor
-from astrodata import returns_list
-from astrodata import TagSet
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 
 from ..gemini import AstroDataGemini
 
-# ------------------------------------------------------------------------------
+
 class AstroDataHokupaaQUIRC(AstroDataGemini):
+    """AstroData class for Hokupa'a+QUIRC data."""
+
     __keyword_dict = dict(
         airmass = 'AMEND',
         wavelength_band = 'FILTER',
@@ -45,13 +43,15 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
 
     @astro_data_descriptor
     def airmass(self):
+        """Return the airmass of the observation."""
         return self.phu.get(self._keyword_for('airmass'))
 
     @astro_data_descriptor
     def detector_name(self, pretty=False):
         """
-        Returns the name of the detector. For HOKUPAA+QUIRC, this is always
-        'QUIRC'
+        Return the name of the detector.
+
+        For HOKUPAA+QUIRC, this is always 'QUIRC'.
 
         Returns
         -------
@@ -64,7 +64,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, pretty=False):
         """
-        This descriptor is used to display 'WaveBand' in the archive.
+        Return the wavelength band, to display 'WaveBand' in the archive.
 
         Parameters
         ----------
@@ -82,7 +82,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     @astro_data_descriptor
     def instrument(self, generic=False):
         """
-        Returns the name of the instrument making the observation
+        Return the name of the instrument making the observation.
 
         Parameters
         ----------
@@ -101,7 +101,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     @astro_data_descriptor
     def observation_type(self):
         """
-        Returns 'type' the observation.
+        Return 'type' the observation.
 
         Returns
         -------
@@ -114,7 +114,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the name of the 
+        Return the name of the.
 
         Returns
         -------
@@ -127,7 +127,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the name of the 
+        Return the name of the.
 
         Returns
         -------
@@ -140,7 +140,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     @astro_data_descriptor
     def wavelength_band(self):
         """
-        Returns the name of the bandpass of the observation.
+        Return the name of the bandpass of the observation.
 
         Returns
         -------
@@ -152,8 +152,10 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
 
     @astro_data_descriptor
     def target_ra(self):
+        """Return the Right Ascension of the target, from the WCS."""
         return self.wcs_ra()
 
     @astro_data_descriptor
     def target_dec(self):
+        """Return the Declination of the target, from the WCS."""
         return self.wcs_dec()

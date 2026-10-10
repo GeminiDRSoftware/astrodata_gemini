@@ -1,8 +1,18 @@
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
-from ..gemini import AstroDataGemini
+"""Tags and descriptors for T-ReCS data."""
+
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
+from ..gemini import AstroDataGemini
+
 
 class AstroDataTrecs(AstroDataGemini):
+    """AstroData class for T-ReCS data."""
 
     __keyword_dict = dict(camera = 'OBSMODE',
                           disperser = 'GRATING',
@@ -31,7 +41,7 @@ class AstroDataTrecs(AstroDataGemini):
     @gmu.return_requested_units(input_units="um")
     def central_wavelength(self):
         """
-        Returns the central wavelength in microns
+        Return the central wavelength in microns.
 
         Returns
         -------
@@ -54,8 +64,9 @@ class AstroDataTrecs(AstroDataGemini):
     @astro_data_descriptor
     def detector_x_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive x-direction of the detector
+        Return the offset along the positive x-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -70,8 +81,9 @@ class AstroDataTrecs(AstroDataGemini):
     @astro_data_descriptor
     def detector_y_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive y-direction of the detector
+        Return the offset along the positive y-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -87,9 +99,11 @@ class AstroDataTrecs(AstroDataGemini):
     @gmu.return_requested_units(input_units="um")
     def dispersion(self):
         """
-        Returns the dispersion in microns per pixel as a list (one value per
-        extension) or a float if used on a single-extension slice.  It is
-        possible to control the units of wavelength using the input arguments.
+        Return the dispersion in microns per pixel.
+
+        A list (one value per extension) is returned, or a float if used on a
+        single-extension slice. It is possible to control the units of
+        wavelength using the input arguments.
 
         Returns
         -------
@@ -111,7 +125,7 @@ class AstroDataTrecs(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain (electrons/ADU) for each extension
+        Return the gain (electrons/ADU) for each extension.
 
         Returns
         -------
@@ -127,7 +141,7 @@ class AstroDataTrecs(AstroDataGemini):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Returns the image scale in arcseconds per pixel
+        Return the image scale in arcseconds per pixel.
 
         Returns
         -------
@@ -139,7 +153,7 @@ class AstroDataTrecs(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------

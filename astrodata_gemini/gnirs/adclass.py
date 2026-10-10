@@ -1,20 +1,30 @@
+"""Tags and descriptors for GNIRS data."""
+
 import math
 import re
 
-from astrodata import astro_data_tag, astro_data_descriptor, TagSet, returns_list
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 
-from ..gemini import AstroDataGemini, use_keyword_if_prepared
-from ..common import build_group_id
-
-from .lookup import detector_properties, nominal_zeropoints, read_modes
-from .lookup import dispersion_by_config, xd_orders
-from .lookup import pixel_scale
-
-# NOTE: Temporary functions for test. gempy imports astrodata and
-#       won't work with this implementation
 from .. import gmu
+from ..common import build_group_id
+from ..gemini import AstroDataGemini, use_keyword_if_prepared
+from .lookup import (
+    detector_properties,
+    dispersion_by_config,
+    nominal_zeropoints,
+    pixel_scale,
+    read_modes,
+    xd_orders,
+)
+
 
 class AstroDataGnirs(AstroDataGemini):
+    """AstroData class for GNIRS data."""
 
     __keyword_dict = dict(central_wavelength='GRATWAVE',
                           array_name='ARRAYID',
@@ -88,7 +98,7 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def array_name(self):
         """
-        Returns the name of each array
+        Return the name of each array.
 
         Returns
         -------
@@ -105,16 +115,17 @@ class AstroDataGnirs(AstroDataGemini):
     @gmu.return_requested_units()
     def dispersion(self):
         """
-        Returns the dispersion in nm per pixel as a list (one value per
-        extension) or a float if used on a single-extension slice. It is
-        possible to control the units of wavelength using the input arguments.
+        Return the dispersion in nm per pixel.
+
+        A list (one value per extension) is returned, or a float if used on a
+        single-extension slice. It is possible to control the units of
+        wavelength using the input arguments.
 
         Returns
         -------
         list/float
             The dispersion(s) in nm/pixel
         """
-
         grating = self._grating(pretty=True, stripID=True)
 
         if 'Short' in self.camera():
@@ -141,18 +152,20 @@ class AstroDataGnirs(AstroDataGemini):
     @returns_list
     @astro_data_descriptor
     def dispersion_axis(self):
+        """Return the dispersion axis, always 2 for GNIRS."""
         # TODO: Document and make sure the axis is the proper one
         return 2
 
     @astro_data_descriptor
     def array_section(self, pretty=False):
         """
-        Returns the section covered by the array(s) relative to the detector
-        frame.  For example, this can be the position of multiple amps read
-        within a CCD.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the array(s) in the detector frame.
+
+        For example, this can be the position of multiple amps read within a
+        CCD.  If pretty is False, a tuple of 0-based coordinates is returned
+        with format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -177,11 +190,12 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def data_section(self, pretty=False):
         """
-        Returns the rectangular section that includes the pixels that would be
-        exposed to light.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the rectangular section of pixels exposed to light.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -206,11 +220,12 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def detector_section(self, pretty=False):
         """
-        Returns the section covered by the detector relative to the whole
-        mosaic of detectors.  If pretty is False, a tuple of 0-based coordinates
-        is returned with format (x1, x2, y1, y2).  If pretty is True, a keyword
-        value is returned without parsing as a string.  In this format, the
-        coordinates are generally 1-based.
+        Return the section covered by the detector relative to the mosaic.
+
+        If pretty is False, a tuple of 0-based coordinates is returned with
+        format (x1, x2, y1, y2).  If pretty is True, a keyword value is
+        returned without parsing as a string.  In this format, the coordinates
+        are generally 1-based.
 
         One tuple or string is return per extension/array, in a list. If the
         method is called on a single slice, the section is returned as a tuple
@@ -239,8 +254,9 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def detector_x_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive x-direction of the detector
+        Return the offset along the positive x-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -257,8 +273,9 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def detector_y_offset(self):
         """
-        Returns the offset from the reference position in pixels along
-        the positive y-direction of the detector
+        Return the offset along the positive y-direction of the detector.
+
+        The offset is measured from the reference position, in pixels.
 
         Returns
         -------
@@ -273,10 +290,12 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
         """
-        Returns the name of the disperser group as the name of the grating
-        and of the prims joined with '&', unless the acquisition mirror is
-        in the beam, then returns the string "MIRROR". The component ID can
-        be removed with either 'stripID' or 'pretty' set to True.
+        Return the name of the disperser group.
+
+        The name is the grating and the prism names joined with '&', unless the
+        acquisition mirror is in the beam, in which case the string "MIRROR" is
+        returned. The component ID can be removed with either 'stripID' or
+        'pretty' set to True.
 
         Parameters
         ----------
@@ -307,10 +326,11 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def focal_plane_mask(self, stripID=False, pretty=False):
         """
-        Returns the name of the focal plane mask group as the slit and the
-        decker joined with '&', or as a shorter (pretty) version.
-        The component ID can be removed with either 'stripID' or 'pretty'
-        set to True.
+        Return the name of the focal plane mask group.
+
+        The name is the slit and the decker joined with '&', or a shorter
+        (pretty) version. The component ID can be removed with either 'stripID'
+        or 'pretty' set to True.
 
         Parameters
         ----------
@@ -356,8 +376,10 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain used for the observation.  This is read from a
-        lookup table using the read_mode and the well_depth.
+        Return the gain used for the observation.
+
+        This is read from a lookup table using the read_mode and the
+        well_depth.
 
         Returns
         -------
@@ -379,9 +401,10 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument, mode of observation, and data type will have its own rules.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument, mode of
+        observation, and data type will have its own rules.
 
         Returns
         -------
@@ -410,7 +433,8 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
         """
-        Returns the nominal photometric zeropoint for the observation.
+        Return the nominal photometric zeropoint for the observation.
+
         This value is obtained from a lookup table based on gain, the
         camera used, and the filter used.
 
@@ -440,9 +464,11 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the array becomes non-linear, in the same
-        units as of the data. A lookup table is used and the value
-        is based on read_mode, well_depth_setting, and saturation_level.
+        Return the level at which the array becomes non-linear.
+
+        The value is in the same units as the data. A lookup table is used and
+        the value is based on read_mode, well_depth_setting, and
+        saturation_level.
 
         Returns
         -------
@@ -476,9 +502,10 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Returns the pixel scale in arc seconds. GNIRS pixel scale is determined
-        soley by the camera used, long or short, regardless of color band
-        (red|blue).
+        Return the pixel scale in arc seconds.
+
+        GNIRS pixel scale is determined soley by the camera used, long or
+        short, regardless of color band (red|blue).
 
         GNIRS instrument page,
 
@@ -510,7 +537,7 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def position_angle(self):
         """
-        Returns the position angle of the instruement
+        Return the position angle of the instruement.
 
         Returns
         -------
@@ -522,7 +549,8 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of the field in degrees.
+        Return the Right Ascension of the center of the field in degrees.
+
         Uses the RA derived from the WCS, unless it is wildly different from
         the target RA stored in the headers (with telescope offset and in
         ICRS).  When that's the case the target RA is used.
@@ -561,7 +589,8 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of the field in degrees.
+        Return the Declination of the center of the field in degrees.
+
         Uses the Dec derived from the WCS, unless it is wildly different from
         the target Dec stored in the headers (with telescope offset and in
         ICRS).  When that's the case the target Dec is used.
@@ -598,9 +627,10 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def read_mode(self):
         """
-        Returns the read mode for the observation.  Uses a lookup table
-        indexed on the number of non-destructive read pairs (LNRS) and
-        the number of digital averages (NDAVGS)
+        Return the read mode for the observation.
+
+        Uses a lookup table indexed on the number of non-destructive read
+        pairs (LNRS) and the number of digital averages (NDAVGS).
 
         Returns
         -------
@@ -618,7 +648,8 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the detector read noise, in electrons.
+        Return the detector read noise, in electrons.
+
         A lookup table indexed on read_mode and well_depth_setting is
         used to retrieve the read noise.
 
@@ -650,10 +681,12 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level or the observation, in the units of the
-        data. A lookup table indexed on read_mode and well_depth_setting is used
-        to retrieve the saturation level for raw data, and it is expected that
-        this will be inserted into the headers as processing continues.
+        Return the saturation level of the observation.
+
+        The value is in the same units as the data. A lookup table indexed on
+        read_mode and well_depth_setting is used to retrieve the saturation
+        level for raw data, and it is expected that this will be inserted into
+        the headers as processing continues.
 
         Returns
         -------
@@ -685,8 +718,10 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def slit(self, stripID=False, pretty=False):
         """
-        Returns the name of the slit mask.  The component ID can be removed
-        with either 'stripID' or 'pretty' set to True.
+        Return the name of the slit mask.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------
@@ -712,7 +747,7 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Returns the width of the slit in arcseconds
+        Return the width of the slit in arcseconds.
 
         Returns
         -------
@@ -727,7 +762,8 @@ class AstroDataGnirs(AstroDataGemini):
     @astro_data_descriptor
     def well_depth_setting(self):
         """
-        Returns the well depth setting used for the observation.
+        Return the well depth setting used for the observation.
+
         For GNIRS, this is either 'Shallow' or 'Deep'.
 
         Returns
@@ -750,19 +786,20 @@ class AstroDataGnirs(AstroDataGemini):
 
     def prism_motor_steps(self):
         """
-        Returns the PRSM_ENG header value, which is the step count of the prism
-        mechanism. This is needed to associate HR-IFR (at least) flats correctly
-        following discovery in Apr-2024 that the prism mechanism does not
-        position with sufficient reproducability for the HR-IFU. Thus, sci-ops
-        will tweak the step count on the fly at the start of a sequence, taking
-        "dummy" flats to do so. The correct flat to use must have the same
-        prism_eng value as the science.
+        Return the PRSM_ENG header value.
+
+        This is the step count of the prism mechanism. This is needed to
+        associate HR-IFR (at least) flats correctly following discovery in
+        Apr-2024 that the prism mechanism does not position with sufficient
+        reproducibility for the HR-IFU. Thus, sci-ops will tweak the step count
+        on the fly at the start of a sequence, taking "dummy" flats to do so.
+        The correct flat to use must have the same prism_eng value as the
+        science.
 
         Returns
         -------
         PRSM_ENG value from the PHU as an int, or None if unable.
         """
-
         try:
             return int(self.phu.get('PRSM_ENG'))
         except (ValueError, TypeError):
@@ -773,7 +810,8 @@ class AstroDataGnirs(AstroDataGemini):
     # Private methods
     def _grating(self, stripID=False, pretty=False):
         """
-        Returns the name of the grating used for the observation.
+        Return the name of the grating used for the observation.
+
         The component ID can be removed with either 'stripID' or 'pretty'
         set to True.
 
@@ -803,8 +841,10 @@ class AstroDataGnirs(AstroDataGemini):
 
     def _prism(self, stripID=False, pretty=False):
         """
-        Returns the name of the prism.  The component ID can be removed
-        with either 'stripID' or 'pretty' set to True.
+        Return the name of the prism.
+
+        The component ID can be removed with either 'stripID' or 'pretty' set
+        to True.
 
         Parameters
         ----------

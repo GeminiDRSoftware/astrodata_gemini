@@ -1,20 +1,18 @@
-#
-#                                                            Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                             cirpass.adclass.py
-# ------------------------------------------------------------------------------
+"""Tags and descriptors for CIRPASS data."""
 
-from astrodata import astro_data_tag
-from astrodata import astro_data_descriptor
-from astrodata import returns_list
-from astrodata import TagSet
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 
 from ..gemini import AstroDataGemini
 
-# ------------------------------------------------------------------------------
+
 class AstroDataCirpass(AstroDataGemini):
+    """AstroData class for CIRPASS data."""
+
     __keyword_dict = dict(
         ra = 'TEL_RA',
         dec = 'TEL_DEC',
@@ -49,7 +47,7 @@ class AstroDataCirpass(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the name of the 
+        Return the name of the.
 
         Returns
         -------
@@ -62,7 +60,7 @@ class AstroDataCirpass(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the name of the 
+        Return the name of the.
 
         Returns
         -------
@@ -74,8 +72,10 @@ class AstroDataCirpass(AstroDataGemini):
 
     @astro_data_descriptor
     def target_ra(self):
+        """Return the Right Ascension of the target, in degrees."""
         return self._ra()
 
     @astro_data_descriptor
     def target_dec(self):
+        """Return the Declination of the target, in degrees."""
         return self._dec()

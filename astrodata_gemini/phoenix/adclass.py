@@ -1,24 +1,24 @@
-#
-#                                                            Gemini Observatory
-#
-#                                                                        Dragons
-#                                                             astrodata_gemini
-#                                                             phoenix.adclass.py
-# ------------------------------------------------------------------------------
-import re
-import datetime
-import dateutil
+"""Tags and descriptors for Phoenix data."""
 
+import datetime
+import re
+
+import dateutil
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 from astropy import units as u
 from astropy.coordinates import Angle
 
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
+from .. import gmu
 from ..gemini import AstroDataGemini
 
-from .. import gmu
 
-# ------------------------------------------------------------------------------
 class AstroDataPhoenix(AstroDataGemini):
+    """AstroData class for Phoenix data."""
 
     __keyword_dict = dict(focal_plane_mask = 'SLIT_POS')
 
@@ -58,7 +58,7 @@ class AstroDataPhoenix(AstroDataGemini):
     @astro_data_descriptor
     def dec(self):
         """
-        Returns the Declination of the center of the field, in degrees.
+        Return the Declination of the center of the field, in degrees.
 
         Returns
         -------
@@ -70,12 +70,13 @@ class AstroDataPhoenix(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         """
-        Returns the name of the filter(s) used.  The component ID can be
-        removed with either 'stripID' or 'pretty'.  If a combination of filters
-        is used, the filter names will be join into a unique string with '&' as
-        separator.  If 'pretty' is True, filter positions such as 'Open',
-        'Dark', 'blank', and others are removed leaving only the relevant
-        filters in the string.
+        Return the name of the filter(s) used.
+
+        The component ID can be removed with either 'stripID' or 'pretty'.  If
+        a combination of filters is used, the filter names will be join into a
+        unique string with '&' as separator.  If 'pretty' is True, filter
+        positions such as 'Open', 'Dark', 'blank', and others are removed
+        leaving only the relevant filters in the string.
 
         Parameters
         ----------
@@ -95,7 +96,7 @@ class AstroDataPhoenix(AstroDataGemini):
     @astro_data_descriptor
     def ra(self):
         """
-        Returns the Right Ascension of the center of the field, in degrees.
+        Return the Right Ascension of the center of the field, in degrees.
 
         Returns
         -------
@@ -106,6 +107,13 @@ class AstroDataPhoenix(AstroDataGemini):
 
     @astro_data_descriptor
     def ut_datetime(self, strict=False, dateonly=False, timeonly=False):
+        """
+        Return the UT date and/or time of the observation.
+
+        If the parent class cannot determine it, the UT and UTDATE headers of
+        the first extension are used.  What gets returned depends on what is
+        availalbe in the headers.
+        """
         utd = super().ut_datetime(strict=strict,
                                   dateonly=dateonly,
                                   timeonly=timeonly)

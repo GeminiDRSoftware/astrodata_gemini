@@ -3,26 +3,27 @@
 # pylint: disable=no-self-use, inconsistent-return-statements
 
 """
-This module contains the AstroDataGhost class, used for adding tags
-and descriptors to GHOST data.
+AstroData class for GHOST data.
+
+This module contains the AstroDataGhost class, used for adding tags and
+descriptors to GHOST data.
 """
 
-from astrodata import (
-    astro_data_tag,
-    TagSet,
-    astro_data_descriptor,
-)
-from astrodata_gemini.gemini import AstroDataGemini
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
+
 from astrodata_gemini.common import build_group_id
+from astrodata_gemini.gemini import AstroDataGemini
 
 from .. import gmu
 
 
 def return_dict_for_bundle(desc_fn):
     """
-    A decorator that will return a dict with keys "blue" and "red" and values
-    equal to the descriptor return if it was sent the split files. A check is
-    made that all the returns are equal, and None is returned otherwise.
+    Decorate a descriptor to return a dict of the blue and red values.
+
+    The dict has keys "blue" and "red" and values equal to the descriptor
+    return if it was sent the split files. A check is made that all the returns
+    are equal, and None is returned otherwise.
 
     This works by splitting the bundle and evaluating the descriptor on all of
     the blue and then red arms in turn. It therefore works regardless of whether
@@ -58,8 +59,10 @@ def return_dict_for_bundle(desc_fn):
 
 def use_nascent_phu_for_bundle(desc_fn):
     """
-    A decorator for bundles (where the PHU is minimal) that will instead
-    provide the first nascent PHU (of a red/blue arm) instead
+    Decorate a descriptor to use the first nascent PHU for bundles.
+
+    For bundles, where the PHU is minimal, the first nascent PHU (of a
+    red/blue arm) is provided instead.
     """
     def wrapper(self, *args, **kwargs):
         if 'BUNDLE' in self.tags:
@@ -72,9 +75,7 @@ def use_nascent_phu_for_bundle(desc_fn):
 
 
 class AstroDataGhost(AstroDataGemini):
-    """
-    Class for adding tags and descriptors to GHOST data.
-    """
+    """Class for adding tags and descriptors to GHOST data."""
 
     __keyword_dict = dict(array_section = 'CCDSEC',
                           array_name = 'AMPNAME',
@@ -85,6 +86,7 @@ class AstroDataGhost(AstroDataGemini):
                           )
 
     def __iter__(self):
+        """Yield each extension as a slice, or self if already a single."""
         if self.is_single:
             yield self
         else:
@@ -93,11 +95,12 @@ class AstroDataGhost(AstroDataGemini):
 
     def __getitem__(self, idx):
         """
-        Override default slicing method for bundles for two reasons:
-        1) Prevent creation of a new AD from non-contiguous extensions, as
-           this doesn't make sense.
-        2) Prevent creation of a new "Frankenstein" AD with data from more
-           than one camera, as only original bundles should have this.
+        Override the default slicing method for bundles.
+
+        There are two reasons: 1) Prevent creation of a new AD from
+        non-contiguous extensions, as this doesn't make sense. 2) Prevent
+        creation of a new "Frankenstein" AD with data from more than one
+        camera, as only original bundles should have this.
         """
         obj = super().__getitem__(idx)
         if 'BUNDLE' in self.tags:
@@ -135,7 +138,7 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def data_label(self):
         """
-        Returns the data label of an observation.
+        Return the data label of an observation.
 
         Returns
         -------
@@ -160,74 +163,56 @@ class AstroDataGhost(AstroDataGemini):
 
     @astro_data_tag
     def _tag_instrument(self):
-        """
-        Define the minimal tag set for GHOST data.
-        """
+        """Define the minimal tag set for GHOST data."""
         return TagSet(['GHOST'])
 
     @astro_data_tag
     def _tag_bundle(self):
-        """
-        Define the 'bundled data' tag set for GHOST data.
-        """
+        """Define the 'bundled data' tag set for GHOST data."""
         # Gets blocked by tags created by split files
         return TagSet(['BUNDLE'])
 
     @astro_data_tag
     def _tag_bias(self):
-        """
-        Define the 'bias data' tag set for GHOST data.
-        """
+        """Define the 'bias data' tag set for GHOST data."""
         if self.phu.get('OBSTYPE') == 'BIAS':
             return TagSet(['CAL', 'BIAS'], blocks=['IMAGE', 'SPECT'])
 
     @astro_data_tag
     def _tag_dark(self):
-        """
-        Define the 'dark data' tag set for GHOST data.
-        """
+        """Define the 'dark data' tag set for GHOST data."""
         if self.phu.get('OBSTYPE') == 'DARK':
             return TagSet(['CAL', 'DARK'], blocks=['IMAGE', 'SPECT'])
 
     @astro_data_tag
     def _tag_arc(self):
-        """
-        Define the 'arc data' tag set for GHOST data.
-        """
+        """Define the 'arc data' tag set for GHOST data."""
         if self.phu.get('OBSTYPE') == 'ARC':
             return TagSet(['CAL', 'ARC'])
 
     @astro_data_tag
     def _tag_flat(self):
-        """
-        Define the 'flat data' tag set for GHOST data.
-        """
+        """Define the 'flat data' tag set for GHOST data."""
         if self.phu.get('OBSTYPE') == 'FLAT':
             return TagSet(['CAL', 'FLAT'])
 
     @astro_data_tag
     def _tag_slitflat(self):
-        """
-        Define the 'slitflat data' tag set for GHOST data.
-        """
+        """Define the 'slitflat data' tag set for GHOST data."""
         if (self.phu.get('OBSTYPE') == 'FLAT' and
             self.phu.get('CAMERA', '').lower().startswith('slit')):
             return TagSet(['CAL', 'SLITFLAT'])
 
     @astro_data_tag
     def _tag_sky(self):
-        """
-        Define the 'flat data' tag set for GHOST data.
-        """
+        """Define the 'flat data' tag set for GHOST data."""
         if self.phu.get('OBSTYPE') == 'SKY':
             return TagSet(['SKY'])
 
     # MCW 191107 - had to add SLIT back in to make cal system work
     @astro_data_tag
     def _tag_slitv(self):
-        """
-        Define the 'slit data' tag set for GHOST data.
-        """
+        """Define the 'slit data' tag set for GHOST data."""
         if self.phu.get('CAMERA', '').lower().startswith('slit'):
             return TagSet(['SLITV', 'SLIT'],
                           blocks=['SPECT', 'BUNDLE'])
@@ -235,17 +220,17 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_tag
     def _tag_image(self):
         """
-        Tag slitviewer images as IMAGE (must be done separately from
-        the "SLITV" so "SLITV" isn't blocked by BIAS or BPM)
+        Tag slitviewer images as IMAGE.
+
+        This must be done separately from the "SLITV" tag so that "SLITV"
+        isn't blocked by BIAS or BPM.
         """
         if self.phu.get('CAMERA', '').lower().startswith('slit'):
             return TagSet(['IMAGE'])
 
     @astro_data_tag
     def _tag_camera(self):
-        """
-        Define the 'spectrograph data' tag set for GHOST data.
-        """
+        """Define the 'spectrograph data' tag set for GHOST data."""
         # Also returns BLUE or RED if the CAMERA keyword is set thus
         camera = self.phu.get('CAMERA')
         if camera in ('BLUE', 'RED'):
@@ -254,8 +239,10 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_tag
     def _tag_spect(self):
         """
-        Tag echelle frames as SPECT (must be done separately from
-        "RED"/"BLUE" so that isn't blocked by BIAS or BPM)
+        Tag echelle frames as SPECT.
+
+        This must be done separately from "RED"/"BLUE" so that it isn't
+        blocked by BIAS or BPM.
         """
         camera = self.phu.get('CAMERA')
         if camera in ('BLUE', 'RED'):
@@ -263,9 +250,7 @@ class AstroDataGhost(AstroDataGemini):
 
     @astro_data_tag
     def _status_processed_ghost_cals(self):
-        """
-        Define the 'processed data' tag set for GHOST data.
-        """
+        """Define the 'processed data' tag set for GHOST data."""
         kwords = set(['PRSLITIM', 'PRSLITBI', 'PRSLITDA', 'PRSLITFL',
                       'PRWAVLFT', 'PRPOLYFT', 'PROCSTND'])
         if set(self.phu) & kwords:
@@ -298,9 +283,7 @@ class AstroDataGhost(AstroDataGemini):
 
     @astro_data_tag
     def _tag_obsclass(self):
-        """
-        Define the tagset for 'partnerCal' observations.
-        """
+        """Define the tagset for 'partnerCal' observations."""
         if self.phu.get('OBSCLASS') == 'partnerCal':
             return TagSet(['PARTNER_CAL'])
 
@@ -308,9 +291,10 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def amp_read_area(self, pretty=False):
         """
-        Returns a list of amplifier read areas, one per extension, made by
-        combining the amplifier name and detector section; or, returns a
-        string if called on a single-extension slice.
+        Return the amplifier read areas, one per extension.
+
+        Each is made by combining the amplifier name and detector section. A
+        string is returned if called on a single-extension slice.
 
         Note: this descriptor is only used for calibration association
         purposes in the archive, not during DR, so for pragmatic reasons
@@ -345,8 +329,9 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def arm(self):
         """
-        Returns a string indicating whether these data are from the red
-        or blue arm of the spectrograph.
+        Return whether the data are from the red or blue arm.
+
+        The result is a string indicating the arm of the spectrograph.
 
         Returns
         -------
@@ -367,7 +352,7 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def array_name(self):
         """
-        Return the arr
+        Return the arr.
 
         Returns
         -------
@@ -381,26 +366,19 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     @return_dict_for_bundle
     def binning(self):
-        """
-        Returns an "MxN"-style string because CJS is fed up with not having this!
-        """
+        """Return an "MxN"-style string."""
         return super().binning()
 
     @astro_data_descriptor
     def calibration_key(self):
-        """
-        Returns a suitable calibration key for GHOST, which includes the arm.
-        """
+        """Return a suitable calibration key for GHOST, including the arm."""
         return (self.data_label().replace('_stack', ''), self.arm())
 
     # FIXME Remove once headers corrected
     @astro_data_descriptor
     @gmu.return_requested_units()
     def central_wavelength(self): # pragma: no cover
-        """
-        Dummy to work around current Gemini cal_mgr
-        """
-
+        """Return a dummy value to work around current Gemini cal_mgr."""
         val = self.phu.get(self._keyword_for('central_wavelength'), None)
 
         if val is None:
@@ -416,16 +394,14 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     @return_dict_for_bundle
     def detector_name(self, pretty=False):
-        """
-        Returns the detector (CCD) name.
-        """
+        """Return the detector (CCD) name."""
         return self.phu.get('DETECTOR')
 
     @astro_data_descriptor
     @return_dict_for_bundle
     def detector_x_bin(self):
         """
-        Returns the detector binning in the x-direction.
+        Return the detector binning in the x-direction.
 
         Returns
         -------
@@ -450,7 +426,7 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def detector_y_bin(self):
         """
-        Returns the detector binning in the y-direction.
+        Return the detector binning in the y-direction.
 
         Returns
         -------
@@ -477,8 +453,10 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def exposure_time(self):
         """
-        Returns the exposure time. If run on a bundle, it returns the exposure
-        time of a single exposure in each arm, NOT the total exposure time
+        Return the exposure time.
+
+        If run on a bundle, it returns the exposure time of a single exposure
+        in each arm, NOT the total exposure time.
 
         Returns
         -------
@@ -502,8 +480,10 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def focal_plane_mask(self, *args, **kwargs):
         """
-        Returns the "focal plane mask", primarily to populate the archive's
-        Header table so it can be searched on.
+        Return the "focal plane mask".
+
+        This is primarily to populate the archive's Header table so it can be
+        searched on.
 
         Returns
         -------
@@ -524,7 +504,7 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def gain_setting(self):
         """
-        Returns the gain setting for this observation (e.g., 'high', 'low')
+        Return the gain setting for this observation (e.g., 'high', 'low').
 
         Returns
         -------
@@ -547,9 +527,10 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument, mode of observation, and data type will have its own rules.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument, mode of
+        observation, and data type will have its own rules.
 
         Returns
         -------
@@ -582,8 +563,9 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the data become non-linear. This is
-        the same as the saturation level for the GHOST CCDs.
+        Return the level at which the data become non-linear.
+
+        This is the same as the saturation level for the GHOST CCDs.
 
         Returns
         -------
@@ -595,7 +577,7 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def number_of_exposures(self):
         """
-        Return the number of individual exposures
+        Return the number of individual exposures.
 
         Returns
         -------
@@ -617,8 +599,10 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Overrides AstroDataGemini descriptor that looks at WCS because that
-        will crash as there's no suitable WCS spatial information.
+        Override the AstroDataGemini descriptor that looks at the WCS.
+
+        That one would crash because there's no suitable WCS spatial
+        information.
         """
         return None
 
@@ -626,9 +610,11 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def read_mode(self):
         """
-        Returns a string describing the read mode, matching that offered
-        in the OT. Only the readout speed will be configurable, so that
-        is what is returned, albeit in a circuitous way to future-proof.
+        Return a string describing the read mode.
+
+        This matches the read mode offered in the OT. Only the readout speed
+        will be configurable, so that is what is returned, albeit in a
+        circuitous way to future-proof.
 
         Returns
         -------
@@ -650,7 +636,7 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def read_speed_setting(self):
         """
-        Returns the setting for the readout speed (slow or fast)
+        Return the setting for the readout speed (slow or fast).
 
         Returns
         -------
@@ -664,7 +650,7 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def res_mode(self):
         """
-        Get the GHOST resolution mode of this dataset
+        Get the GHOST resolution mode of this dataset.
 
         Returns
         -------
@@ -684,7 +670,7 @@ class AstroDataGhost(AstroDataGemini):
 
     @astro_data_descriptor
     def saturation_level(self):
-        """Patch because SATURATE=0 for the blue spectrograph"""
+        """Patch because SATURATE=0 for the blue spectrograph."""
         retval = super().saturation_level()
         if 'PREPARED' in self.tags:
             return retval
@@ -696,6 +682,7 @@ class AstroDataGhost(AstroDataGemini):
     def slit_width(self):
         """
         Just return None. It's a pseudo-slit formed by the fibres.
+
         It is required here because the gemini.adclass version raises an
         exception if a SPECT does not have slit_width
         defined.
@@ -705,15 +692,17 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     @use_nascent_phu_for_bundle
     def ut_datetime(self, *args, **kwargs):
+        """Return the UT date and time, using the nascent PHU for bundles."""
         return AstroDataGemini.ut_datetime(self, *args, **kwargs)
 
     @astro_data_descriptor
     def want_before_arc(self):
         """
-        This is a special descriptor which is being used as a calibration
-        system work-around. Outside of active reduction, this descriptor
-        should always return None, as the relevant header keyword should only
-        exist very briefly during the fetching of bracketed arc files.
+        Return a special value used as a calibration system work-around.
+
+        Outside of active reduction, this descriptor should always return None,
+        as the relevant header keyword should only exist very briefly during
+        the fetching of bracketed arc files.
 
         Returns
         -------

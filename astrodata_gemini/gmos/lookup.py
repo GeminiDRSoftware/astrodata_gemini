@@ -1,3 +1,5 @@
+"""Lookup tables for GMOS data."""
+
 filter_wavelengths = {
     'HeII'  : 0.4680,
     'HeIIC' : 0.4780,

@@ -1,12 +1,23 @@
+"""Tags and descriptors for GSAOI data."""
+
 import math
 
-from astrodata import astro_data_tag, TagSet, astro_data_descriptor, returns_list
-from ..gemini import AstroDataGemini, use_keyword_if_prepared
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
+
 from .. import gmu
 from ..common import build_group_id
+from ..gemini import AstroDataGemini, use_keyword_if_prepared
 from . import lookup
 
+
 class AstroDataGsaoi(AstroDataGemini):
+    """AstroData class for GSAOI data."""
+
     __keyword_dict = dict(array_section='CCDSEC',
                           camera='DETECTOR',
                           central_wavelength='WAVELENG',
@@ -52,7 +63,7 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def array_name(self):
         """
-        Returns a list of the array names of each extension
+        Return a list of the array names of each extension.
 
         Returns
         -------
@@ -70,7 +81,7 @@ class AstroDataGsaoi(AstroDataGemini):
     @gmu.return_requested_units(input_units="AA")
     def central_wavelength(self):
         """
-        Returns the central wavelength
+        Return the central wavelength.
 
         Returns
         -------
@@ -85,6 +96,7 @@ class AstroDataGsaoi(AstroDataGemini):
 
     @astro_data_descriptor
     def detector_y_offset(self):
+        """Return the detector y offset, sign-flipped from the parent."""
         return -super().detector_y_offset()
 
     @returns_list
@@ -92,7 +104,7 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain (electrons/ADU) of the extensions
+        Return the gain (electrons/ADU) of the extensions.
 
         Returns
         -------
@@ -104,9 +116,10 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def group_id(self):
         """
-        Returns a string representing a group of data that are compatible
-        with each other.  This is used when stacking, for example.  Each
-        instrument and mode of observation will have its own rules.
+        Return a string representing a group of compatible data.
+
+        This is used when stacking, for example.  Each instrument and mode of
+        observation will have its own rules.
 
         Returns
         -------
@@ -154,8 +167,9 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def is_coadds_summed(self):
         """
-        Tells whether or not the co-adds have been summed.  If not, they
-        have been averaged. GSAOI averages them.
+        Tells whether or not the co-adds have been summed.
+
+        If not, they have been averaged. GSAOI averages them.
 
         Returns
         -------
@@ -168,10 +182,11 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
         """
-        Returns the nominal zeropoints (i.e., the magnitude corresponding to
-        a pixel value of 1) for the extensions in an AD object.
-        Zeropoints in table are for electrons, so subtract 2.5*lg(gain)
-        if the data are in ADU
+        Return the nominal photometric zeropoint for each extension.
+
+        The zeropoint is the magnitude corresponding to 1 pixel count.
+        This descriptor uses a lookup table.  The zeropoints in the table are
+        for electrons, so 2.5*lg(gain) is subtracted if the data are in ADU.
 
         Returns
         -------
@@ -200,8 +215,9 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the data become non-linear, in the units
-        of the data.
+        Return the level at which the data become non-linear.
+
+        The value is in the same units as the data.
 
         Returns
         -------
@@ -227,8 +243,9 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the read noise of each extension in electrons, as a float or
-        a list of floats
+        Return the read noise of each extension in electrons.
+
+        The result is a float or a list of floats.
 
         Returns
         -------
@@ -250,7 +267,7 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def read_speed_setting(self):
         """
-        Returns a string describing the read speed setting, as used in the OT
+        Return a string describing the read speed setting, as used in the OT.
 
         Returns
         -------
@@ -264,12 +281,14 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level in the units of the data for each
-        extension, as a list or a single value. Values are obtained from
-        a LUT which has the saturation level in ADU, so this is converted
-        to electrons using the original gain (from the LUT) and then
-        divided by the current gain (from the descriptor), which should
-        have been set to 1.0 if the data have been converted to electrons.
+        Return the saturation level for each extension.
+
+        The value is in the same units as the data, as a list or a single
+        value. Values are obtained from a LUT which has the saturation level in
+        ADU, so this is converted to electrons using the original gain (from
+        the LUT) and then divided by the current gain (from the descriptor),
+        which should have been set to 1.0 if the data have been converted to
+        electrons.
 
         Returns
         -------
@@ -289,8 +308,10 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def wcs_ra(self):
         """
-        Returns the Right Ascension of the center of the field based on the
-        WCS rather than the RA keyword. This just uses the CRVAL1 keyword.
+        Return the Right Ascension of the field center, based on the WCS.
+
+        This is used rather than the RA keyword. This just uses the CRVAL1
+        keyword.
 
         Returns
         -------
@@ -310,8 +331,10 @@ class AstroDataGsaoi(AstroDataGemini):
     @astro_data_descriptor
     def wcs_dec(self):
         """
-        Returns the Declination of the center of the field based on the
-        WCS rather than the DEC keyword. This just uses the CRVAL2 keyword.
+        Return the Declination of the field center, based on the WCS.
+
+        This is used rather than the DEC keyword. This just uses the CRVAL2
+        keyword.
 
         Returns
         -------
@@ -331,8 +354,9 @@ class AstroDataGsaoi(AstroDataGemini):
 
     def _look_up_arr_property(self, attr):
         """
-        Helper function to extract information from the array_properties dict
-        Will return a list or a value, depending on the object it's called on
+        Extract a property from the array_properties dict.
+
+        It returns a list or a value, depending on the object it's called on.
 
         Returns
         -------

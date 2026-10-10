@@ -1,14 +1,21 @@
+"""Tags and descriptors for NIFS data."""
+
 import math
 
-from astrodata import astro_data_tag, astro_data_descriptor, returns_list, TagSet
-from ..gemini import AstroDataGemini, use_keyword_if_prepared
-from .lookup import constants_by_bias, config_dict, lnrs_mode_map
+from astrodata import (
+    TagSet,
+    astro_data_descriptor,
+    astro_data_tag,
+    returns_list,
+)
 
-# NOTE: Temporary functions for test. gempy imports astrodata and
-#       won't work with this implementation
 from .. import gmu
+from ..gemini import AstroDataGemini, use_keyword_if_prepared
+from .lookup import config_dict, constants_by_bias, lnrs_mode_map
+
 
 class AstroDataNifs(AstroDataGemini):
+    """AstroData class for NIFS data."""
 
     __keyword_dict = dict(array_section = 'DATASEC',
                           camera = 'INSTRUME',
@@ -54,10 +61,11 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         """
-        Returns the name of the filter(s) used.  The component ID can be
-        removed with either 'stripID' or 'pretty'.  If 'pretty' is True,
-        filter positions such as 'Open', 'Dark', 'blank', and others are
-        removed leaving only the relevant filters in the string.
+        Return the name of the filter(s) used.
+
+        The component ID can be removed with either 'stripID' or 'pretty'.  If
+        'pretty' is True, filter positions such as 'Open', 'Dark', 'blank', and
+        others are removed leaving only the relevant filters in the string.
 
         Parameters
         ----------
@@ -92,9 +100,10 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def gain(self):
         """
-        Returns the gain used for the observation.  A lookup table is
-        uses to compare the bias value in the headers to the bias values
-        associate with the various gain settings.
+        Return the gain used for the observation.
+
+        A lookup table is uses to compare the bias value in the headers to the
+        bias values associate with the various gain settings.
 
         Returns
         -------
@@ -108,10 +117,12 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def non_linear_level(self):
         """
-        Returns the level at which the array becomes non-linear, in the same
-        units as the data. A lookup table is used. Whether the data
-        has been corrected for non-linearity or not is taken into account.
-        A list is returned unless called on a single-extension slice.
+        Return the level at which the array becomes non-linear.
+
+        The value is in the same units as the data. A lookup table is used.
+        Whether the data has been corrected for non-linearity or not is taken
+        into account. A list is returned unless called on a single-extension
+        slice.
 
         Returns
         -------
@@ -135,8 +146,10 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def pixel_scale(self):
         """
-        Returns the pixel scale in arc seconds.  A lookup table indexed on
-        focal_plane_mask, disperser, and filter_name is used.
+        Return the pixel scale in arc seconds.
+
+        A lookup table indexed on focal_plane_mask, disperser, and filter_name
+        is used.
 
         Returns
         -------
@@ -151,8 +164,10 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def read_mode(self):
         """
-        Returns the read mode for the observation.  The read mode is directly
-        associated with the LNRS header keyword value.
+        Return the read mode for the observation.
+
+        The read mode is directly associated with the LNRS header keyword
+        value.
 
         Returns
         -------
@@ -167,7 +182,8 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def read_noise(self):
         """
-        Returns the detector read noise, in electrons.
+        Return the detector read noise, in electrons.
+
         A lookup table is used.  The read noise depends on the gain setting
         and is affected by the number of coadds and non-destructive pairs.
         A list is returned unless called on a single-extension slice.
@@ -189,9 +205,10 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def saturation_level(self):
         """
-        Returns the saturation level for the observation, in the same units as
-        the data. A lookup table is used to get the full well value based on the
-        bias voltage.
+        Return the saturation level for the observation.
+
+        The value is in the same units as the data. A lookup table is used to
+        get the full well value based on the bias voltage.
 
         Returns
         -------
@@ -209,7 +226,8 @@ class AstroDataNifs(AstroDataGemini):
     @astro_data_descriptor
     def slit_width(self):
         """
-        Return None. NIFS does not have a slit width descriptor, as it is an
-        IFU instrument.
+        Return None.
+
+        NIFS does not have a slit width descriptor, as it is an IFU instrument.
         """
         return None
