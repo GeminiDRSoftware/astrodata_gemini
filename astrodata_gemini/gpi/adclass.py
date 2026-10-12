@@ -8,18 +8,23 @@ from ..gemini import AstroDataGemini
 class AstroDataGpi(AstroDataGemini):
     """AstroData class for GPI data."""
 
-    __keyword_dict = dict(array_section='DATASEC',
-                          detector_section='DATASEC',
-                          exposure_time='ITIME',
-                          filter='IFSFILT',
-                          focal_plane_mask='OCCULTER',
-                          pupil_mask='APODIZER')
+    __keyword_dict = dict(
+        array_section='DATASEC',
+        detector_section='DATASEC',
+        exposure_time='ITIME',
+        filter='IFSFILT',
+        focal_plane_mask='OCCULTER',
+        pupil_mask='APODIZER',
+    )
 
     @classmethod
     def read(cls, source):
         """Read the source, renaming the DQ extension 3 as SCI extension 2."""
         def gpi_parser(hdu):
-            if hdu.header.get('EXTNAME') == 'DQ' and hdu.header.get('EXTVER') == 3:
+            if (
+                hdu.header.get('EXTNAME') == 'DQ'
+                and hdu.header.get('EXTVER') == 3
+            ):
                 hdu.header['EXTNAME'] = ('SCI', 'BPM renamed by AstroData')
                 hdu.header['EXTVER'] = (int(2), 'BPM renamed by AstroData')
 
@@ -97,7 +102,8 @@ class AstroDataGpi(AstroDataGemini):
         Returns
         -------
         str
-            The name of the filter combination with or without the component ID.
+            The name of the filter combination with or without the
+            component ID.
         """
         filter_name = self._may_remove_component('IFSFILT', stripID, pretty)
         if pretty:

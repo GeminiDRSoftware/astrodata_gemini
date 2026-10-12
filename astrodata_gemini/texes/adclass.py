@@ -23,16 +23,25 @@ class AstroDataTexes(AstroDataGemini):
         def texes_parser(hdu):
             xnam, xver = hdu.header.get('EXTNAME'), hdu.header.get('EXTVER')
             if 'RAWFRAME' in [xnam] and xver:
-                hdu.header.set('EXTNAME0', xnam,
-                               'EXTNAME Orig (AstroData)', before='EXTNAME')
+                hdu.header.set(
+                    'EXTNAME0',
+                    xnam,
+                    'EXTNAME Orig (AstroData)',
+                    before='EXTNAME'
+                )
                 hdu.header.set('EXTNAME', 'SCI', 'Renamed by AstroData')
             elif 'SCAN-FRAME' in [xnam] and xver:
-                hdu.header.set('EXTNAME0', xnam,
-                               'EXTNAME Orig (AstroData)', before='EXTNAME')
+                hdu.header.set(
+                    'EXTNAME0',
+                    xnam,
+                    'EXTNAME Orig (AstroData)',
+                    before='EXTNAME'
+                )
                 hdu.header.set('EXTNAME', 'SCI', 'Renamed by AstroData')
             elif xnam and not xver:
-                hdu.header.set('EXTVER', 1, 'Versioned by AstroData',
-                               after='EXTNAME')
+                hdu.header.set(
+                    'EXTVER', 1, 'Versioned by AstroData', after='EXTNAME'
+                )
 
         return super().read(source, extname_parser=texes_parser)
 

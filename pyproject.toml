@@ -163,6 +163,10 @@ ignore = [
 #  + F401: Imported but unused
 "astrodata_gemini/__init__.py" = ["F401"]
 
+# The lookup tables have wide data rows that are clearer left on one line:
+#  + E501: Line too long
+"astrodata_gemini/*/lookup.py" = ["E501"]
+
 # Tests should not be worried about:
 #  + ERA001: Commented out code
 #  + S101: Use of assert

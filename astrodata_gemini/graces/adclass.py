@@ -1,10 +1,6 @@
 """Tags and descriptors for GRACES data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from .. import gmu
 from ..gemini import AstroDataGemini
@@ -13,8 +9,7 @@ from ..gemini import AstroDataGemini
 class AstroDataGraces(AstroDataGemini):
     """AstroData class for GRACES data."""
 
-    __keyword_dict = dict(detector = 'DETECTOR',
-                          )
+    __keyword_dict = dict(detector = 'DETECTOR')
 
     @staticmethod
     def _matches_data(source):

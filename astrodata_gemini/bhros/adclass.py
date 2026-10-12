@@ -1,10 +1,6 @@
 """Tags and descriptors for BhROS data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from .. import gmu
 from ..gemini import AstroDataGemini
@@ -13,9 +9,11 @@ from ..gemini import AstroDataGemini
 class AstroDataBhros(AstroDataGemini):
     """AstroData class for BhROS data."""
 
-    __keyword_dict = dict(array_section = 'CCDSEC',
-                          central_wavelength = 'WAVELENG',
-                          overscan_section = 'BIASSEC')
+    __keyword_dict = dict(
+        array_section = 'CCDSEC',
+        central_wavelength = 'WAVELENG',
+        overscan_section = 'BIASSEC'
+    )
 
     @staticmethod
     def _matches_data(source):

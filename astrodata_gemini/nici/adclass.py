@@ -1,10 +1,6 @@
 """Tags and descriptors for NICI data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from .. import gmu
 from ..gemini import AstroDataGemini
@@ -28,7 +24,8 @@ class AstroDataNici(AstroDataGemini):
 
     @astro_data_tag
     def _tag_flat(self):
-        # NOTE: This will be set also for old type DARK frames... What should we do?
+        # NOTE: This will be set also for old type DARK frames... What should
+        # we do?
         if self.phu.get('OBSTYPE') == 'FLAT':
             return TagSet({'FLAT', 'CAL'}, {'SDI', 'ASDI'})
 
@@ -97,7 +94,8 @@ class AstroDataNici(AstroDataGemini):
         Returns
         -------
         str/list of str
-            The name of the filter combination with or without the component ID.
+            The name of the filter combination with or without the
+            component ID.
         """
         filt_r = self.hdr.get('FILTER_R')
         filt_b = self.hdr.get('FILTER_B')
@@ -106,11 +104,17 @@ class AstroDataNici(AstroDataGemini):
         # in each HDU
         try:
             filters = [r if b is None else b for r,b in zip(filt_r, filt_b)]
-            return "+".join([gmu.removeComponentID(f) if pretty or stripID else
-                        f for f in filters])
+            return "+".join(
+                [
+                    gmu.removeComponentID(f) if pretty or stripID else f
+                    for f in filters
+                ]
+            )
         except TypeError:
             filter = filt_r if filt_b is None else filt_b
-            return gmu.removeComponentID(filter) if pretty or stripID else filter
+            return (
+                gmu.removeComponentID(filter) if pretty or stripID else filter
+            )
 
     @astro_data_descriptor
     def pixel_scale(self):

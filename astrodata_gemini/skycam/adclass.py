@@ -10,8 +10,12 @@ class AstroDataSkyCam(AstroDataGemini):
 
     @staticmethod
     def _matches_data(source):
-        # remove "s because they added them, but this will also work if the fix it
-        match = source[0].header.get('TELESCOP', '').strip('"') == 'GS_ALLSKYCAMERA'
+        # remove "s because they added them, but this will also work if the
+        # fix it
+        match = (
+            source[0].header.get('TELESCOP', '').strip('"')
+            == 'GS_ALLSKYCAMERA'
+        )
         return match
 
     @astro_data_tag

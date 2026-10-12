@@ -18,11 +18,12 @@ from . import lookup
 class AstroDataGsaoi(AstroDataGemini):
     """AstroData class for GSAOI data."""
 
-    __keyword_dict = dict(array_section='CCDSEC',
-                          camera='DETECTOR',
-                          central_wavelength='WAVELENG',
-                          detector_name='DETECTOR',
-                          )
+    __keyword_dict = dict(
+        array_section='CCDSEC',
+      camera='DETECTOR',
+      central_wavelength='WAVELENG',
+      detector_name='DETECTOR',
+    )
 
     @staticmethod
     def _matches_data(source):
@@ -162,7 +163,9 @@ class AstroDataGsaoi(AstroDataGemini):
         # Add in all the common descriptors required
         id_descriptor_list.extend(["read_mode", "detector_section"])
 
-        return build_group_id(self, id_descriptor_list, prettify=('filter_name'))
+        return build_group_id(
+            self, id_descriptor_list, prettify=('filter_name')
+        )
 
     @astro_data_descriptor
     def is_coadds_summed(self):
@@ -208,8 +211,10 @@ class AstroDataGsaoi(AstroDataGemini):
         if self.is_single:
             return _zpt(array_name, filter_name, gain, in_adu)
         else:
-            return [_zpt(a, filter_name, g, in_adu)
-                    for a, g in zip(array_name, gain)]
+            return [
+                _zpt(a, filter_name, g, in_adu)
+                for a, g in zip(array_name, gain)
+            ]
 
     @use_keyword_if_prepared
     @astro_data_descriptor
@@ -235,8 +240,9 @@ class AstroDataGsaoi(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [f * s if f and s else None
-                    for f, s in zip(fraction, sat_level)]
+            return [
+                f * s if f and s else None for f, s in zip(fraction, sat_level)
+            ]
 
     @returns_list
     @use_keyword_if_prepared
@@ -261,8 +267,10 @@ class AstroDataGsaoi(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [round(r / coadd_factor, 2) if r else None
-                    for r in raw_read_noise]
+            return [
+                round(r / coadd_factor, 2) if r else None
+                for r in raw_read_noise
+            ]
 
     @astro_data_descriptor
     def read_speed_setting(self):
@@ -303,7 +311,10 @@ class AstroDataGsaoi(AstroDataGemini):
                 return welldepth * orig_gain / gain
             except TypeError:
                 return None
-        return [w * o / g if w and o and g else None for w, o, g in zip(welldepth, orig_gain, gain)]
+        return [
+            w * o / g if w and o and g else None
+            for w, o, g in zip(welldepth, orig_gain, gain)
+        ]
 
     @astro_data_descriptor
     def wcs_ra(self):
@@ -367,8 +378,15 @@ class AstroDataGsaoi(AstroDataGemini):
         array_names = self.array_name()
 
         if isinstance(array_names, list):
-            return [getattr(lookup.array_properties.get((read_speed, a)),
-                            attr, None) for a in array_names]
+            return [
+                getattr(
+                    lookup.array_properties.get((read_speed, a)), attr, None
+                )
+                for a in array_names
+            ]
         else:
-            return getattr(lookup.array_properties.get((read_speed,
-                                            array_names)), attr, None)
+            return getattr(
+                lookup.array_properties.get((read_speed, array_names)),
+                attr,
+                None
+            )

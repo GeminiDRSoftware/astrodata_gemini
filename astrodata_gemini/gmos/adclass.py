@@ -26,15 +26,19 @@ from .pixel_functions import get_bias_level
 class AstroDataGmos(AstroDataGemini):
     """AstroData class for GMOS data."""
 
-    __keyword_dict = dict(array_name='AMPNAME',
-                          array_section='CCDSEC',
-                          camera='INSTRUME',
-                          overscan_section='BIASSEC',
-                          )
+    __keyword_dict = dict(
+        array_name='AMPNAME',
+        array_section='CCDSEC',
+        camera='INSTRUME',
+        overscan_section='BIASSEC',
+    )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() in ('GMOS-N', 'GMOS-S')
+        return source[0].header.get('INSTRUME', '').upper() in (
+            'GMOS-N',
+            'GMOS-S'
+        )
 
     @astro_data_tag
     def _tag_instrument(self):
@@ -97,8 +101,13 @@ class AstroDataGmos(AstroDataGemini):
         if self.phu.get('OBJECT', '').upper() == 'TWILIGHT':
             # Twilight flats are of OBSTYPE == OBJECT, meaning that the generic
             # FLAT tag won't be triggered. Add it explicitly
-            return TagSet(['TWILIGHT', 'CAL',
-                           'SLITILLUM' if self._tag_is_spect() else 'FLAT'])
+            return TagSet(
+                [
+                    'TWILIGHT',
+                    'CAL',
+                    'SLITILLUM' if self._tag_is_spect() else 'FLAT'
+                ]
+            )
 
     @astro_data_tag
     def _tag_domeflat(self):
@@ -150,7 +159,9 @@ class AstroDataGmos(AstroDataGemini):
         names = {key for key in mapping.keys() if key.startswith('IFU')}
 
         mskt, mskn = self.phu.get('MASKTYP'), self.phu.get('MASKNAME')
-        if mskt == -1 and (mskn in names or re.match('g[ns]ifu_slit[rbs]_mdf', mskn)):
+        if mskt == -1 and (
+            mskn in names or re.match('g[ns]ifu_slit[rbs]_mdf', mskn)
+        ):
             if mskn not in names:
                 mskn = re.match('g.ifu_slit(.)_mdf', mskn).groups()[0]
 
@@ -176,7 +187,9 @@ class AstroDataGmos(AstroDataGemini):
         if self._tag_is_bias() or self._tag_is_dark() or self._tag_is_bpm():
             return
 
-        if self.phu.get('MASKTYP') == 1 and self.phu.get('MASKNAME', '').endswith('arcsec'):
+        if self.phu.get('MASKTYP') == 1 and self.phu.get(
+                'MASKNAME', ''
+        ).endswith('arcsec'):
             return TagSet(['LS'])
 
     @astro_data_tag
@@ -189,7 +202,11 @@ class AstroDataGmos(AstroDataGemini):
 
         mskt = self.phu.get('MASKTYP')
         mskn = self.phu.get('MASKNAME', '')
-        if mskt == 1 and not (mskn.startswith('IFU') or mskn.startswith('focus') or mskn.endswith('arcsec')):
+        if mskt == 1 and not (
+            mskn.startswith('IFU')
+            or mskn.startswith('focus')
+            or mskn.endswith('arcsec')
+        ):
             return TagSet(['MOS'])
 
     @astro_data_tag
@@ -214,11 +231,16 @@ class AstroDataGmos(AstroDataGemini):
         detsec = self.detector_section(pretty=True)
         # Combine the amp name(s) and detector section(s)
         if self.is_single:
-            return "'{}':{}".format(ampname,
-                                    detsec) if ampname and detsec else None
+            return (
+                "'{}':{}".format(ampname, detsec)
+                if ampname and detsec
+                else None
+            )
         else:
-            return ["'{}':{}".format(a, d) if a and d else None
-                    for a, d in zip(ampname, detsec)]
+            return [
+                "'{}':{}".format(a, d) if a and d else None
+                for a, d in zip(ampname, detsec)
+            ]
 
     @astro_data_descriptor
     def array_name(self):
@@ -311,8 +333,9 @@ class AstroDataGmos(AstroDataGemini):
             if x1 and xs and y1 and ys:
                 xs *= self.detector_x_bin()
                 ys *= self.detector_y_bin()
-                roi_section = Section(x1=x1 - 1, x2=x1 + xs - 1,
-                                      y1=y1 - 1, y2=y1 + ys - 1)
+                roi_section = Section(
+                    x1=x1 - 1, x2=x1 + xs - 1, y1=y1 - 1, y2=y1 + ys - 1
+                )
                 roi_list.append(roi_section)
             else:
                 break
@@ -411,8 +434,11 @@ class AstroDataGmos(AstroDataGemini):
         except TypeError:  # either is None
             return None
         # Flipped for GMOS-N if on bottom port
-        return -offset if (self.phu.get('INPORT') == 1 and
-                           self.instrument() == 'GMOS-N') else offset
+        return (
+            -offset
+            if (self.phu.get('INPORT') == 1 and self.instrument() == 'GMOS-N')
+            else offset
+        )
 
     @astro_data_descriptor
     def detector_y_offset(self):
@@ -431,8 +457,11 @@ class AstroDataGmos(AstroDataGemini):
         except TypeError:  # either is None
             return None
         # Flipped for GMOS-S if on bottom port
-        return -offset if (self.phu.get('INPORT') == 1 and
-                           self.instrument() == 'GMOS-S') else offset
+        return (
+            -offset
+            if (self.phu.get('INPORT') == 1 and self.instrument() == 'GMOS-S')
+            else offset
+        )
 
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
@@ -505,8 +534,14 @@ class AstroDataGmos(AstroDataGemini):
                 )
             )
 
-            dispersion = - (81 * math.sin(gtilt + 0.87266) * self.pixel_scale() *
-                            self.detector_x_bin() / self.detector_y_bin() * cenwave) / (206265. * greq)
+            dispersion = -(
+                81
+                * math.sin(gtilt + 0.87266)
+                * self.pixel_scale()
+                * self.detector_x_bin()
+                / self.detector_y_bin()
+                * cenwave
+            ) / (206265. * greq)
 
         else:
             dispersion = None
@@ -615,8 +650,10 @@ class AstroDataGmos(AstroDataGemini):
         if self.is_single:
             return gain_dict.get((read_speed_setting, gain_setting, ampname))
         else:
-            return [gain_dict.get((read_speed_setting, gain_setting, a))
-                    for a in ampname]
+            return [
+                gain_dict.get((read_speed_setting, gain_setting, a))
+                for a in ampname
+            ]
 
     @astro_data_descriptor
     def gain_setting(self):
@@ -695,13 +732,21 @@ class AstroDataGmos(AstroDataGemini):
         tags = self.tags
 
         # Things needed for all observations
-        unique_id_descriptor_list_all = ['detector_x_bin', 'detector_y_bin',
-                                         'read_mode', 'amp_read_area']
+        unique_id_descriptor_list_all = [
+            'detector_x_bin',
+            'detector_y_bin',
+            'read_mode',
+            'amp_read_area',
+        ]
         if 'SPECT' in tags:
             unique_id_descriptor_list_all.append('disperser')
 
         # List to format descriptor calls using 'pretty=True' parameter
-        call_pretty_version_list = ['filter_name', 'disperser', 'central_wavelength']
+        call_pretty_version_list = [
+            'filter_name',
+            'disperser',
+            'central_wavelength',
+        ]
 
         # Force this to be a list
         force_list = ['amp_read_area']
@@ -712,12 +757,16 @@ class AstroDataGmos(AstroDataGemini):
             id_descriptor_list = ['exposure_time']
         elif 'IMAGE' in tags and ('FLAT' in tags or 'TWILIGHT' in tags):
             id_descriptor_list = ['filter_name']
-        elif 'SPECT' in tags and ('FLAT' in tags or 'SLITILLUM' in tags
-                or 'ARC' in tags):
+        elif 'SPECT' in tags and (
+            'FLAT' in tags or 'SLITILLUM' in tags or 'ARC' in tags
+        ):
             id_descriptor_list = ['filter_name', 'central_wavelength']
         elif 'SPECT' in tags and 'STANDARD' in tags:
-            id_descriptor_list = ['observation_id', 'filter_name',
-                                  'central_wavelength']
+            id_descriptor_list = [
+                'observation_id',
+                'filter_name',
+                'central_wavelength'
+            ]
         else:  # SPECT science
             id_descriptor_list = ['observation_id', 'filter_name']
 
@@ -733,8 +782,9 @@ class AstroDataGmos(AstroDataGemini):
             descriptor_object = getattr(self, descriptor)(**kw)
 
             # Ensure we get a list, even if only looking at one extension
-            if (descriptor in force_list and
-                    not isinstance(descriptor_object, list)):
+            if descriptor in force_list and not isinstance(
+                descriptor_object, list
+            ):
                 descriptor_object = [descriptor_object]
 
             # Convert descriptor to a string and store
@@ -866,8 +916,9 @@ class AstroDataGmos(AstroDataGemini):
         if self.is_single:
             return _zpt(ccd_name, filter_name, gain, in_adu)
         else:
-            return [_zpt(c, filter_name, g, in_adu)
-                    for c, g in zip(ccd_name, gain)]
+            return [
+                _zpt(c, filter_name, g, in_adu) for c, g in zip(ccd_name, gain)
+            ]
 
     @returns_list
     @astro_data_descriptor
@@ -949,9 +1000,12 @@ class AstroDataGmos(AstroDataGemini):
             read mode used
         """
         # Get the right mapping (detector-dependent)
-        det_key = 'Hamamatsu' if \
-            self.detector_name(pretty=True).startswith('Hamamatsu') \
+        det_key = (
+            'Hamamatsu'
+            if
+            self.detector_name(pretty=True).startswith('Hamamatsu')
             else 'default'
+        )
         mode_dict = lookup.read_mode_map.get(det_key)
         mode_key = (self.gain_setting(), self.read_speed_setting())
         return mode_dict.get(mode_key)
@@ -997,8 +1051,10 @@ class AstroDataGmos(AstroDataGemini):
         if self.is_single:
             return rn_dict.get((read_speed_setting, gain_setting, ampname))
         else:
-            return [rn_dict.get((read_speed_setting, gain_setting, a))
-                    for a in ampname]
+            return [
+                rn_dict.get((read_speed_setting, gain_setting, a))
+                for a in ampname
+            ]
 
     @astro_data_descriptor
     def read_speed_setting(self):
@@ -1054,7 +1110,8 @@ class AstroDataGmos(AstroDataGemini):
         bias_subtracted |= bias_levels not in (None, [None] * len(self))
 
         detname = self.detector_name(pretty=True)
-        detector = self.phu['DETECTOR']  # the only way to distinguish GMOS-S Ham pre/post video board work.
+        # the only way to distinguish GMOS-S Ham pre/post video board work.
+        detector = self.phu['DETECTOR']
         xbin = self.detector_x_bin()
         ybin = self.detector_y_bin()
         bin_factor = xbin * ybin
@@ -1069,8 +1126,10 @@ class AstroDataGmos(AstroDataGemini):
             if self.is_single and bias_levels is None:
                 bias_levels = est_bias_levels or 0.0
             elif not self.is_single:
-                bias_levels = [bias if bias is not None else (est or 0.0)
-                               for bias, est in zip(bias_levels, est_bias_levels)]
+                bias_levels = [
+                    bias if bias is not None else (est or 0.0)
+                    for bias, est in zip(bias_levels, est_bias_levels)
+                ]
         else:
             bias_levels = 0.0 if self.is_single else [0.0] * len(self)
 
@@ -1078,12 +1137,18 @@ class AstroDataGmos(AstroDataGemini):
         # Get the limit that could be processed without hitting the ADC limit
         # Subtracted bias level if data are bias-subtracted
         if self.is_single:
-            processed_limit = ((adc_limit - bias_levels) *
-                               self._electrons_per_adu() / self.gain())
+            processed_limit = (
+                (adc_limit - bias_levels)
+                * self._electrons_per_adu()
+                / self.gain()
+            )
         else:
             processed_limit = [
                 (adc_limit - blev) * (1.0 if self.is_in_adu() else e_per_adu)
-                for blev, e_per_adu in zip(bias_levels, self._electrons_per_adu())]
+                for blev, e_per_adu in zip(
+                    bias_levels, self._electrons_per_adu()
+                )
+            ]
 
         # For old EEV data, or heavily-binned data, we're ADC-limited
         if detname == 'EEV' or bin_factor > 2:
@@ -1095,17 +1160,28 @@ class AstroDataGmos(AstroDataGemini):
                 if saturation is None:
                     saturation = processed_limit
                 else:
-                    # Remember: bias_levels=0 if the data haven't been bias-subtracted
-                    saturation = (saturation + bias_levels *
-                                  self._electrons_per_adu()) / gain  # in data units
+                    # Remember: bias_levels=0 if the data haven't been
+                    # bias-subtracted
+                    # in data units
+                    saturation = (
+                        saturation + bias_levels * self._electrons_per_adu()
+                    ) / gain
                     if saturation > processed_limit:
                         saturation = processed_limit
             else:
-                well_limit = [_well_depth(detector, a, bin_factor)
-                              for a in ampname]
-                saturation = [None if w is None else min((w + blev * e_per_adu) / g, p)
-                              for w, p, blev, g, e_per_adu in zip(
-                        well_limit, processed_limit, bias_levels, gain, self._electrons_per_adu())]
+                well_limit = [
+                    _well_depth(detector, a, bin_factor) for a in ampname
+                ]
+                saturation = [
+                    None if w is None else min((w + blev * e_per_adu) / g, p)
+                    for w, p, blev, g, e_per_adu in zip(
+                        well_limit,
+                        processed_limit,
+                        bias_levels,
+                        gain,
+                        self._electrons_per_adu(),
+                    )
+                ]
         return saturation
 
     @astro_data_descriptor

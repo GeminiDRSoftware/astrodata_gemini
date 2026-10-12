@@ -159,8 +159,9 @@ class AstroDataNiri(AstroDataGemini):
         data_section = self.data_section()
         # If we have a list, check they're all the same and take one element
         if isinstance(data_section, list):
-            assert data_section == data_section[::-1], \
+            assert data_section == data_section[::-1], (
                 "Multiple extensions with different data_sections"
+            )
             data_section = data_section[0]
         elif data_section is None:
             return None
@@ -168,7 +169,9 @@ class AstroDataNiri(AstroDataGemini):
         x1, x2, y1, y2 = data_section
         # Check for a sensibly-sized square
         if x1==0 and y1==0 and x2==y2 and x2 % 256==0:
-            roi_setting = 'Full Frame' if x2==1024 else 'Central{}'.format(x2)
+            roi_setting = (
+                'Full Frame' if x2 == 1024 else 'Central{}'.format(x2)
+            )
         else:
             roi_setting = 'Custom'
         return roi_setting
@@ -219,8 +222,11 @@ class AstroDataNiri(AstroDataGemini):
         except TypeError:  # either is None
             return None
         # Flipped if on bottom port unless AO is operating
-        return -offset if (self.phu.get('INPORT')==1 and
-                           not self.is_ao()) else offset
+        return (
+            -offset
+            if (self.phu.get('INPORT')==1 and not self.is_ao())
+            else offset
+        )
     @astro_data_descriptor
     def detector_y_offset(self):
         """
@@ -296,7 +302,7 @@ class AstroDataNiri(AstroDataGemini):
             dispersion = None
 
         if dispersion is not None and not self.is_single:
-                dispersion = [dispersion] * len(self)
+            dispersion = [dispersion] * len(self)
 
         return dispersion
 
@@ -328,13 +334,20 @@ class AstroDataNiri(AstroDataGemini):
         Returns
         -------
         str
-            The name of the filter combination with or without the component ID.
+            The name of the filter combination with or without the
+            component ID.
         """
-        raw_filters = [self._may_remove_component('FILTER{}'.format(i),
-                                        stripID, pretty) for i in [1,2,3]]
+        raw_filters = [
+            self._may_remove_component('FILTER{}'.format(i), stripID, pretty)
+            for i in [1,2,3]
+        ]
         # eliminate any open/grism/pupil from the list
-        filters = [f for f in raw_filters if f is not None and
-                   not any(x in f.lower() for x in ['open', 'grism', 'pupil'])]
+        filters = [
+            f
+            for f in raw_filters
+            if f is not None
+            and not any(x in f.lower() for x in ['open', 'grism', 'pupil'])
+        ]
         filters.sort()
 
         if 'blank' in filters:
@@ -344,8 +357,8 @@ class AstroDataNiri(AstroDataGemini):
 
         if pretty:
             try:
-                return lookup.filter_name_mapping[tuple(filters) if len(filters)>1
-                                               else filters[0]]
+                return lookup.filter_name_mapping[
+                    tuple(filters) if len(filters) > 1 else filters[0]]
             except KeyError:
                 pass
         return '&'.join(filters)
@@ -383,20 +396,27 @@ class AstroDataNiri(AstroDataGemini):
         else:
             desc_list = ['observation_id', 'filter_name', 'camera']
 
-        desc_list.extend(['read_mode', 'well_depth_setting',
-                          'detector_section'])
+        desc_list.extend(
+            ['read_mode', 'well_depth_setting', 'detector_section']
+        )
         if 'SPECT' in tags:
             desc_list.extend(['disperser', 'focal_plane_mask'])
 
         if 'IMAGE' in tags and 'FLAT' in tags:
-            additional_item = 'NIRI_IMAGE_TWILIGHT' if 'TWILIGHT' in tags \
+            additional_item = (
+                'NIRI_IMAGE_TWILIGHT'
+                if 'TWILIGHT' in tags
                 else 'NIRI_IMAGE_FLAT'
+            )
         else:
             additional_item = None
 
-        return build_group_id(self, desc_list, prettify=['filter_name',
-                              'disperser', 'focal_plane_mask'],
-                              additional=additional_item)
+        return build_group_id(
+            self,
+            desc_list,
+            prettify=['filter_name', 'disperser', 'focal_plane_mask'],
+            additional=additional_item
+        )
 
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
@@ -424,8 +444,12 @@ class AstroDataNiri(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [zpt - (2.5 * math.log10(g) if in_adu else 0) if zpt and g
-                    else None for g in gain]
+            return [
+                zpt - (2.5 * math.log10(g) if in_adu else 0)
+                if zpt and g
+                else None
+                for g in gain
+            ]
 
     @use_keyword_if_prepared
     @astro_data_descriptor
@@ -462,8 +486,11 @@ class AstroDataNiri(AstroDataGemini):
         except KeyError:
             return None
         if filter3.startswith('pup'):
-             return gmu.removeComponentID(filter3) if pretty or stripID \
+             return (
+                gmu.removeComponentID(filter3)
+                if pretty or stripID
                 else filter3
+             )
         else:
             return 'MIRROR'
 
@@ -532,14 +559,17 @@ class AstroDataNiri(AstroDataGemini):
         """
         coadds = self.coadds()
         gain = self.gain()
-        well = lookup.array_properties.get(self.well_depth_setting().lower()+'well')
+        well = lookup.array_properties.get(
+            self.well_depth_setting().lower()+'well')
         if self.is_single:
             try:
                 return int(well * coadds / gain)
             except TypeError:
                 return None
         else:
-            return [int(well * coadds / g) if g and well else None for g in gain]
+            return [
+                int(well * coadds / g) if g and well else None for g in gain
+            ]
 
     @astro_data_descriptor
     def slit_width(self):
@@ -590,6 +620,8 @@ class AstroDataNiri(AstroDataGemini):
             disperser = None
         fpmask = self.focal_plane_mask(stripID=True)
         try:
-            return lookup.spec_wavelengths[camera, fpmask, disperser].cenpixwave
+            return lookup.spec_wavelengths[
+                camera, fpmask, disperser
+            ].cenpixwave
         except KeyError:
             return None

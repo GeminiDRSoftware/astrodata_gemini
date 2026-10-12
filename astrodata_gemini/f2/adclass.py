@@ -25,10 +25,11 @@ from .lookup import (
 class AstroDataF2(AstroDataGemini):
     """AstroData class for Flamingos-2 data."""
 
-    __keyword_dict = dict(central_wavelength='WAVELENG',
-                          disperser='GRISM',
-                          lyot_stop='LYOT',
-                          )
+    __keyword_dict = dict(
+        central_wavelength='WAVELENG',
+        disperser='GRISM',
+        lyot_stop='LYOT',
+    )
 
     @staticmethod
     def _matches_data(source):
@@ -52,7 +53,10 @@ class AstroDataF2(AstroDataGemini):
 
     @astro_data_tag
     def _tag_image(self):
-        if self.phu.get('GRISM') == 'Open' or self.phu.get('GRISMPOS') == 'Open':
+        if (
+            self.phu.get('GRISM') == 'Open'
+            or self.phu.get('GRISMPOS') == 'Open'
+        ):
             return TagSet(['IMAGE'])
 
     # Do not tag this as astro_data_tag. It's a helper function
@@ -68,7 +72,10 @@ class AstroDataF2(AstroDataGemini):
 
     @astro_data_tag
     def _tag_is_ls(self):
-        decker = self.phu.get('DECKER') == 'Long_slit' or self.phu.get('DCKERPOS') == 'Long_slit'
+        decker = (
+            self.phu.get('DECKER') == 'Long_slit'
+            or self.phu.get('DCKERPOS') == 'Long_slit'
+        )
         if decker or re.match(".?pix-slit", self.phu.get('MOSPOS', '')):
             if self._tag_is_spect():
                 return TagSet(['LS', 'SPECT'])
@@ -77,7 +84,10 @@ class AstroDataF2(AstroDataGemini):
 
     @astro_data_tag
     def _tag_is_mos(self):
-        decker = self.phu.get('DECKER') == 'mos' or self.phu.get('DCKERPOS') == 'mos'
+        decker = (
+            self.phu.get('DECKER') == 'mos'
+            or self.phu.get('DCKERPOS') == 'mos'
+        )
         if decker or re.match("mos.?", self.phu.get('MOSPOS', '')):
             if self._tag_is_spect():
                 return TagSet(['MOS', 'SPECT'])
@@ -167,8 +177,11 @@ class AstroDataF2(AstroDataGemini):
             focus = self.phu.get("FOCUS", "")
             if not re.match('^f/\\d+$', focus):
                 # Use original pixel scale
-                pixscale = (self.phu["PIXSCALE"] if 'PREPARED' in self.tags
-                            else self.pixel_scale())
+                pixscale = (
+                    self.phu["PIXSCALE"]
+                    if 'PREPARED' in self.tags
+                    else self.pixel_scale()
+                )
                 focus = "f/16" if pixscale > 0.1 else "f/32"
             # Make up component number (for now) should f/32 happen
             camera = focus + ("_G5830" if focus == "f/16" else "_G9999")
@@ -198,16 +211,19 @@ class AstroDataF2(AstroDataGemini):
         # Header value for this filter in early data is incorrect:
         if filter == 'K-long_G0812':
             central_wavelength = 2200.0
-        # The new JH_G0816 and HK_G0817 filters were installed in 2022, but their
-        #  WAVELENG header keywords weren't simultaneously updated, thus the correction.
+        # The new JH_G0816 and HK_G0817 filters were installed in 2022, but
+        # their WAVELENG header keywords weren't simultaneously updated, thus
+        # the correction.
         if filter == "JH_G0816":
-                central_wavelength = 1338.5
+            central_wavelength = 1338.5
         if filter == "HK_G0817":
-                central_wavelength = 1900.0
+            central_wavelength = 1900.0
 
         if central_wavelength < 0.0:
             if self.disperser(pretty=True) == "R3K":
-                return {"J": 1250, "H": 1650, "K": 2200}.get(self.filter_name(pretty=True)[0])
+                return {"J": 1250, "H": 1650, "K": 2200}.get(
+                    self.filter_name(pretty=True)[0]
+                )
             return None
         return central_wavelength
 
@@ -347,7 +363,7 @@ class AstroDataF2(AstroDataGemini):
         dispersion = float(mask.dispersion if mask else None)
 
         if dispersion is not None and not self.is_single:
-                dispersion = [dispersion] * len(self)
+            dispersion = [dispersion] * len(self)
 
         return dispersion
 
@@ -376,7 +392,8 @@ class AstroDataF2(AstroDataGemini):
         Returns
         -------
         str
-            The name of the filter combination with or without the component ID.
+            The name of the filter combination with or without the
+            component ID.
 
         """
         try:
@@ -395,28 +412,36 @@ class AstroDataF2(AstroDataGemini):
         # 2022-02-22:  The lyot wheel now contains filters and stops
         #  Gymnastic is required to figure out which is which.
 
-        if (lyot is not None and lyot[0:1] != "f" and lyot[0:4] != "GEMS" and
-                lyot[0:4] != "Hart" and lyot[0:5] != "Datum"):
+        if (
+            lyot is not None
+            and lyot[0:1] != "f"
+            and lyot[0:4] != "GEMS"
+            and lyot[0:4] != "Hart"
+            and lyot[0:5] != "Datum"
+        ):
             filter3 = lyot
         else:
             filter3 = None
 
         if stripID or pretty:
-                filter1 = gmu.removeComponentID(filter1)
-                filter2 = gmu.removeComponentID(filter2)
-                if filter3:
-                    filter3 = gmu.removeComponentID(filter3)
+            filter1 = gmu.removeComponentID(filter1)
+            filter2 = gmu.removeComponentID(filter2)
+            if filter3:
+                filter3 = gmu.removeComponentID(filter3)
         if keepID:
             def filter_with_id(fltname, fltid):
                 return fltname if fltid is None else (fltname + "_" + fltid)
 
-            filter1 = filter_with_id(gmu.removeComponentID(filter1),
-                                          gmu.getComponentID(filter1))
-            filter2 = filter_with_id(gmu.removeComponentID(filter2),
-                                          gmu.getComponentID(filter2))
+            filter1 = filter_with_id(
+                gmu.removeComponentID(filter1), gmu.getComponentID(filter1)
+            )
+            filter2 = filter_with_id(
+                gmu.removeComponentID(filter2), gmu.getComponentID(filter2)
+            )
             if filter3:
-                filter3 = filter_with_id(gmu.removeComponentID(filter3),
-                                          gmu.getComponentID(filter3))
+                filter3 = filter_with_id(
+                    gmu.removeComponentID(filter3),gmu.getComponentID(filter3)
+                )
 
         filter = [filter1, filter2]
         if filter3:
@@ -428,8 +453,12 @@ class AstroDataF2(AstroDataGemini):
             if 'open' in filter1 or 'Open' in filter1:
                 del filter[0]
 
-            if ('Block' in filter1 or 'Block' in filter2 or 'Dark' in filter1
-                    or 'Dark' in filter2):
+            if (
+                'Block' in filter1
+                or 'Block' in filter2
+                or 'Dark' in filter1
+                or 'Dark' in filter2
+            ):
                 filter = ['blank']
             if 'DK' in filter1 or 'DK' in filter2:
                 filter = ['dark']
@@ -483,9 +512,15 @@ class AstroDataF2(AstroDataGemini):
         dark_id = ["exposure_time", "coadds"]
         flat_id = ["filter_name", "camera", "exposure_time", "observation_id"]
         flat_twilight_id = ["filter_name", "camera"]
-        science_id = ["observation_id", "filter_name", "camera", "exposure_time"]
-        ## !!! KL: added exposure_time to science_id for QAP.  The sky subtraction
-        ## !!! seems unable to deal with difference exposure time circa Sep 2015.
+        science_id = [
+            "observation_id",
+            "filter_name",
+            "camera",
+            "exposure_time"
+        ]
+        ## !!! KL: added exposure_time to science_id for QAP.  The sky
+        ## !!! subtraction seems unable to deal with difference exposure time
+        ## !!! circa Sep 2015.
         ## !!! The on-target dither sky-sub falls over completely.
         ## !!! Also, we do not have a fully tested scale by exposure routine.
 
@@ -513,9 +548,12 @@ class AstroDataF2(AstroDataGemini):
         if "SPECT" in tags:
             id_descriptor_list.extend(["disperser", "focal_plane_mask"])
 
-        return build_group_id(self, id_descriptor_list,
-                              prettify=["filter_name", "disperser", "focal_plane_mask"],
-                              additional=additional_item)
+        return build_group_id(
+            self,
+            id_descriptor_list,
+            prettify=["filter_name", "disperser", "focal_plane_mask"],
+            additional=additional_item
+        )
 
     # @astro_data_descriptor
     # def instrument(self):
@@ -595,8 +633,13 @@ class AstroDataF2(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [(zpt - (2.5 * math.log10(g) if in_adu else 0) if zpt and g
-                     else None) for g in gain]
+            return [
+                (
+                    zpt - (2.5 * math.log10(g) if in_adu else 0)
+                    if zpt and g
+                    else None
+                ) for g in gain
+            ]
 
     @returns_list
     @use_keyword_if_prepared
@@ -614,8 +657,9 @@ class AstroDataF2(AstroDataGemini):
         """
         # Element [3] gives the fraction of the saturation level at which
         # the data become non-linear
-        fraction = getattr(array_properties.get(self.read_mode()),
-                           'linlimit', None)
+        fraction = getattr(
+            array_properties.get(self.read_mode()), 'linlimit', None
+        )
         sat_level = self.saturation_level()
         # Saturation level might be an element or a list
         if self.is_single:
@@ -624,8 +668,10 @@ class AstroDataF2(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [int(fraction * s) if fraction and s else None
-                    for s in sat_level]
+            return [
+                int(fraction * s) if fraction and s else None
+                for s in sat_level
+            ]
 
     # TODO: is 'F2_DARK' still a tag?
     @astro_data_descriptor
@@ -683,8 +729,9 @@ class AstroDataF2(AstroDataGemini):
         float
             read noise
         """
-        return getattr(array_properties.get(self.read_mode(), None),
-                       'readnoise', None)
+        return getattr(
+            array_properties.get(self.read_mode(), None), 'readnoise', None
+        )
 
     @returns_list
     @use_keyword_if_prepared
@@ -698,8 +745,9 @@ class AstroDataF2(AstroDataGemini):
         int/float
             saturation level
         """
-        well_depth = getattr(array_properties.get(self.read_mode(), None),
-                             'welldepth', None)
+        well_depth = getattr(
+            array_properties.get(self.read_mode(), None), 'welldepth', None
+        )
         gain = self.gain()
         if self.is_single:
             try:
@@ -707,8 +755,9 @@ class AstroDataF2(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            saturation_adu = [int(well_depth / g) if well_depth and g else None
-                              for g in gain]
+            saturation_adu = [
+                int(well_depth / g) if well_depth and g else None for g in gain
+            ]
         return saturation_adu
 
     @astro_data_descriptor
@@ -781,7 +830,8 @@ class AstroDataF2(AstroDataGemini):
     #     ra, dec = float(result[0]), float(result[1])
     #
     #     if 'NON_SIDEREAL' in self.tags:
-    #         ra, dec = gmu.toicrs('APPT', ra, dec, ut_datetime=self.ut_datetime())
+    #         ra, dec = gmu.toicrs('APPT', ra, dec,
+    #                              ut_datetime=self.ut_datetime())
     #
     #     return {'lon': ra, 'lat': dec}
 
@@ -790,8 +840,13 @@ class AstroDataF2(AstroDataGemini):
         """Return the central wavelength corrected for its mask offset."""
         index = (self.disperser(pretty=True), self.filter_name(keepID=True))
         mask = dispersion_offset_mask[index]
-        disp = (self.dispersion(asNanometers=True) if self.is_single else
-                self.dispersion(asNanometers=True)[0])
-        actual_cenwave = (self.central_wavelength(asNanometers=True) -
-                          disp * mask.cenwaveoffset)
+        disp = (
+            self.dispersion(asNanometers=True)
+            if self.is_single
+            else self.dispersion(asNanometers=True)[0]
+        )
+        actual_cenwave = (
+            self.central_wavelength(asNanometers=True)
+            - disp * mask.cenwaveoffset
+        )
         return np.float32(actual_cenwave)

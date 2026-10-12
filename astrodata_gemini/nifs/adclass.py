@@ -17,13 +17,15 @@ from .lookup import config_dict, constants_by_bias, lnrs_mode_map
 class AstroDataNifs(AstroDataGemini):
     """AstroData class for NIFS data."""
 
-    __keyword_dict = dict(array_section = 'DATASEC',
-                          camera = 'INSTRUME',
-                          central_wavelength = 'GRATWAVE',
-                          detector_section = 'DATASEC',
-                          disperser = 'GRATING',
-                          focal_plane_mask = 'APERTURE',
-                          observation_epoch = 'EPOCH')
+    __keyword_dict = dict(
+        array_section = 'DATASEC',
+        camera = 'INSTRUME',
+        central_wavelength = 'GRATWAVE',
+        detector_section = 'DATASEC',
+        disperser = 'GRATING',
+        focal_plane_mask = 'APERTURE',
+        observation_epoch = 'EPOCH',
+    )
     @staticmethod
     def _matches_data(source):
         return source[0].header.get('INSTRUME', '').upper() == 'NIFS'
@@ -93,7 +95,10 @@ class AstroDataNifs(AstroDataGemini):
             if abs(bias - bias_volt) < 0.1:
                 return getattr(constants, constant_name, None)
 
-        raise KeyError("The bias value for this image doesn't match any on the lookup table")
+        raise KeyError(
+            "The bias value for this image doesn't match any on "
+            "the lookup table"
+        )
 
     @returns_list
     @use_keyword_if_prepared
@@ -132,16 +137,19 @@ class AstroDataNifs(AstroDataGemini):
         saturation_level = self.saturation_level()
         corrected = 'NONLINCR' in self.phu
 
-        linear_limit = self._from_biaspwr("linearlimit" if corrected
-                                          else "nonlinearlimit")
+        linear_limit = self._from_biaspwr(
+            "linearlimit" if corrected else "nonlinearlimit"
+        )
         if self.is_single:
             try:
                 return int(saturation_level * linear_limit)
             except TypeError:
                 return None
         else:
-            return [int(linear_limit * s) if linear_limit and s else None
-                    for s in saturation_level]
+            return [
+                int(linear_limit * s) if linear_limit and s else None
+                for s in saturation_level
+            ]
 
     @astro_data_descriptor
     def pixel_scale(self):
@@ -196,7 +204,9 @@ class AstroDataNifs(AstroDataGemini):
         """
         rn = self._from_biaspwr("readnoise")
         try:
-            return float(rn * math.sqrt(self.coadds()) / math.sqrt(self.phu.get('LNRS')))
+            return float(
+                rn * math.sqrt(self.coadds()) / math.sqrt(self.phu.get('LNRS'))
+            )
         except TypeError:
             return None
 
@@ -217,8 +227,12 @@ class AstroDataNifs(AstroDataGemini):
 
         """
         try:
-            return int(self._from_biaspwr("well") *
-                       self._from_biaspwr("gain") * self.coadds() / self.gain()[0])
+            return int(
+                self._from_biaspwr("well")
+                * self._from_biaspwr("gain")
+                * self.coadds()
+                / self.gain()[0]
+            )
         except TypeError:
             return None
 

@@ -1,10 +1,6 @@
 """Tags and descriptors for FLAMINGOS data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from .. import gmu
 from ..gemini import AstroDataGemini
@@ -13,11 +9,12 @@ from ..gemini import AstroDataGemini
 class AstroDataFlamingos(AstroDataGemini):
     """AstroData class for FLAMINGOS data."""
 
-    __keyword_dict = dict(detector = 'DETECTOR',
-                          filter_name = 'FILTER',
-                          disperser = 'GRISM',
-                          exposure_time = 'EXP_TIME',
-                          )
+    __keyword_dict = dict(
+        detector = 'DETECTOR',
+        filter_name = 'FILTER',
+        disperser = 'GRISM',
+        exposure_time = 'EXP_TIME',
+    )
 
     @staticmethod
     def _matches_data(source):

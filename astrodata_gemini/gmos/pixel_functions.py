@@ -113,7 +113,8 @@ def _get_bias_level(adinput=None):
             overscan_data = ext.data[osec[2]:osec[3], osec[0]:osec[1]]
             bias_level.append(np.median(overscan_data))
 
-        # Turn single-element list into a value if sent a single-extension slice
+        # Turn single-element list into a value if sent a single-extension
+        # slice
         if adinput.is_single:
             bias_level = bias_level[0]
     else:

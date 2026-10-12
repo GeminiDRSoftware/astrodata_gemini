@@ -3,11 +3,7 @@
 import datetime
 
 import dateutil
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 from astropy import units as u
 from astropy.coordinates import Angle
 
@@ -86,7 +82,8 @@ class AstroDataPhoenix(AstroDataGemini):
         Returns
         -------
         str
-            The name of the filter combination with or without the component ID.
+            The name of the filter combination with or without the
+            component ID.
         """
         return self._may_remove_component('FILT_POS', stripID, pretty)
 
@@ -111,9 +108,9 @@ class AstroDataPhoenix(AstroDataGemini):
         the first extension are used.  What gets returned depends on what is
         availalbe in the headers.
         """
-        utd = super().ut_datetime(strict=strict,
-                                  dateonly=dateonly,
-                                  timeonly=timeonly)
+        utd = super().ut_datetime(
+            strict=strict, dateonly=dateonly, timeonly=timeonly
+        )
         if utd is None:
             utime = self[0].hdr.get('UT')
             udate = self[0].hdr.get('UTDATE')

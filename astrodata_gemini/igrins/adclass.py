@@ -1,10 +1,6 @@
 """Tags and descriptors for IGRINS data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import  TagSet, astro_data_descriptor, astro_data_tag
 
 from ..gemini import AstroDataGemini
 
@@ -50,27 +46,42 @@ class AstroDataIgrins(AstroDataGemini):
 
     @astro_data_tag
     def _tag_dark(self):
-        if self.phu.get('OBJTYPE') == 'DARK' or self[0].hdr.get('OBJTYPE') == 'DARK':
+        if (
+            self.phu.get('OBJTYPE') == 'DARK'
+            or self[0].hdr.get('OBJTYPE') == 'DARK'
+        ):
             return TagSet(['DARK'], blocks=['IMAGE', 'SPECT'])
 
     @astro_data_tag
     def _tag_arc(self):
-        if self.phu.get('OBJTYPE') == 'ARC' or self[0].hdr.get('OBJTYPE') == 'ARC':
+        if (
+            self.phu.get('OBJTYPE') == 'ARC'
+            or self[0].hdr.get('OBJTYPE') == 'ARC'
+        ):
             return TagSet(['ARC', 'CAL'])
 
     @astro_data_tag
     def _tag_flat(self):
-        if self.phu.get('OBJTYPE') == 'FLAT' or self[0].hdr.get('OBJTYPE') == 'FLAT':
+        if (
+            self.phu.get('OBJTYPE') == 'FLAT'
+            or self[0].hdr.get('OBJTYPE') == 'FLAT'
+        ):
             return TagSet(['FLAT', 'CAL'])
 
     @astro_data_tag
     def _tag_standard(self):
-        if self.phu.get('OBJTYPE') == 'STD' or self[0].hdr.get('OBJTYPE') == 'STD':
+        if (
+            self.phu.get('OBJTYPE') == 'STD'
+            or self[0].hdr.get('OBJTYPE') == 'STD'
+        ):
             return TagSet(['STANDARD', 'CAL'])
 
     @astro_data_tag
     def _tag_science(self):
-        if self.phu.get('OBJTYPE') == 'TAR' or self[0].hdr.get('OBJTYPE') == 'TAR':
+        if (
+            self.phu.get('OBJTYPE') == 'TAR'
+            or self[0].hdr.get('OBJTYPE') == 'TAR'
+        ):
             return TagSet(['SCIENCE'])
 
     @astro_data_descriptor

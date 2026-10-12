@@ -1,10 +1,7 @@
 """Tags and descriptors for HRWFS data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
+
 
 from ..gemini import AstroDataGemini
 
@@ -12,10 +9,8 @@ from ..gemini import AstroDataGemini
 class AstroDataHrwfs(AstroDataGemini):
     """AstroData class for HRWFS data."""
 
-    __keyword_dict = dict(
-        target_ra = 'CRVAL1',
-        target_dec = 'CRVAL2',
-        )
+    __keyword_dict = dict(target_ra = 'CRVAL1', target_dec = 'CRVAL2')
+
     @staticmethod
     def _matches_data(source):
         return source[0].header.get('INSTRUME', '') == 'hrwfs'

@@ -26,9 +26,11 @@ from .lookup import (
 class AstroDataGnirs(AstroDataGemini):
     """AstroData class for GNIRS data."""
 
-    __keyword_dict = dict(central_wavelength='GRATWAVE',
-                          array_name='ARRAYID',
-                          grating_order='GRATORD')
+    __keyword_dict = dict(
+        central_wavelength='GRATWAVE',
+        array_name='ARRAYID',
+        grating_order='GRATORD',
+    )
 
     @staticmethod
     def _matches_data(source):
@@ -84,8 +86,9 @@ class AstroDataGnirs(AstroDataGemini):
     def _type_flats(self):
         if self.phu.get('OBSTYPE') == 'FLAT':
             if 'Pinholes' in self.phu.get('SLIT', ''):
-                return TagSet(['PINHOLE', 'CAL'], remove=['GCALFLAT'],
-                              blocks=['FLAT'])
+                return TagSet(
+                    ['PINHOLE', 'CAL'], remove=['GCALFLAT'], blocks=['FLAT']
+                )
 
             return TagSet(['FLAT', 'CAL'])
 
@@ -139,7 +142,9 @@ class AstroDataGnirs(AstroDataGemini):
             filter = xd_orders.get(order, None)
         else:
             filter = str(self.filter_name(pretty=True))[0]
-        dispersion = dispersion_by_config.get((grating, camera), {}).get(filter)
+        dispersion = dispersion_by_config.get((grating, camera), {}).get(
+            filter
+        )
 
         if dispersion is None:
             return None
@@ -268,8 +273,11 @@ class AstroDataGnirs(AstroDataGemini):
         except TypeError:  # either is None
             return None
         # Flipped if on bottom port unless AO is operating
-        return -offset if (self.phu.get('INPORT') == 1 and
-                           not self.is_ao()) else offset
+        return (
+            -offset
+            if (self.phu.get('INPORT') == 1 and not self.is_ao())
+            else offset
+        )
     @astro_data_descriptor
     def detector_y_offset(self):
         """
@@ -347,10 +355,12 @@ class AstroDataGnirs(AstroDataGemini):
             The name of the focal plane mask with or without the component ID.
         """
         try:
-            slit = self.slit(stripID=stripID,
-                             pretty=pretty).replace('Acquisition', 'Acq')
-            decker = self.decker(stripID=stripID,
-                                 pretty=pretty).replace('Acquisition', 'Acq')
+            slit = self.slit(stripID=stripID, pretty=pretty).replace(
+                'Acquisition', 'Acq'
+            )
+            decker = self.decker(stripID=stripID, pretty=pretty).replace(
+                'Acquisition', 'Acq'
+            )
         except AttributeError:  # either slit or decker is None
             return None
 
@@ -389,14 +399,17 @@ class AstroDataGnirs(AstroDataGemini):
         read_mode = self.read_mode()
         well_depth = self.well_depth_setting()
 
-        arrayname = self.array_name() if self.is_single else self.array_name()[0]
+        arrayname = (
+            self.array_name() if self.is_single else self.array_name()[0]
+        )
 
         if arrayname not in detector_properties:
             return None
         else:
             arraydict = detector_properties[arrayname]
-            return getattr(arraydict.get((read_mode, well_depth)),
-                           'gain', None)
+            return getattr(
+                arraydict.get((read_mode, well_depth)), 'gain', None
+            )
 
     @astro_data_descriptor
     def group_id(self):
@@ -416,19 +429,33 @@ class AstroDataGnirs(AstroDataGemini):
             desc_list = ['read_mode', 'exposure_time', 'coadds']
         else:
             # The descriptor list is the same for flats and science frames
-            desc_list = ['observation_id', 'filter_name', 'camera', 'read_mode']
+            desc_list = [
+                'observation_id',
+                'filter_name',
+                'camera',
+                'read_mode'
+            ]
 
-        desc_list.extend(['well_depth_setting', 'detector_section',
-                          'disperser', 'focal_plane_mask'])
+        desc_list.extend(
+            [
+                'well_depth_setting',
+                'detector_section',
+                'disperser',
+                'focal_plane_mask'
+            ]
+        )
 
         if 'IMAGE' in tags and 'FLAT' in tags:
             additional_item = 'GNIRS_IMAGE_FLAT'
         else:
             additional_item = None
 
-        return build_group_id(self, desc_list, prettify=('filter_name',
-                              'disperser', 'focal_plane_mask'),
-                              additional=additional_item)
+        return build_group_id(
+            self,
+            desc_list,
+            prettify=('filter_name', 'disperser', 'focal_plane_mask'),
+            additional=additional_item
+        )
 
     @astro_data_descriptor
     def nominal_photometric_zeropoint(self):
@@ -457,8 +484,12 @@ class AstroDataGnirs(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [zpt - (2.5 * math.log10(g) if in_adu else 0) if zpt and g
-                    else None for g in gain]
+            return [
+                zpt - (2.5 * math.log10(g) if in_adu else 0)
+                if zpt and g
+                else None
+                for g in gain
+            ]
 
     @use_keyword_if_prepared
     @astro_data_descriptor
@@ -479,14 +510,17 @@ class AstroDataGnirs(AstroDataGemini):
         read_mode = self.read_mode()
         well_depth = self.well_depth_setting()
 
-        arrayname = self.array_name() if self.is_single else self.array_name()[0]
+        arrayname = (
+            self.array_name() if self.is_single else self.array_name()[0]
+        )
 
         if arrayname not in detector_properties:
             return None
         else:
             arraydict = detector_properties[arrayname]
-            limit = getattr(arraydict.get((read_mode, well_depth)),
-                            'linearlimit', None)
+            limit = getattr(
+                arraydict.get((read_mode, well_depth)), 'linearlimit', None
+            )
 
         sat_level = self.saturation_level()
 
@@ -496,8 +530,7 @@ class AstroDataGnirs(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [int(limit * s) if limit and s else None
-                    for s in sat_level]
+            return [int(limit * s) if limit and s else None for s in sat_level]
 
     @astro_data_descriptor
     def pixel_scale(self):
@@ -532,7 +565,11 @@ class AstroDataGnirs(AstroDataGemini):
         if camera in pixel_scale:
             return pixel_scale[self.camera(pretty=True)]
         else:
-            raise ValueError("Unrecognized GNIRS camera, {}".format(self.camera(pretty=True)))
+            raise ValueError(
+                "Unrecognized GNIRS camera, {}".format(
+                    self.camera(pretty=True)
+                )
+            )
 
     @astro_data_descriptor
     def position_angle(self):
@@ -622,7 +659,7 @@ class AstroDataGnirs(AstroDataGemini):
         delta = delta * 3600 # to arcsecs
 
         # If more than 1000" arcsec different, WCS is probably bad
-        return (tgt_dec if delta > 1000 else wcs_dec)
+        return tgt_dec if delta > 1000 else wcs_dec
 
     @astro_data_descriptor
     def read_mode(self):
@@ -639,8 +676,9 @@ class AstroDataGnirs(AstroDataGemini):
         """
         readmode = self.phu.get('READMODE')
         if readmode is None:
-            readmode = read_modes.get((self.phu.get('LNRS'), self.phu.get('NDAVGS')),
-                           "Unknown")
+            readmode = read_modes.get(
+                (self.phu.get('LNRS'), self.phu.get('NDAVGS')), "Unknown"
+            )
         return readmode
 
     @returns_list
@@ -664,14 +702,17 @@ class AstroDataGnirs(AstroDataGemini):
         well_depth = self.well_depth_setting()
         coadds = self.coadds()
 
-        arrayname = self.array_name() if self.is_single else self.array_name()[0]
+        arrayname = (
+            self.array_name() if self.is_single else self.array_name()[0]
+        )
 
         if arrayname not in detector_properties:
             return None
         else:
             arraydict = detector_properties[arrayname]
-            read_noise = getattr(arraydict.get((read_mode, well_depth)),
-                                 'readnoise', None)
+            read_noise = getattr(
+                arraydict.get((read_mode, well_depth)), 'readnoise', None
+            )
         try:
             return read_noise * math.sqrt(coadds)
         except TypeError:
@@ -698,13 +739,17 @@ class AstroDataGnirs(AstroDataGemini):
         read_mode = self.read_mode()
         well_depth = self.well_depth_setting()
 
-        arrayname = self.array_name() if self.is_single else self.array_name()[0]
+        arrayname = (
+            self.array_name() if self.is_single else self.array_name()[0]
+        )
 
         if arrayname not in detector_properties:
             return None
         else:
             arraydict = detector_properties[arrayname]
-            well = getattr(arraydict.get((read_mode, well_depth)), 'well', None)
+            well = getattr(
+                arraydict.get((read_mode, well_depth)), 'well', None
+            )
 
         if self.is_single:
             try:
@@ -712,8 +757,9 @@ class AstroDataGnirs(AstroDataGemini):
             except TypeError:
                 return None
         else:
-            return [int(well * coadds / g) if well and g else None
-                    for g in gain]
+            return [
+                int(well * coadds / g) if well and g else None for g in gain
+            ]
 
     @astro_data_descriptor
     def slit(self, stripID=False, pretty=False):

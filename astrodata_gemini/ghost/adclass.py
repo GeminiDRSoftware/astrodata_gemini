@@ -26,7 +26,8 @@ def return_dict_for_bundle(desc_fn):
     are equal, and None is returned otherwise.
 
     This works by splitting the bundle and evaluating the descriptor on all of
-    the blue and then red arms in turn. It therefore works regardless of whether
+    the blue and then red arms in turn. It therefore works regardless of
+    whether
     the required information is in the extensions or the nascent PHU.
 
     Its behaviour on multi-extension slices is unclear.
@@ -41,7 +42,9 @@ def return_dict_for_bundle(desc_fn):
                 camera = cameras[i].lower()
                 # We've found the nascent PHU of an arm exposure
                 if namps[i] > 1:
-                    ret_value = desc_fn(self[i+1:i+namps[i]+1], *args, **kwargs)
+                    ret_value = desc_fn(
+                        self[i+1:i+namps[i]+1], *args, **kwargs
+                    )
                     i += namps[i] + 1
                 else:  # it's a slitviewer
                     ret_value = desc_fn(self[i], *args, **kwargs)
@@ -66,8 +69,11 @@ def use_nascent_phu_for_bundle(desc_fn):
     """
     def wrapper(self, *args, **kwargs):
         if 'BUNDLE' in self.tags:
-            phu_index = min(i for i, camera in enumerate(self.hdr['CAMERA'])
-                            if camera in ('BLUE', 'RED'))
+            phu_index = min(
+                i
+                for i, camera in enumerate(self.hdr['CAMERA'])
+                if camera in ('BLUE', 'RED')
+            )
             nascent_phu = self[phu_index]
             return desc_fn(nascent_phu, *args, **kwargs)
         return desc_fn(self, *args, **kwargs)
@@ -77,13 +83,14 @@ def use_nascent_phu_for_bundle(desc_fn):
 class AstroDataGhost(AstroDataGemini):
     """Class for adding tags and descriptors to GHOST data."""
 
-    __keyword_dict = dict(array_section = 'CCDSEC',
-                          array_name = 'AMPNAME',
-                          overscan_section = 'BIASSEC',
-                          res_mode = 'SMPNAME',
-                          exposure_time = 'EXPTIME',
-                          saturation_level = 'SATURATE',
-                          )
+    __keyword_dict = dict(
+        array_section = 'CCDSEC',
+        array_name = 'AMPNAME',
+        overscan_section = 'BIASSEC',
+        res_mode = 'SMPNAME',
+        exposure_time = 'EXPTIME',
+        saturation_level = 'SATURATE',
+    )
 
     def __iter__(self):
         """Yield each extension as a slice, or self if already a single."""
@@ -115,7 +122,8 @@ class AstroDataGhost(AstroDataGemini):
                 # (which is explicitly done in debundling)
                 objhdr = obj.hdr if obj.is_single else obj[0].hdr
                 phu = self.phu + objhdr
-                # because people just do things without understanding the ramifications
+                # because people just do things without understanding the
+                # ramifications
                 phu['EXPTIME'] = objhdr['EXPTIME']
                 obj.phu = phu
                 return obj
@@ -127,7 +135,8 @@ class AstroDataGhost(AstroDataGemini):
             else:
                 phu = self._all_nddatas[min(obj.indices)].meta['header']
             obj.phu = phu
-            # This has to happen way down here because only by resetting the PHU
+            # This has to happen way down here because only by resetting the
+            # PHU
             # can we prevent the 'BUNDLE' tag appearing and hence allow more
             # slicing to occur
             if len(set(ext.shape for ext in obj)) > 1:
@@ -251,8 +260,17 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_tag
     def _status_processed_ghost_cals(self):
         """Define the 'processed data' tag set for GHOST data."""
-        kwords = set(['PRSLITIM', 'PRSLITBI', 'PRSLITDA', 'PRSLITFL',
-                      'PRWAVLFT', 'PRPOLYFT', 'PROCSTND'])
+        kwords = set(
+            [
+                'PRSLITIM',
+                'PRSLITBI',
+                'PRSLITDA',
+                'PRSLITFL',
+                'PRWAVLFT',
+                'PRPOLYFT',
+                'PROCSTND'
+            ]
+        )
         if set(self.phu) & kwords:
             return TagSet(['PROCESSED'])
 
@@ -316,12 +334,18 @@ class AstroDataGhost(AstroDataGemini):
         detsec = self.detector_section(pretty=True)
         # Combine the amp name(s) and detector section(s)
         if self.is_single:
-            return "'{}':{}".format(ampname,
-                        detsec) if ampname and detsec else None
+            return (
+                "'{}':{}".format(ampname, detsec)
+                if ampname and detsec
+                else None
+            )
         else:
-            ret_value = ["'{}':{}".format(a,d)
-                         if a is not None and d is not None else None
-                         for a,d in zip(ampname, detsec)]
+            ret_value = [
+                "'{}':{}".format(a,d)
+                if a is not None and d is not None
+                else None
+                for a,d in zip(ampname, detsec)
+            ]
             if ret_value == ret_value[::-1]:
                 return ret_value[:1]
             return ret_value
@@ -361,7 +385,10 @@ class AstroDataGhost(AstroDataGemini):
         if self.is_single:
             return f"{self.detector_name()}, {self.hdr.get('AMPNAME')}"
         else:
-            return [f"{ext.detector_name()}, {ext.hdr.get('AMPNAME')}" for ext in self]
+            return [
+                f"{ext.detector_name()}, {ext.hdr.get('AMPNAME')}"
+                for ext in self
+            ]
 
     @astro_data_descriptor
     @return_dict_for_bundle
@@ -557,8 +584,9 @@ class AstroDataGhost(AstroDataGemini):
         # CJS: Generally need to stop FLATs being stacked with science
         additional_item = 'FLAT' if 'FLAT' in tags else None
 
-        return build_group_id(self, desc_list, prettify=[],
-                              additional=additional_item)
+        return build_group_id(
+            self, desc_list, prettify=[], additional=additional_item
+        )
 
     @astro_data_descriptor
     def non_linear_level(self):
@@ -622,13 +650,16 @@ class AstroDataGhost(AstroDataGemini):
             The read mode
         """
         # TODO: get appropriate return values
-        _read_mode_dict = {("slow", "low"): "slow",
-                           ("medium", "low"): "medium",
-                           ("fast", "low"): "rapid",
-                           ("fast", "high"): "bright",
-                           ("standard", "standard"): "standard"}  # SLITV
-        return _read_mode_dict.get((self.read_speed_setting(),
-                                    self.gain_setting()), "unknown")
+        _read_mode_dict = {
+            ("slow", "low"): "slow",
+            ("medium", "low"): "medium",
+            ("fast", "low"): "rapid",
+            ("fast", "high"): "bright",
+            ("standard", "standard"): "standard"
+        }  # SLITV
+        return _read_mode_dict.get(
+            (self.read_speed_setting(), self.gain_setting()), "unknown"
+        )
 
     # TODO: read_noise(): see comments on gain()
 
@@ -645,7 +676,8 @@ class AstroDataGhost(AstroDataGemini):
         """
         if 'SLITV' in self.tags:
             return "standard"
-        return ("slow", "medium", "fast", "unknown")[self.phu.get('READMODE', 3)]
+        return ("slow", "medium", "fast", "unknown")[
+            self.phu.get('READMODE', 3)]
 
     @astro_data_descriptor
     def res_mode(self):

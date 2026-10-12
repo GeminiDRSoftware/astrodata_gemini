@@ -1,10 +1,7 @@
 """Tags and descriptors for Hokupa'a+QUIRC data."""
 
-from astrodata import (
-    TagSet,
-    astro_data_descriptor,
-    astro_data_tag,
-)
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
+
 
 from ..gemini import AstroDataGemini
 
@@ -13,9 +10,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     """AstroData class for Hokupa'a+QUIRC data."""
 
     __keyword_dict = dict(
-        airmass = 'AMEND',
-        wavelength_band = 'FILTER',
-        observation_type = 'IMAGETYP',
+        airmass='AMEND', wavelength_band='FILTER', observation_type='IMAGETYP'
     )
 
     @staticmethod
