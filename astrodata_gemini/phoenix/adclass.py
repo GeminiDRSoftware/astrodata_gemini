@@ -1,19 +1,16 @@
 """Tags and descriptors for Phoenix data."""
 
 import datetime
-import re
 
 import dateutil
 from astrodata import (
     TagSet,
     astro_data_descriptor,
     astro_data_tag,
-    returns_list,
 )
 from astropy import units as u
 from astropy.coordinates import Angle
 
-from .. import gmu
 from ..gemini import AstroDataGemini
 
 

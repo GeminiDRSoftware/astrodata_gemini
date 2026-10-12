@@ -2239,7 +2239,7 @@ class AstroDataGemini(AstroData):
                 return None
             try:
                 pixel_scale_list.append(3600 * np.sqrt(abs(np.linalg.det(ext.wcs.forward_transform['cd_matrix'].matrix))))
-            except (IndexError, AttributeError) as iae:
+            except (IndexError, AttributeError):
                 scale = empirical_pixel_scale(ext)
                 if scale is not None:
                     pixel_scale_list.append(scale)

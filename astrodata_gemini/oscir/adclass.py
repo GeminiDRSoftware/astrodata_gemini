@@ -2,7 +2,6 @@
 
 from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
-from .. import gmu
 from ..gemini import AstroDataGemini
 
 

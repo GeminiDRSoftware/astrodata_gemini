@@ -5,7 +5,7 @@ This module defines AstroData classes for IGRINS instruments, extending
 `astrodata_gemini.igrins.AstroDataIgrins` to provide instrument-specific
 metadata handling and data descriptors for IGRINS and IGRINS-2 data.
 """
-import datetime
+#import datetime
 
 import numpy as np
 from astrodata import (
