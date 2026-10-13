@@ -13,7 +13,7 @@ from ..gemini import AstroDataGemini
 class AstroDataPhoenix(AstroDataGemini):
     """AstroData class for Phoenix data."""
 
-    __keyword_dict = dict(focal_plane_mask = "SLIT_POS")
+    __keyword_dict = dict(focal_plane_mask="SLIT_POS")
 
     @staticmethod
     def _matches_data(source):

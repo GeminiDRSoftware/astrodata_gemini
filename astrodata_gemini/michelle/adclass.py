@@ -12,7 +12,7 @@ from ..gemini import AstroDataGemini
 
 class AstroDataMichelle(AstroDataGemini):
     """AstroData class for Michelle data."""
-    
+
     __keyword_dict = dict(
         central_wavelength="GRATPOS",
         coadds="NUMEXPOS",

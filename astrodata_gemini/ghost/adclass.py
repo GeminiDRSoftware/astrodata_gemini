@@ -32,6 +32,7 @@ def return_dict_for_bundle(desc_fn):
 
     Its behaviour on multi-extension slices is unclear.
     """
+
     def wrapper(self, *args, **kwargs):
         if not self.is_single and "BUNDLE" in self.tags:
             ret_dict = dict()
@@ -43,7 +44,7 @@ def return_dict_for_bundle(desc_fn):
                 # We've found the nascent PHU of an arm exposure
                 if namps[i] > 1:
                     ret_value = desc_fn(
-                        self[i+1:i+namps[i]+1], *args, **kwargs
+                        self[i + 1 : i + namps[i] + 1], *args, **kwargs
                     )
                     i += namps[i] + 1
                 else:  # it's a slitviewer
@@ -57,6 +58,7 @@ def return_dict_for_bundle(desc_fn):
                     ret_dict[camera] = ret_value
             return ret_dict
         return desc_fn(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -67,6 +69,7 @@ def use_nascent_phu_for_bundle(desc_fn):
     For bundles, where the PHU is minimal, the first nascent PHU (of a
     red/blue arm) is provided instead.
     """
+
     def wrapper(self, *args, **kwargs):
         if "BUNDLE" in self.tags:
             phu_index = min(
@@ -77,6 +80,7 @@ def use_nascent_phu_for_bundle(desc_fn):
             nascent_phu = self[phu_index]
             return desc_fn(nascent_phu, *args, **kwargs)
         return desc_fn(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -84,12 +88,12 @@ class AstroDataGhost(AstroDataGemini):
     """Class for adding tags and descriptors to GHOST data."""
 
     __keyword_dict = dict(
-        array_section = "CCDSEC",
-        array_name = "AMPNAME",
-        overscan_section = "BIASSEC",
-        res_mode = "SMPNAME",
-        exposure_time = "EXPTIME",
-        saturation_level = "SATURATE",
+        array_section="CCDSEC",
+        array_name="AMPNAME",
+        overscan_section="BIASSEC",
+        res_mode="SMPNAME",
+        exposure_time="EXPTIME",
+        saturation_level="SATURATE",
     )
 
     def __iter__(self):
@@ -111,10 +115,10 @@ class AstroDataGhost(AstroDataGemini):
         """
         obj = super().__getitem__(idx)
         if "BUNDLE" in self.tags:
-            #print("BUNDLE", idx, obj._mapping)
+            # print("BUNDLE", idx, obj._mapping)
             if max(obj.indices) - min(obj.indices) != len(obj.indices) - 1:
                 raise ValueError("Bundles can only be sliced contiguously")
-            #print(obj.tags)
+            # print(obj.tags)
             # Find the nascent PHU if it's not a slit viewer, keep PHU if it is
             # this copes with CAMERA return a list or a string (single-slice)
             if obj.hdr.get("CAMERA")[0].startswith("S"):
@@ -141,7 +145,7 @@ class AstroDataGhost(AstroDataGemini):
             # slicing to occur
             if len(set(ext.shape for ext in obj)) > 1:
                 raise ValueError("Bundles must be sliced from the same camera")
-            #print("RETURNING", len(obj))
+            # print("RETURNING", len(obj))
         return obj
 
     @astro_data_descriptor
@@ -208,8 +212,9 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_tag
     def _tag_slitflat(self):
         """Define the 'slitflat data' tag set for GHOST data."""
-        if (self.phu.get("OBSTYPE") == "FLAT" and
-            self.phu.get("CAMERA", "").lower().startswith("slit")):
+        if self.phu.get("OBSTYPE") == "FLAT" and self.phu.get(
+            "CAMERA", ""
+        ).lower().startswith("slit"):
             return TagSet(["CAL", "SLITFLAT"])
 
     @astro_data_tag
@@ -223,8 +228,7 @@ class AstroDataGhost(AstroDataGemini):
     def _tag_slitv(self):
         """Define the 'slit data' tag set for GHOST data."""
         if self.phu.get("CAMERA", "").lower().startswith("slit"):
-            return TagSet(["SLITV", "SLIT"],
-                          blocks=["SPECT", "BUNDLE"])
+            return TagSet(["SLITV", "SLIT"], blocks=["SPECT", "BUNDLE"])
 
     @astro_data_tag
     def _tag_image(self):
@@ -268,7 +272,7 @@ class AstroDataGhost(AstroDataGemini):
                 "PRSLITFL",
                 "PRWAVLFT",
                 "PRPOLYFT",
-                "PROCSTND"
+                "PROCSTND",
             ]
         )
         if set(self.phu) & kwords:
@@ -279,8 +283,8 @@ class AstroDataGhost(AstroDataGemini):
         if "PROCSTND" in self.phu:
             return TagSet(["STANDARD"])
 
-    #@astro_data_tag
-    #def _tag_binning_mode(self):
+    # @astro_data_tag
+    # def _tag_binning_mode(self):
     #    """
     #    TODO: this should not be a tag
     #    Define the tagset for GHOST data of different binning modes.
@@ -328,7 +332,8 @@ class AstroDataGhost(AstroDataGemini):
         # Note that tiled arrays won't have an array_name, so we'll fake it
         # FIXME correctly fetch keyword for tileArrays primitive
         if self.phu.get("TILEARRY", None) is not None:
-            ampname = [0, ]
+            # Can ampname be set to [0] instead?
+            ampname = [0, ]  # fmt: skip
         else:
             ampname = self.array_name()
         detsec = self.detector_section(pretty=True)
@@ -341,10 +346,10 @@ class AstroDataGhost(AstroDataGemini):
             )
         else:
             ret_value = [
-                "'{}':{}".format(a,d)
+                "'{}':{}".format(a, d)
                 if a is not None and d is not None
                 else None
-                for a,d in zip(ampname, detsec)
+                for a, d in zip(ampname, detsec)
             ]
             if ret_value == ret_value[::-1]:
                 return ret_value[:1]
@@ -404,7 +409,7 @@ class AstroDataGhost(AstroDataGemini):
     # FIXME Remove once headers corrected
     @astro_data_descriptor
     @gmu.return_requested_units()
-    def central_wavelength(self): # pragma: no cover
+    def central_wavelength(self):  # pragma: no cover
         """Return a dummy value to work around current Gemini cal_mgr."""
         val = self.phu.get(self._keyword_for("central_wavelength"), None)
 
@@ -435,6 +440,7 @@ class AstroDataGhost(AstroDataGemini):
         int
             The detector binning
         """
+
         def _get_xbin(binning):
             try:
                 return int(binning.split()[0])
@@ -460,6 +466,7 @@ class AstroDataGhost(AstroDataGemini):
         int
             The detector binning
         """
+
         def _get_ybin(binning):
             try:
                 return int(binning.split()[1])
@@ -493,7 +500,7 @@ class AstroDataGhost(AstroDataGemini):
         return super().exposure_time()
 
         # Don't let this special logic happen for bundles
-        #if 'BUNDLE' not in self.tags:
+        # if 'BUNDLE' not in self.tags:
         #    if exp_time_default is None:
         #        exposure_time = self[0].hdr.get(
         #            self._keyword_for('exposure_time'),
@@ -502,7 +509,7 @@ class AstroDataGhost(AstroDataGemini):
         #            return None
         #        return exposure_time
         #
-        #return exp_time_default
+        # return exp_time_default
 
     @astro_data_descriptor
     def focal_plane_mask(self, *args, **kwargs):
@@ -518,7 +525,7 @@ class AstroDataGhost(AstroDataGemini):
             "HR"/"SR" as appropriate
         """
         try:
-            return self.res_mode().upper()[0]+"R"
+            return self.res_mode().upper()[0] + "R"
         except AttributeError:
             return None
 
@@ -655,7 +662,7 @@ class AstroDataGhost(AstroDataGemini):
             ("medium", "low"): "medium",
             ("fast", "low"): "rapid",
             ("fast", "high"): "bright",
-            ("standard", "standard"): "standard"
+            ("standard", "standard"): "standard",
         }  # SLITV
         return _read_mode_dict.get(
             (self.read_speed_setting(), self.gain_setting()), "unknown"
@@ -677,7 +684,8 @@ class AstroDataGhost(AstroDataGemini):
         if "SLITV" in self.tags:
             return "standard"
         return ("slow", "medium", "fast", "unknown")[
-            self.phu.get("READMODE", 3)]
+            self.phu.get("READMODE", 3)
+        ]
 
     @astro_data_descriptor
     def res_mode(self):
@@ -694,7 +702,7 @@ class AstroDataGhost(AstroDataGemini):
         try:
             if mode.endswith("HI_ONLY"):
                 return "high"
-            elif (mode.endswith("LO_ONLY") or mode.endswith("STD_ONLY")):
+            elif mode.endswith("LO_ONLY") or mode.endswith("STD_ONLY"):
                 return "std"
         except Exception:
             pass

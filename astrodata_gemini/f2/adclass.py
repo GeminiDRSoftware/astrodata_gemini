@@ -29,7 +29,7 @@ class AstroDataF2(AstroDataGemini):
         central_wavelength="WAVELENG",
         disperser="GRISM",
         lyot_stop="LYOT",
-    )
+    )  # fmt: skip
 
     @staticmethod
     def _matches_data(source):
@@ -123,7 +123,6 @@ class AstroDataF2(AstroDataGemini):
         if self.phu.get("PROCSTND"):
             return TagSet(["STANDARD", "CAL"])
 
-
     @returns_list
     @astro_data_descriptor
     def array_section(self, pretty=False):
@@ -156,7 +155,7 @@ class AstroDataF2(AstroDataGemini):
         if "PREPARED" in self.tags:
             return super().array_section(pretty=pretty)
 
-        value_filter = (str if pretty else Section.from_string)
+        value_filter = str if pretty else Section.from_string
         return value_filter("[1:2048,1:2048]")
 
     def camera(self, stripID=False, pretty=False):
@@ -429,6 +428,7 @@ class AstroDataF2(AstroDataGemini):
             if filter3:
                 filter3 = gmu.removeComponentID(filter3)
         if keepID:
+
             def filter_with_id(fltname, fltid):
                 return fltname if fltid is None else (fltname + "_" + fltid)
 
@@ -440,7 +440,7 @@ class AstroDataF2(AstroDataGemini):
             )
             if filter3:
                 filter3 = filter_with_id(
-                    gmu.removeComponentID(filter3),gmu.getComponentID(filter3)
+                    gmu.removeComponentID(filter3), gmu.getComponentID(filter3)
                 )
 
         filter = [filter1, filter2]
@@ -516,7 +516,7 @@ class AstroDataF2(AstroDataGemini):
             "observation_id",
             "filter_name",
             "camera",
-            "exposure_time"
+            "exposure_time",
         ]
         ## !!! KL: added exposure_time to science_id for QAP.  The sky
         ## !!! subtraction seems unable to deal with difference exposure time
@@ -552,7 +552,7 @@ class AstroDataF2(AstroDataGemini):
             self,
             id_descriptor_list,
             prettify=["filter_name", "disperser", "focal_plane_mask"],
-            additional=additional_item
+            additional=additional_item,
         )
 
     # @astro_data_descriptor
@@ -638,7 +638,8 @@ class AstroDataF2(AstroDataGemini):
                     zpt - (2.5 * math.log10(g) if in_adu else 0)
                     if zpt and g
                     else None
-                ) for g in gain
+                )
+                for g in gain
             ]
 
     @returns_list

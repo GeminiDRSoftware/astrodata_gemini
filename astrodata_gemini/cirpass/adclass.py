@@ -11,7 +11,8 @@ class AstroDataCirpass(AstroDataGemini):
     __keyword_dict = dict(
         ra = "TEL_RA",
         dec = "TEL_DEC",
-    )
+    )  # fmt: skip
+
     @staticmethod
     def _matches_data(source):
         return source[0].header.get("INSTRUME", "") == "CIRPASS"

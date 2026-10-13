@@ -8,7 +8,7 @@ from ..gemini import AstroDataGemini
 class AstroDataHrwfs(AstroDataGemini):
     """AstroData class for HRWFS data."""
 
-    __keyword_dict = dict(target_ra = "CRVAL1", target_dec = "CRVAL2")
+    __keyword_dict = dict(target_ra="CRVAL1", target_dec="CRVAL2")
 
     @staticmethod
     def _matches_data(source):

@@ -45,9 +45,9 @@ def get_bias_level(adinput=None, estimate=True):
         estimate = True  # so we have to estimate
     __ALLOWED_TYPES__ = ["GMOS"]
     if not set(__ALLOWED_TYPES__).issubset(adinput.tags):
-        msg = "{}.{} only works for {} data".format(__name__,
-                                                    "get_bias_level",
-                                                    __ALLOWED_TYPES__)
+        msg = "{}.{} only works for {} data".format(
+            __name__, "get_bias_level", __ALLOWED_TYPES__
+        )
         raise NotImplementedError(msg)
     elif estimate:
         bias_level = _get_bias_level_estimate(adinput=adinput)
@@ -112,7 +112,7 @@ def _get_bias_level(adinput=None):
                 osec[1] -= 1
 
             # Extract overscan data. In numpy arrays, y indices come first.
-            overscan_data = ext.data[osec[2]:osec[3], osec[0]:osec[1]]
+            overscan_data = ext.data[osec[2] : osec[3], osec[0] : osec[1]]
             bias_level.append(np.median(overscan_data))
 
         # Turn single-element list into a value if sent a single-extension
@@ -161,8 +161,10 @@ def _get_bias_level_estimate(adinput=None):
 
     # Create appropriate object (list/value) of LUT bias level(s)
     if isinstance(ampname, list):
-        lut_bias = [bias_dict.get((read_speed_setting, gain_setting, a))
-                for a in ampname]
+        lut_bias = [
+            bias_dict.get((read_speed_setting, gain_setting, a))
+            for a in ampname
+        ]
     else:
         lut_bias = bias_dict.get((read_speed_setting, gain_setting, ampname))
 
@@ -171,13 +173,17 @@ def _get_bias_level_estimate(adinput=None):
     raw_bias_levels = adinput.hdr.get("RAWBIAS")
 
     try:
-        bias_level = [o if o is not None else
-                      r if r is not None else b
-                      for o,r,b in zip(overscan_values, raw_bias_levels,
-                                       lut_bias)]
+        bias_level = [
+            o if o is not None else r if r is not None else b
+            for o, r, b in zip(overscan_values, raw_bias_levels, lut_bias)
+        ]
     except TypeError:
-        bias_level = overscan_values if overscan_values is not None else \
-            raw_bias_levels if raw_bias_levels is not None else \
-            lut_bias
+        bias_level = (
+            overscan_values
+            if overscan_values is not None
+            else raw_bias_levels
+            if raw_bias_levels is not None
+            else lut_bias
+        )
 
     return bias_level

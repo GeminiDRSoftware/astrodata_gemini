@@ -84,12 +84,11 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
 
         Returns
         -------
-        <str>: 
+        <str>:
             instrument name
 
         """
         return self.phu.get(self._keyword_for("instrument"))
-
 
     @astro_data_descriptor
     def observation_type(self):
@@ -98,7 +97,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
 
         Returns
         -------
-        <str>: 
+        <str>:
             observation type.
 
         """

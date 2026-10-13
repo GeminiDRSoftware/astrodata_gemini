@@ -15,11 +15,11 @@ class AstroDataTrecs(AstroDataGemini):
     """AstroData class for T-ReCS data."""
 
     __keyword_dict = dict(
-        camera = "OBSMODE",
-        disperser = "GRATING",
-        exposure_time = "OBJTIME",
-        focal_plane_mask = "SLIT",
-         pupil_mask = "PUPILIMA"
+        camera="OBSMODE",
+        disperser="GRATING",
+        exposure_time="OBJTIME",
+        focal_plane_mask="SLIT",
+        pupil_mask="PUPILIMA",
     )
 
     @staticmethod

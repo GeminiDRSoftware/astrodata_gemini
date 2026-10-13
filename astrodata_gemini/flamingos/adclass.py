@@ -10,10 +10,10 @@ class AstroDataFlamingos(AstroDataGemini):
     """AstroData class for FLAMINGOS data."""
 
     __keyword_dict = dict(
-        detector = "DETECTOR",
-        filter_name = "FILTER",
-        disperser = "GRISM",
-        exposure_time = "EXP_TIME",
+        detector="DETECTOR",
+        filter_name="FILTER",
+        disperser="GRISM",
+        exposure_time="EXP_TIME",
     )
 
     @staticmethod
@@ -39,7 +39,7 @@ class AstroDataFlamingos(AstroDataGemini):
     @astro_data_tag
     def _tag_twilight(self):
         if "twilight" in self.phu.get("OBJECT", "").lower():
-            return TagSet(["TWILIGHT", "CAL"])    
+            return TagSet(["TWILIGHT", "CAL"])
 
     @astro_data_tag
     def _tag_dark(self):
@@ -121,7 +121,7 @@ class AstroDataFlamingos(AstroDataGemini):
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         """Return the filter name; stripID and pretty have no effect."""
-        return self.phu.get(self._keyword_for("filter_name"))    
+        return self.phu.get(self._keyword_for("filter_name"))
 
     @astro_data_descriptor
     def ra(self):

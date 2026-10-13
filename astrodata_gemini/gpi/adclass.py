@@ -20,6 +20,7 @@ class AstroDataGpi(AstroDataGemini):
     @classmethod
     def read(cls, source):
         """Read the source, renaming the DQ extension 3 as SCI extension 2."""
+
         def gpi_parser(hdu):
             if (
                 hdu.header.get("EXTNAME") == "DQ"

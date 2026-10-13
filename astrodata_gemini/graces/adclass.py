@@ -9,7 +9,7 @@ from ..gemini import AstroDataGemini
 class AstroDataGraces(AstroDataGemini):
     """AstroData class for GRACES data."""
 
-    __keyword_dict = dict(detector = "DETECTOR")
+    __keyword_dict = dict(detector="DETECTOR")
 
     @staticmethod
     def _matches_data(source):

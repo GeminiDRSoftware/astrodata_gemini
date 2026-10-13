@@ -20,9 +20,9 @@ class AstroDataGsaoi(AstroDataGemini):
 
     __keyword_dict = dict(
         array_section="CCDSEC",
-      camera="DETECTOR",
-      central_wavelength="WAVELENG",
-      detector_name="DETECTOR",
+        camera="DETECTOR",
+        central_wavelength="WAVELENG",
+        detector_name="DETECTOR",
     )
 
     @staticmethod
@@ -148,9 +148,9 @@ class AstroDataGsaoi(AstroDataGemini):
         #       change is the program ID.  That's a bit procedural though
         #       but that's the only thing left.
         #
-        #dark_id = ["exposure_time", "coadds"]
+        # dark_id = ["exposure_time", "coadds"]
         flat_id = ["filter_name", "exposure_time", "program_id"]
-        #flat_twilight_id = ["filter_name"]
+        # flat_twilight_id = ["filter_name"]
         science_id = ["observation_id", "filter_name", "exposure_time"]
 
         # Associate rules with data type
@@ -196,6 +196,7 @@ class AstroDataGsaoi(AstroDataGemini):
         float/list
             zeropoint values, one per SCI extension
         """
+
         def _zpt(array, filt, gain, in_adu):
             zpt = lookup.nominal_zeropoints.get((filt, array))
             try:
@@ -388,5 +389,5 @@ class AstroDataGsaoi(AstroDataGemini):
             return getattr(
                 lookup.array_properties.get((read_speed, array_names)),
                 attr,
-                None
+                None,
             )

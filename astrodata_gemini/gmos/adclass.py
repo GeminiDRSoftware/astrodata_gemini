@@ -37,7 +37,7 @@ class AstroDataGmos(AstroDataGemini):
     def _matches_data(source):
         return source[0].header.get("INSTRUME", "").upper() in (
             "GMOS-N",
-            "GMOS-S"
+            "GMOS-S",
         )
 
     @astro_data_tag
@@ -105,7 +105,7 @@ class AstroDataGmos(AstroDataGemini):
                 [
                     "TWILIGHT",
                     "CAL",
-                    "SLITILLUM" if self._tag_is_spect() else "FLAT"
+                    "SLITILLUM" if self._tag_is_spect() else "FLAT",
                 ]
             )
 
@@ -129,7 +129,7 @@ class AstroDataGmos(AstroDataGemini):
             ("MASKTYP", 0),
             ("MASKNAME", "None"),
             ("GRATING", "MIRROR")
-        )
+        )  # fmt: skip
 
         matches = (self.phu.get(kw) == value for (kw, value) in pairs)
         if any(matches):
@@ -153,7 +153,7 @@ class AstroDataGmos(AstroDataGemini):
             "r": "ONESLIT_RED",
             "IFU-2": "TWOSLIT",
             "IFU-NS-2": "TWOSLIT",
-            "s": "TWOSLIT"
+            "s": "TWOSLIT",
         }
 
         names = {key for key in mapping.keys() if key.startswith("IFU")}
@@ -188,7 +188,7 @@ class AstroDataGmos(AstroDataGemini):
             return
 
         if self.phu.get("MASKTYP") == 1 and self.phu.get(
-                "MASKNAME", ""
+            "MASKNAME", ""
         ).endswith("arcsec"):
             return TagSet(["LS"])
 
@@ -306,7 +306,7 @@ class AstroDataGmos(AstroDataGemini):
                 "SDSU II CCD": "EEV",
                 "SDSU II e2v DD CCD42-90": "e2vDD",
                 "S10892": "Hamamatsu-S",
-                "S10892-N": "Hamamatsu-N"
+                "S10892-N": "Hamamatsu-N",
             }
             return pretty_detname_dict.get(self.phu.get("DETTYPE"))
         else:
@@ -530,7 +530,7 @@ class AstroDataGmos(AstroDataGemini):
                 np.interp(
                     greq,
                     lookup.gratingeq[::-1],
-                    np.arange(len(lookup.gratingeq), 0, -1)
+                    np.arange(len(lookup.gratingeq), 0, -1),
                 )
             )
 
@@ -541,7 +541,7 @@ class AstroDataGmos(AstroDataGemini):
                 * self.detector_x_bin()
                 / self.detector_y_bin()
                 * cenwave
-            ) / (206265. * greq)
+            ) / (206265.0 * greq)
 
         else:
             dispersion = None
@@ -765,7 +765,7 @@ class AstroDataGmos(AstroDataGemini):
             id_descriptor_list = [
                 "observation_id",
                 "filter_name",
-                "central_wavelength"
+                "central_wavelength",
             ]
         else:  # SPECT science
             id_descriptor_list = ["observation_id", "filter_name"]
@@ -1002,8 +1002,7 @@ class AstroDataGmos(AstroDataGemini):
         # Get the right mapping (detector-dependent)
         det_key = (
             "Hamamatsu"
-            if
-            self.detector_name(pretty=True).startswith("Hamamatsu")
+            if self.detector_name(pretty=True).startswith("Hamamatsu")
             else "default"
         )
         mode_dict = lookup.read_mode_map.get(det_key)

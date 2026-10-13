@@ -103,7 +103,7 @@ class AstroDataNici(AstroDataGemini):
         # This assumes that precisely one of FILTER_R or FILTER_B is defined
         # in each HDU
         try:
-            filters = [r if b is None else b for r,b in zip(filt_r, filt_b)]
+            filters = [r if b is None else b for r, b in zip(filt_r, filt_b)]
             return "+".join(
                 [
                     gmu.removeComponentID(f) if pretty or stripID else f

@@ -5,7 +5,7 @@ This module defines AstroData classes for IGRINS instruments, extending
 `astrodata_gemini.igrins.AstroDataIgrins` to provide instrument-specific
 metadata handling and data descriptors for IGRINS and IGRINS-2 data.
 """
-#import datetime
+# import datetime
 
 import numpy as np
 from astrodata import (
@@ -120,9 +120,9 @@ class AstroDataIgrins2(AstroDataGemini):
     """
 
     __keyword_dict = dict(
-        wavelength_band = "FILTER",
-        observation_type = "OBSTYPE",
-        observation_class = "OBSCLASS",
+        wavelength_band="FILTER",
+        observation_type="OBSTYPE",
+        observation_class="OBSCLASS",
     )
 
     @astro_data_descriptor
@@ -188,7 +188,6 @@ class AstroDataIgrins2(AstroDataGemini):
         if otype in ["STD", "TAR"]:
             otype = "OBJECT"
         elif otype in ["FLAT"]:
-
             if self._check_if_flat_lamp_on():
                 ftype = "ON"
             else:
@@ -198,7 +197,7 @@ class AstroDataIgrins2(AstroDataGemini):
 
         return otype
 
-    #@use_keyword_if_prepared
+    # @use_keyword_if_prepared
     @astro_data_descriptor
     def exposure_time(self):
         """
@@ -212,8 +211,7 @@ class AstroDataIgrins2(AstroDataGemini):
         exptimes = list(set(self.hdr.get("EXPTIME")) - {None})
         if len(exptimes) == 1:
             return exptimes.pop()
-        raise ValueError("Exposure times are not identical: "
-                         ",".join(exptimes))
+        raise ValueError("Exposure times are not identical: ,".join(exptimes))
 
     @staticmethod
     def _matches_data(source):
@@ -245,14 +243,20 @@ class AstroDataIgrins2(AstroDataGemini):
             return TagSet(["FLAT", "CAL"])
 
     def _check_if_flat_lamp_on(self):
-        if (self.phu.get("GCALLAMP") == "QH"
-                and self.phu.get("GCALSHUT") == "CLOSED"):
+        if (
+            self.phu.get("GCALLAMP") == "QH"
+            and self.phu.get("GCALSHUT") == "CLOSED"
+        ):
             return True
-        elif (self.phu.get("GCALLAMP") == "IRhigh"
-              and self.phu.get("GCALSHUT") == "OPEN"):
+        elif (
+            self.phu.get("GCALLAMP") == "IRhigh"
+            and self.phu.get("GCALSHUT") == "OPEN"
+        ):
             return True
-        elif (self.phu.get("GCALLAMP") == "IRhigh"
-              and self.phu.get("GCALSHUT") == "CLOSED"):
+        elif (
+            self.phu.get("GCALLAMP") == "IRhigh"
+            and self.phu.get("GCALSHUT") == "CLOSED"
+        ):
             return False
 
     @astro_data_tag
@@ -268,8 +272,10 @@ class AstroDataIgrins2(AstroDataGemini):
 
     @astro_data_tag
     def _tag_sky(self):
-        if (self.phu.get("OBSTYPE") == "OBJECT" and
-                "sky" in self.phu.get("OBJECT").lower()):
+        if (
+            self.phu.get("OBSTYPE") == "OBJECT"
+            and "sky" in self.phu.get("OBJECT").lower()
+        ):
             # We don't want "SKY" if it's become a processed arc
             return TagSet(["SKY", "CAL"], blocked_by=["PROCESSED"])
 
@@ -284,14 +290,16 @@ class AstroDataIgrins2(AstroDataGemini):
         ):
             return TagSet(["STANDARD", "CAL"])
 
-    #@astro_data_tag -- commented out so not run
+    # @astro_data_tag -- commented out so not run
     def _tag_caltype(self):
         tags = TagSet()
 
         if self.phu.get("OBSTYPE").strip() == "FLAT":
             tags.add.add("FLAT")
-        elif (self.phu.get("OBSTYPE") == "OBJECT"
-              and self.phu.get("OBSCLASS") == "partnerCal"):
+        elif (
+            self.phu.get("OBSTYPE") == "OBJECT"
+            and self.phu.get("OBSCLASS") == "partnerCal"
+        ):
             if "sky" in self.phu.get("OBJECT").lower():
                 tags.add.add("SKY")
                 tags.add.add("ARC")
@@ -300,11 +308,15 @@ class AstroDataIgrins2(AstroDataGemini):
         else:
             tags.add.add("SCIENCE")
 
-        if (self.phu.get("GCALLAMP") == "QH"
-                and self.phu.get("GCALSHUT") == "CLOSED"):
+        if (
+            self.phu.get("GCALLAMP") == "QH"
+            and self.phu.get("GCALSHUT") == "CLOSED"
+        ):
             tags.add.add("LAMPON")
-        elif (self.phu.get("GCALLAMP") == "IRhigh"
-              and self.phu.get("GCALSHUT") == "CLOSED"):
+        elif (
+            self.phu.get("GCALLAMP") == "IRhigh"
+            and self.phu.get("GCALSHUT") == "CLOSED"
+        ):
             tags.add.add("LAMPOFF")
 
         return tags
@@ -314,7 +326,6 @@ class AstroDataIgrins2(AstroDataGemini):
         band = self.phu.get("FILTER")
         if band:
             return TagSet([band, "SPECT", "XD"], blocks=["BUNDLE"])
-
 
     @astro_data_descriptor
     def array_name(self):
@@ -355,7 +366,7 @@ class AstroDataIgrins2(AstroDataGemini):
         if "PREPARED" in self.tags:
             return super().array_section(pretty=pretty)
 
-        value_filter = (str if pretty else Section.from_string)
+        value_filter = str if pretty else Section.from_string
         return value_filter("[1:2048,1:2048]")
 
     @astro_data_descriptor
@@ -391,7 +402,7 @@ class AstroDataIgrins2(AstroDataGemini):
         if "PREPARED" in self.tags:
             return super().data_section(pretty=pretty)
 
-        value_filter = (str if pretty else Section.from_string)
+        value_filter = str if pretty else Section.from_string
         return value_filter("[1:2048,1:2048]")
 
     @astro_data_descriptor
@@ -406,7 +417,7 @@ class AstroDataIgrins2(AstroDataGemini):
         if "PREPARED" in self.tags:
             return super().detector_section(pretty=pretty)
 
-        value_filter = (str if pretty else Section.from_string)
+        value_filter = str if pretty else Section.from_string
         return value_filter("[1:2048,1:2048]")
 
     @returns_list
@@ -513,11 +524,11 @@ class AstroDataIgrins2(AstroDataGemini):
         if self.is_single:
             if self.band() is None:
                 return None
-            fowler_samp =self.hdr.get("NSAMP") 
-            read_noise_fit = lookup.array_properties.get( "read_noise_fit")[
+            fowler_samp = self.hdr.get("NSAMP")
+            read_noise_fit = lookup.array_properties.get("read_noise_fit")[
                 self.band()
             ]
-            read_noise = float(np.polyval(read_noise_fit, 1/fowler_samp))
+            read_noise = float(np.polyval(read_noise_fit, 1 / fowler_samp))
         else:
             read_noise = [ext.read_noise() for ext in self]
 
@@ -532,7 +543,6 @@ class AstroDataIgrins2(AstroDataGemini):
     def wavelength_band(self):
         """Avoids the round-the-houses calculation of AstroDataGemini."""
         return self.filter_name(pretty=True)
-
 
         return self.filter_name(pretty=True)
 
@@ -553,7 +563,7 @@ class AstroDataIgrins2(AstroDataGemini):
 
             hdul = ad_to_hdulist(self)
             for hdu in hdul:
-                if ((axis_name := hdu.header.get("CTYPE1", "")[:4]) == "WAVE"):
+                if (axis_name := hdu.header.get("CTYPE1", "")[:4]) == "WAVE":
                     hdu.header["PS1_0"] = axis_name
                     hdu.header["PS1_1"] = ("WAVELENGTH", "Name of column")
                     hdu.header["PV1_1"] = hdu.header["EXTVER"]

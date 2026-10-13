@@ -168,7 +168,7 @@ class AstroDataNiri(AstroDataGemini):
 
         x1, x2, y1, y2 = data_section
         # Check for a sensibly-sized square
-        if x1==0 and y1==0 and x2==y2 and x2 % 256==0:
+        if x1 == 0 and y1 == 0 and x2 == y2 and x2 % 256 == 0:
             roi_setting = (
                 "Full Frame" if x2 == 1024 else "Central{}".format(x2)
             )
@@ -224,9 +224,10 @@ class AstroDataNiri(AstroDataGemini):
         # Flipped if on bottom port unless AO is operating
         return (
             -offset
-            if (self.phu.get("INPORT")==1 and not self.is_ao())
+            if (self.phu.get("INPORT") == 1 and not self.is_ao())
             else offset
         )
+
     @astro_data_descriptor
     def detector_y_offset(self):
         """
@@ -314,7 +315,7 @@ class AstroDataNiri(AstroDataGemini):
 
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
-        #TODO: Complete rewrite here so serious testing required
+        # TODO: Complete rewrite here so serious testing required
         """
         Return the name of the filter(s) used.
 
@@ -339,7 +340,7 @@ class AstroDataNiri(AstroDataGemini):
         """
         raw_filters = [
             self._may_remove_component("FILTER{}".format(i), stripID, pretty)
-            for i in [1,2,3]
+            for i in [1, 2, 3]
         ]
         # eliminate any open/grism/pupil from the list
         filters = [
@@ -358,7 +359,8 @@ class AstroDataNiri(AstroDataGemini):
         if pretty:
             try:
                 return lookup.filter_name_mapping[
-                    tuple(filters) if len(filters) > 1 else filters[0]]
+                    tuple(filters) if len(filters) > 1 else filters[0]
+                ]
             except KeyError:
                 pass
         return "&".join(filters)
@@ -415,7 +417,7 @@ class AstroDataNiri(AstroDataGemini):
             self,
             desc_list,
             prettify=["filter_name", "disperser", "focal_plane_mask"],
-            additional=additional_item
+            additional=additional_item,
         )
 
     @astro_data_descriptor
@@ -486,11 +488,11 @@ class AstroDataNiri(AstroDataGemini):
         except KeyError:
             return None
         if filter3.startswith("pup"):
-             return (
+            return (
                 gmu.removeComponentID(filter3)
                 if pretty or stripID
                 else filter3
-             )
+            )
         else:
             return "MIRROR"
 
@@ -509,11 +511,11 @@ class AstroDataNiri(AstroDataGemini):
             the read mode used
         """
         setting = (self.phu.get("LNRS"), self.phu.get("NDAVGS"))
-        if setting == (16,16):
+        if setting == (16, 16):
             return "Low Background"
-        elif setting == (1,16):
+        elif setting == (1, 16):
             return "Medium Background"
-        elif setting == (1,1):
+        elif setting == (1, 1):
             return "High Background"
         else:
             return "Unknown"
@@ -560,7 +562,8 @@ class AstroDataNiri(AstroDataGemini):
         coadds = self.coadds()
         gain = self.gain()
         well = lookup.array_properties.get(
-            self.well_depth_setting().lower()+"well")
+            self.well_depth_setting().lower() + "well"
+        )
         if self.is_single:
             try:
                 return int(well * coadds / gain)

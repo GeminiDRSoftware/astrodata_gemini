@@ -20,6 +20,7 @@ class AstroDataTexes(AstroDataGemini):
     @classmethod
     def read(cls, source):
         """Read the source, renaming the extensions as AstroData expects."""
+
         def texes_parser(hdu):
             xnam, xver = hdu.header.get("EXTNAME"), hdu.header.get("EXTVER")
             if "RAWFRAME" in [xnam] and xver:
@@ -27,7 +28,7 @@ class AstroDataTexes(AstroDataGemini):
                     "EXTNAME0",
                     xnam,
                     "EXTNAME Orig (AstroData)",
-                    before="EXTNAME"
+                    before="EXTNAME",
                 )
                 hdu.header.set("EXTNAME", "SCI", "Renamed by AstroData")
             elif "SCAN-FRAME" in [xnam] and xver:
@@ -35,7 +36,7 @@ class AstroDataTexes(AstroDataGemini):
                     "EXTNAME0",
                     xnam,
                     "EXTNAME Orig (AstroData)",
-                    before="EXTNAME"
+                    before="EXTNAME",
                 )
                 hdu.header.set("EXTNAME", "SCI", "Renamed by AstroData")
             elif xnam and not xver:

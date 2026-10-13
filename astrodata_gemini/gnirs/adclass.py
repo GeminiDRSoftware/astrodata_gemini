@@ -278,6 +278,7 @@ class AstroDataGnirs(AstroDataGemini):
             if (self.phu.get("INPORT") == 1 and not self.is_ao())
             else offset
         )
+
     @astro_data_descriptor
     def detector_y_offset(self):
         """
@@ -433,7 +434,7 @@ class AstroDataGnirs(AstroDataGemini):
                 "observation_id",
                 "filter_name",
                 "camera",
-                "read_mode"
+                "read_mode",
             ]
 
         desc_list.extend(
@@ -441,7 +442,7 @@ class AstroDataGnirs(AstroDataGemini):
                 "well_depth_setting",
                 "detector_section",
                 "disperser",
-                "focal_plane_mask"
+                "focal_plane_mask",
             ]
         )
 
@@ -454,7 +455,7 @@ class AstroDataGnirs(AstroDataGemini):
             self,
             desc_list,
             prettify=("filter_name", "disperser", "focal_plane_mask"),
-            additional=additional_item
+            additional=additional_item,
         )
 
     @astro_data_descriptor
@@ -615,13 +616,13 @@ class AstroDataGnirs(AstroDataGemini):
         # wraparound?
         if delta > 180:
             delta = abs(delta - 360)
-        delta = delta * 3600 # to arcsecs
+        delta = delta * 3600  # to arcsecs
 
         # And account for cos(dec) factor
         delta /= math.cos(math.radians(self.dec()))
 
         # If more than 1000" arcsec different, WCS is probably bad
-        return (tgt_ra if delta > 1000 else wcs_ra)
+        return tgt_ra if delta > 1000 else wcs_ra
 
     @astro_data_descriptor
     def dec(self):
@@ -656,7 +657,7 @@ class AstroDataGnirs(AstroDataGemini):
         # wraparound?
         if delta > 180:
             delta = abs(delta - 360)
-        delta = delta * 3600 # to arcsecs
+        delta = delta * 3600  # to arcsecs
 
         # If more than 1000" arcsec different, WCS is probably bad
         return tgt_dec if delta > 1000 else wcs_dec
@@ -850,7 +851,6 @@ class AstroDataGnirs(AstroDataGemini):
             return int(self.phu.get("PRSM_ENG"))
         except (ValueError, TypeError):
             return None
-
 
     # --------------------------------------
     # Private methods

@@ -18,14 +18,15 @@ class AstroDataNifs(AstroDataGemini):
     """AstroData class for NIFS data."""
 
     __keyword_dict = dict(
-        array_section = "DATASEC",
-        camera = "INSTRUME",
-        central_wavelength = "GRATWAVE",
-        detector_section = "DATASEC",
-        disperser = "GRATING",
-        focal_plane_mask = "APERTURE",
-        observation_epoch = "EPOCH",
+        array_section="DATASEC",
+        camera="INSTRUME",
+        central_wavelength="GRATWAVE",
+        detector_section="DATASEC",
+        disperser="GRATING",
+        focal_plane_mask="APERTURE",
+        observation_epoch="EPOCH",
     )
+
     @staticmethod
     def _matches_data(source):
         return source[0].header.get("INSTRUME", "").upper() == "NIFS"
@@ -235,7 +236,6 @@ class AstroDataNifs(AstroDataGemini):
             )
         except TypeError:
             return None
-
 
     @astro_data_descriptor
     def slit_width(self):

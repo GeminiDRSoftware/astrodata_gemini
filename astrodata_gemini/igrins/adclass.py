@@ -9,18 +9,18 @@ class AstroDataIgrins(AstroDataGemini):
     """AstroData class for IGRINS data."""
 
     __keyword_dict = dict(
-        airmass = "AMSTART",
-        wavelength_band = "BAND",
-        detector_name = "DETECTOR",
-        observation_class = "OBJTYPE",
-        observation_type = "OBJTYPE",
-        ra = "OBJRA",
-        dec = "OBJDEC",
-        slit_x_center = "SLIT_CX",
-        slit_y_center = "SLIT_CY",
-        slit_width = "SLIT_WID",
-        slit_length = "SLIT_LEN",
-        slit_angle = "SLIT_ANG"
+        airmass="AMSTART",
+        wavelength_band="BAND",
+        detector_name="DETECTOR",
+        observation_class="OBJTYPE",
+        observation_type="OBJTYPE",
+        ra="OBJRA",
+        dec="OBJDEC",
+        slit_x_center="SLIT_CX",
+        slit_y_center="SLIT_CY",
+        slit_width="SLIT_WID",
+        slit_length="SLIT_LEN",
+        slit_angle="SLIT_ANG",
     )
 
     @staticmethod
@@ -143,7 +143,7 @@ class AstroDataIgrins(AstroDataGemini):
 
         Returns
         -------
-        <str>: 
+        <str>:
             instrument name
 
         """
@@ -254,70 +254,70 @@ class AstroDataIgrins(AstroDataGemini):
             waveb = self[0].hdr.get(self._keyword_for("wavelength_band"))
         return waveb
 
-    #@astro_data_descriptor
+    # @astro_data_descriptor
     def _slit_x_center(self):
         """
         Return Center x position of slit in the SVC image.
 
         Returns
         -------
-        <int>: 
+        <int>:
             center x position in pixels
 
         """
         return self.phu.get(self._keyword_for("slit_x_center"))
 
-    #@astro_data_descriptor
+    # @astro_data_descriptor
     def _slit_y_center(self):
         """
         Return Center y position of slit in the SVC image.
 
         Returns
         -------
-        <int>: 
+        <int>:
             center y position in pixels
 
         """
         return self.phu.get(self._keyword_for("slit_y_center"))
 
-    #@astro_data_descriptor
+    # @astro_data_descriptor
     def _slit_width(self):
         """
         Return slit width in the SVC image.
 
         Returns
         -------
-        <int>: 
+        <int>:
             slit width in pixels
 
         """
         return self.phu.get(self._keyword_for("slit_width"))
 
-    #@astro_data_descriptor
+    # @astro_data_descriptor
     def _slit_length(self):
         """
         Return slit length in the SVC image.
 
         Returns
         -------
-        <int>: 
+        <int>:
             slit length in pixels
 
         """
         return self.phu.get(self._keyword_for("slit_length"))
 
-    #@astro_data_descriptor
+    # @astro_data_descriptor
     def _slit_angle(self):
         """
         Return slit length in the SVC image.
 
         Returns
         -------
-        <int>: 
+        <int>:
             slit length in pixels
 
         """
-        return self.phu.get(self._keyword_for("slit_angle"))      
+        return self.phu.get(self._keyword_for("slit_angle"))
 
     @astro_data_descriptor
     def target_ra(self):

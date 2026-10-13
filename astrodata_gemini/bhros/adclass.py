@@ -10,9 +10,9 @@ class AstroDataBhros(AstroDataGemini):
     """AstroData class for BhROS data."""
 
     __keyword_dict = dict(
-        array_section = "CCDSEC",
-        central_wavelength = "WAVELENG",
-        overscan_section = "BIASSEC"
+        array_section="CCDSEC",
+        central_wavelength="WAVELENG",
+        overscan_section="BIASSEC",
     )
 
     @staticmethod
