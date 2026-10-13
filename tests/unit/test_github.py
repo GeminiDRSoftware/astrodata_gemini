@@ -107,8 +107,8 @@ def test_descriptors(ad):
         except Exception as err:
             failures.append(f"{descriptor}: {type(err).__name__}: {err}")
     assert not failures, (
-        f"{len(failures)} of {len(dvalue_pairs)} descriptors failed for "
-        f"{ad.filename}:\n" + "\n".join(failures)
+        f"{len(failures)} of {len(expected_descriptors)} descriptors failed "
+        f"for {ad.filename}:\n" + "\n".join(failures)
     )
 
 
