@@ -1,6 +1,6 @@
 """Tags and descriptors for IGRINS data."""
 
-from astrodata import  TagSet, astro_data_descriptor, astro_data_tag
+from astrodata import TagSet, astro_data_descriptor, astro_data_tag
 
 from ..gemini import AstroDataGemini
 

@@ -280,7 +280,7 @@ class AstroDataIgrins2(AstroDataGemini):
         if (
             self.phu.get("OBSTYPE") == "OBJECT"
             and self.phu.get("OBSCLASS") == "partnerCal"
-            and not "sky" in self.phu.get('OBJECT', '').lower()
+            and "sky" not in self.phu.get('OBJECT', '').lower()
         ):
             return TagSet(['STANDARD', 'CAL'])
 

@@ -1,7 +1,9 @@
 """Functions to calculate values from GMOS data, e.g. the bias level."""
 
-import numpy as np
 from datetime import date
+
+import numpy as np
+
 from astrodata_gemini.gmos import lookup
 
 

@@ -1020,7 +1020,7 @@ class AstroDataGemini(AstroData):
         float
             Wavelength representing the bandpass or the spectrum coverage.
         """
-        if not output_units in ('micrometers', 'nanometers', 'angstroms'):
+        if output_units not in ('micrometers', 'nanometers', 'angstroms'):
             output_units = 'meters'
         wave_in_microns = None
         tags = self.tags
