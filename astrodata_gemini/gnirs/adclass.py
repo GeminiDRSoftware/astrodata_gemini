@@ -608,7 +608,7 @@ class AstroDataGnirs(AstroDataGemini):
             return self._ra()
         try:
             tgt_ra = self.target_ra(offset=True, icrs=True)
-        except:  # Return WCS value if we can't get our sanity check
+        except Exception:  # Return WCS value if we can't get our sanity check
             return wcs_ra
         delta = abs(wcs_ra - tgt_ra)
 
@@ -649,7 +649,7 @@ class AstroDataGnirs(AstroDataGemini):
             return self._dec()
         try:
             tgt_dec = self.target_dec(offset=True, icrs=True)
-        except:  # Return WCS value if we can't get our sanity check
+        except Exception:  # Return WCS value if we can't get our sanity check
             return wcs_dec
         delta = abs(wcs_dec - tgt_dec)
 

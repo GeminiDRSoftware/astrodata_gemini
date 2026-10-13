@@ -405,18 +405,18 @@ class AstroDataGemini(AstroData):
         float : right ascension in degrees, or None
         """
         ra = self.phu.get(self._keyword_for("ra"), None)
-        if type(ra) == str:
+        if type(ra) is str:
             # maybe it's just a float
             try:
                 return float(ra)
-            except:
+            except ValueError:
                 try:
                     if not ra.endswith("hours") and not ra.endswith("degrees"):
                         rastr = f"{ra} hours"
                     else:
                         rastr = ra
                     return Angle(rastr).degree
-                except:
+                except ValueError:
                     self._logger.warning(f"Unable to parse RA from {ra}")
                     return None
         return ra
@@ -433,26 +433,30 @@ class AstroDataGemini(AstroData):
         float : declination in degrees, or None
         """
         dec = self.phu.get(self._keyword_for("dec"), None)
-        if type(dec) == str:
+        if type(dec) is str:
             # maybe it's just a float
             try:
                 return float(dec)
-            except:
+            except ValueError:
                 try:
                     if not dec.endswith("degrees"):
                         decstr = f"{dec} degrees"
                     else:
                         decstr = dec
                     return Angle(decstr).degree
-                except:
+                except ValueError:
                     self._logger.warning(f"Unable to parse dec from {dec}")
                     return None
         return dec
 
     def _parse_section(self, keyword, pretty):
         try:
-            value_filter = lambda x: (x.as_iraf_section() if pretty else x)
-            process_fn = lambda x: (None if x is None else value_filter(x))
+            def value_filter(x):
+                return x.as_iraf_section() if pretty else x
+
+            def process_fn(x):
+                return None if x is None else value_filter(x)
+
             # Dummy keyword FULLFRAME returns shape of full data array
             if keyword == "FULLFRAME":
                 def _encode_shape(shape):
@@ -2209,8 +2213,8 @@ class AstroDataGemini(AstroData):
             return None
 
         def wavelength_diff(pair):
-            _, l = pair
-            return abs(l - ctrl_wave)
+            _, wave = pair
+            return abs(wave - ctrl_wave)
         band = min(wavelength_band.items(), key=wavelength_diff)[0]
         return band
 
@@ -2318,7 +2322,7 @@ class AstroDataGemini(AstroData):
             """Brute-force calculation of pixel scale."""
             if ext.wcs is None:
                 return None
-            yc, xc = [0.5 * l for l in ext.shape]
+            yc, xc = [0.5 * axis_length for axis_length in ext.shape]
             coords = ext.wcs.pixel_to_world([xc, xc, xc+1], [yc, yc+1, yc])
             if isinstance(coords, SkyCoord):  # pure image
                 return np.median(
@@ -2410,7 +2414,7 @@ class AstroDataGemini(AstroData):
                     self._keyword_for("grating_order"))
                 if grating_order is not None:
                     return int(grating_order)
-            except:
+            except Exception:
                 pass
         # If it isn't SPECT, or has no grating order, this is not relevant and
         # we return None
