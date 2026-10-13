@@ -151,3 +151,16 @@ def test_cirpass_ra_dec_from_text():
     ad.phu["TEL_DEC"] = "+24:20:43.00"
     assert ad.ra() == pytest.approx(57.12547083333333)
     assert ad.dec() == pytest.approx(24.345277777777778)
+
+
+@pytest.mark.goa_remote_data
+@pytest.mark.parametrize("ad", ["N20190116G0054i.fits"], indirect=True)
+def test_graces_slice_range(ad):
+    """GRACES: Slicing past the single extension gives an empty slice."""
+    metadata = ("SCI", 2), ("SCI", 3)
+    slc = ad[1:]
+
+    assert len(slc) == 0
+
+    for ext, md in zip(slc, metadata):
+        assert (ext.hdr["EXTNAME"], ext.hdr["EXTVER"]) == md
