@@ -103,6 +103,7 @@ precision = 1
 line-length = 79
 exclude = [
     "docs",
+    "astrodata_gemini/igrins2/tests/*.py",
 ]
 force-exclude = true
 
