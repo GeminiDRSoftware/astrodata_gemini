@@ -188,6 +188,7 @@ ignore = [
 skip-magic-trailing-comma = true
 exclude = [
     "astrodata_gemini/*/lookup.py",
+    "tests/unit/*_lut_descriptors.py",
 ]
 
 [tool.ruff.lint.isort]
