@@ -1,4 +1,5 @@
 """Tests for the instruments that have only a few test files each."""
+
 from pathlib import Path
 
 import numpy as np
@@ -12,12 +13,12 @@ from ..testing import find_test_data, get_storage_location
 
 # Instruments covered by this module and their AstroData class.
 INSTRUMENT_CLASSES = {
-    'bHROS': astrodata_gemini.bhros.adclass.AstroDataBhros,
-    'GPI': astrodata_gemini.gpi.adclass.AstroDataGpi,
-    'GRACES': astrodata_gemini.graces.adclass.AstroDataGraces,
-    'michelle': astrodata_gemini.michelle.adclass.AstroDataMichelle,
-    'NICI': astrodata_gemini.nici.adclass.AstroDataNici,
-    'TReCS': astrodata_gemini.trecs.adclass.AstroDataTrecs,
+    "bHROS": astrodata_gemini.bhros.adclass.AstroDataBhros,
+    "GPI": astrodata_gemini.gpi.adclass.AstroDataGpi,
+    "GRACES": astrodata_gemini.graces.adclass.AstroDataGraces,
+    "michelle": astrodata_gemini.michelle.adclass.AstroDataMichelle,
+    "NICI": astrodata_gemini.nici.adclass.AstroDataNici,
+    "TReCS": astrodata_gemini.trecs.adclass.AstroDataTrecs,
 }
 
 # Mark every test in this module.
@@ -35,9 +36,12 @@ def ad(request):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad, expected_class",
-    [pytest.param(fname, INSTRUMENT_CLASSES[inst], id=fname)
-     for (inst, fname), tags in tags_data.items() if inst in INSTRUMENT_CLASSES],
-    indirect=["ad"]
+    [
+        pytest.param(fname, INSTRUMENT_CLASSES[inst], id=fname)
+        for (inst, fname), tags in tags_data.items()
+        if inst in INSTRUMENT_CLASSES
+    ],
+    indirect=["ad"],
 )
 def test_is_right_instance(ad, expected_class):
     """
@@ -51,9 +55,12 @@ def test_is_right_instance(ad, expected_class):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad, expected_tags",
-    [pytest.param(fname, tags, id=fname)
-     for (inst, fname), tags in tags_data.items() if inst in INSTRUMENT_CLASSES],
-    indirect=["ad"]
+    [
+        pytest.param(fname, tags, id=fname)
+        for (inst, fname), tags in tags_data.items()
+        if inst in INSTRUMENT_CLASSES
+    ],
+    indirect=["ad"],
 )
 def test_tags(ad, expected_tags):
     """Check all the tags for all the test files in the LUTs."""
@@ -63,10 +70,12 @@ def test_tags(ad, expected_tags):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad, dvalue_pairs",
-    [pytest.param(fname, dvalue_pairs, id=fname)
-     for (inst, fname), dvalue_pairs in descriptors_data.items()
-     if inst in INSTRUMENT_CLASSES],
-    indirect=["ad"]
+    [
+        pytest.param(fname, dvalue_pairs, id=fname)
+        for (inst, fname), dvalue_pairs in descriptors_data.items()
+        if inst in INSTRUMENT_CLASSES
+    ],
+    indirect=["ad"],
 )
 def test_descriptors(ad, dvalue_pairs):
     """
@@ -87,20 +96,24 @@ def test_descriptors(ad, dvalue_pairs):
 
 
 def _check_descriptor(ad, descriptor, expected_value):
-    """Raise an exception if the descriptor does not match the expected value."""
+    """
+    Raise an exception if the descriptor does not match the expected value.
+    """
     method = getattr(ad, descriptor)
     if expected_value is None:
         assert method() is None
     else:
         mvalue = method()
-        if (isinstance(mvalue, (float, np.floating)) or
-            isinstance(expected_value, (float, np.floating))):
+        if isinstance(mvalue, (float, np.floating)) or isinstance(
+            expected_value, (float, np.floating)
+        ):
             assert mvalue == pytest.approx(expected_value, abs=1e-7, rel=1e-5)
         elif isinstance(expected_value, list):
             assert len(expected_value) == len(mvalue)
             for v, mv in zip(expected_value, mvalue):
-                if (isinstance(mv, (float, np.floating)) or
-                    isinstance(v, (float, np.floating))):
+                if isinstance(mv, (float, np.floating)) or isinstance(
+                    v, (float, np.floating)
+                ):
                     assert mv == pytest.approx(v, abs=1e-7, rel=1e-5)
                 else:
                     assert v == mv
@@ -111,17 +124,22 @@ def _check_descriptor(ad, descriptor, expected_value):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad",
-    [pytest.param(fname, id=fname)
-     for (inst, fname) in descriptors_data if inst in INSTRUMENT_CLASSES],
-    indirect=["ad"]
+    [
+        pytest.param(fname, id=fname)
+        for (inst, fname) in descriptors_data
+        if inst in INSTRUMENT_CLASSES
+    ],
+    indirect=["ad"],
 )
 def test_all_descriptors_represented(ad):
     """Check that the LUT has a value for every name in ad.descriptors."""
     fname = ad.filename
-    represented = {descriptor
-                   for (inst, name), pairs in descriptors_data.items()
-                   if inst in INSTRUMENT_CLASSES and name == fname
-                   for descriptor, _ in pairs}
+    represented = {
+        descriptor
+        for (inst, name), pairs in descriptors_data.items()
+        if inst in INSTRUMENT_CLASSES and name == fname
+        for descriptor, _ in pairs
+    }
     assert represented == set(ad.descriptors)
 
 

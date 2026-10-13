@@ -9,6 +9,7 @@ from .lut_tags import tags_data
 from .gsaoi_lut_descriptors import descriptors_data
 from ..testing import find_test_data, get_storage_location
 
+
 @pytest.fixture(scope="module")
 def ad(request):
     """Returns an AstroData object for each of the test files in the list."""
@@ -21,9 +22,12 @@ def ad(request):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad",
-    [pytest.param(fname, id=fname)
-     for (inst, fname), tags in tags_data.items() if inst == 'GSAOI'],
-    indirect=["ad"]
+    [
+        pytest.param(fname, id=fname)
+        for (inst, fname), tags in tags_data.items()
+        if inst == "GSAOI"
+    ],
+    indirect=["ad"],
 )
 def test_is_right_instance(ad):
     """
@@ -38,9 +42,12 @@ def test_is_right_instance(ad):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad, expected_tags",
-    [pytest.param(fname, tags, id=fname)
-     for (inst, fname), tags in tags_data.items() if inst == 'GSAOI'],
-    indirect=["ad"]
+    [
+        pytest.param(fname, tags, id=fname)
+        for (inst, fname), tags in tags_data.items()
+        if inst == "GSAOI"
+    ],
+    indirect=["ad"],
 )
 def test_gsaoi_tags(ad, expected_tags):
     """Check all the tags for all the test files in the LUTs."""
@@ -51,9 +58,12 @@ def test_gsaoi_tags(ad, expected_tags):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad, dvalue_pairs",
-    [pytest.param(fname, dvalue_pairs, id=fname)
-     for (inst, fname), dvalue_pairs in descriptors_data.items() if inst == 'GSAOI'],
-    indirect=["ad"]
+    [
+        pytest.param(fname, dvalue_pairs, id=fname)
+        for (inst, fname), dvalue_pairs in descriptors_data.items()
+        if inst == "GSAOI"
+    ],
+    indirect=["ad"],
 )
 def test_descriptors(ad, dvalue_pairs):
     """
@@ -74,20 +84,24 @@ def test_descriptors(ad, dvalue_pairs):
 
 
 def _check_descriptor(ad, descriptor, expected_value):
-    """Raise an exception if the descriptor does not match the expected value."""
+    """
+    Raise an exception if the descriptor does not match the expected value.
+    """
     method = getattr(ad, descriptor)
     if expected_value is None:
         assert method() is None
     else:
         mvalue = method()
-        if (isinstance(mvalue, (float, np.floating)) or
-            isinstance(expected_value, (float, np.floating))):
+        if isinstance(mvalue, (float, np.floating)) or isinstance(
+            expected_value, (float, np.floating)
+        ):
             assert mvalue == pytest.approx(expected_value, abs=1e-7, rel=1e-5)
         elif isinstance(expected_value, list):
             assert len(expected_value) == len(mvalue)
             for v, mv in zip(expected_value, mvalue):
-                if (isinstance(mv, (float, np.floating)) or
-                    isinstance(v, (float, np.floating))):
+                if isinstance(mv, (float, np.floating)) or isinstance(
+                    v, (float, np.floating)
+                ):
                     assert mv == pytest.approx(v, abs=1e-7, rel=1e-5)
                 else:
                     assert v == mv
@@ -99,15 +113,20 @@ def _check_descriptor(ad, descriptor, expected_value):
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad",
-    [pytest.param(fname, id=fname)
-     for (inst, fname) in descriptors_data if inst == 'GSAOI'],
-    indirect=["ad"]
+    [
+        pytest.param(fname, id=fname)
+        for (inst, fname) in descriptors_data
+        if inst == "GSAOI"
+    ],
+    indirect=["ad"],
 )
 def test_all_descriptors_represented(ad):
     """Check that the LUT has a value for every name in ad.descriptors."""
     fname = ad.filename
-    represented = {descriptor
-                   for (inst, name), pairs in descriptors_data.items()
-                   if inst == 'GSAOI' and name == fname
-                   for descriptor, _ in pairs}
+    represented = {
+        descriptor
+        for (inst, name), pairs in descriptors_data.items()
+        if inst == "GSAOI" and name == fname
+        for descriptor, _ in pairs
+    }
     assert represented == set(ad.descriptors)

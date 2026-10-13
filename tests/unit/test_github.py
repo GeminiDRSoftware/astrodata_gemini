@@ -10,35 +10,35 @@ from .lut_tags import tags_data
 from ..testing import astrofaker, find_test_data, get_storage_location
 
 test_files = [
-    "S20070131S0152.fits", # bHROS
-    "S20150624S0172.fits", # F2
-    "S20160317S0055.fits", # F2
-    "S20230214S0025.fits", # GHOST
-    "N20110718S0294.fits", # GMOS
-    "N20160407S0076.fits", # GMOS
-    "N20160726S0179.fits", # GMOS
-    "N20190216S0039.fits", # GMOS
-    "S20060130S0079.fits", # GMOS
-    "S20091217S0032.fits", # GMOS
-    "S20160905S0003.fits", # GMOS
-    "S20261001S0185_bias.fits", # GMOS
-    "N20120117S0042.fits", # GNIRS
-    "N20130814S0231.fits", # GNIRS
-    "N20131222S0070_flat.fits", # GNIRS
-    "N20160726S0260.fits", # GNIRS
-    "N20240116S0138.fits", # GNIRS
-    "S20060507S0125.fits", # GNIRS
-    "S20070102S0073.fits", # GNIRS
-    "S20161014S0043.fits", # GPI
-    "N20190116G0054i.fits", # GRACES
-    "S20160613S0316.fits", # GSAOI
-    "N20260923S0392.fits", # IGRINS-2
-    "N20111112S0316.fits", # MICHELLE
-    "S20130806S0071.fits", # NICI
-    "N20160727S0078.fits", # NIFS
-    "N20131215S0178.fits", # NIRI
-    "N20131215S0428.fits", # NIRI
-    "S20051113S0300.fits", # TRECS
+    "S20070131S0152.fits",  # bHROS
+    "S20150624S0172.fits",  # F2
+    "S20160317S0055.fits",  # F2
+    "S20230214S0025.fits",  # GHOST
+    "N20110718S0294.fits",  # GMOS
+    "N20160407S0076.fits",  # GMOS
+    "N20160726S0179.fits",  # GMOS
+    "N20190216S0039.fits",  # GMOS
+    "S20060130S0079.fits",  # GMOS
+    "S20091217S0032.fits",  # GMOS
+    "S20160905S0003.fits",  # GMOS
+    "S20261001S0185_bias.fits",  # GMOS
+    "N20120117S0042.fits",  # GNIRS
+    "N20130814S0231.fits",  # GNIRS
+    "N20131222S0070_flat.fits",  # GNIRS
+    "N20160726S0260.fits",  # GNIRS
+    "N20240116S0138.fits",  # GNIRS
+    "S20060507S0125.fits",  # GNIRS
+    "S20070102S0073.fits",  # GNIRS
+    "S20161014S0043.fits",  # GPI
+    "N20190116G0054i.fits",  # GRACES
+    "S20160613S0316.fits",  # GSAOI
+    "N20260923S0392.fits",  # IGRINS-2
+    "N20111112S0316.fits",  # MICHELLE
+    "S20130806S0071.fits",  # NICI
+    "N20160727S0078.fits",  # NIFS
+    "N20131215S0178.fits",  # NIRI
+    "N20131215S0428.fits",  # NIRI
+    "S20051113S0300.fits",  # TRECS
 ]
 
 descriptor_lut_path_map = {
@@ -67,12 +67,13 @@ def ad(request):
     store_location = get_storage_location(current_file)
     return find_test_data(request.param, store_location)
 
+
 @pytest.mark.github
 @pytest.mark.goa_remote_data
 @pytest.mark.parametrize(
     "ad",
     [pytest.param(fname, id=fname) for fname in test_files],
-    indirect=["ad"]
+    indirect=["ad"],
 )
 def test_tags(ad):
     """Check all the tags for all the test files in the LUTs."""
@@ -86,7 +87,7 @@ def test_tags(ad):
 @pytest.mark.parametrize(
     "ad",
     [pytest.param(fname, id=fname) for fname in test_files],
-    indirect=["ad"]
+    indirect=["ad"],
 )
 def test_descriptors(ad):
     """
@@ -106,26 +107,30 @@ def test_descriptors(ad):
         except Exception as err:
             failures.append(f"{descriptor}: {type(err).__name__}: {err}")
     assert not failures, (
-            f"{len(failures)} of {len(dvalue_pairs)} descriptors failed for "
-            f"{ad.filename}:\n" + "\n".join(failures)
+        f"{len(failures)} of {len(dvalue_pairs)} descriptors failed for "
+        f"{ad.filename}:\n" + "\n".join(failures)
     )
 
+
 def _check_descriptor(ad, descriptor, expected_value):
-    """Raise an exception if the descriptor does not match the expected value."""
+    """
+    Raise an exception if the descriptor does not match the expected value.
+    """
     method = getattr(ad, descriptor)
     if expected_value is None:
         assert method() is None
     else:
         mvalue = method()
-        if (isinstance(mvalue, (float, np.floating)) or
-                isinstance(expected_value, (float, np.floating))):
-            assert mvalue == pytest.approx(expected_value, abs=1e-7,
-                                           rel=1e-5)
+        if isinstance(mvalue, (float, np.floating)) or isinstance(
+            expected_value, (float, np.floating)
+        ):
+            assert mvalue == pytest.approx(expected_value, abs=1e-7, rel=1e-5)
         elif isinstance(expected_value, list):
             assert len(expected_value) == len(mvalue)
             for v, mv in zip(expected_value, mvalue):
-                if (isinstance(mv, (float, np.floating)) or
-                        isinstance(v, (float, np.floating))):
+                if isinstance(mv, (float, np.floating)) or isinstance(
+                    v, (float, np.floating)
+                ):
                     assert mv == pytest.approx(v, abs=1e-7, rel=1e-5)
                 else:
                     assert v == mv
@@ -134,6 +139,7 @@ def _check_descriptor(ad, descriptor, expected_value):
 
 
 # ---
+
 
 def get_lut_data(module_name, lut_path):
     """Get the LUT data from the lut_tags.py file.
