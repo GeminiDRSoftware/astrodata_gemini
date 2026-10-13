@@ -13,25 +13,25 @@ class AstroDataSkyCam(AstroDataGemini):
         # remove "s because they added them, but this will also work if the
         # fix it
         match = (
-            source[0].header.get('TELESCOP', '').strip('"')
-            == 'GS_ALLSKYCAMERA'
+            source[0].header.get("TELESCOP", "").strip('"')
+            == "GS_ALLSKYCAMERA"
         )
         return match
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['GS_ALLSKYCAMERA'])
+        return TagSet(["GS_ALLSKYCAMERA"])
 
     @astro_data_tag
     def _tag_site(self):
-        return TagSet(['SOUTH'])
+        return TagSet(["SOUTH"])
 
     @astro_data_descriptor
     def instrument(self):
         """Return the name of the instrument, from the TELESCOP keyword."""
-        return self.phu['TELESCOP'].strip('"')
+        return self.phu["TELESCOP"].strip('"')
 
     @astro_data_descriptor
     def object(self):
         """Return the object name, always 'ZENITH'."""
-        return 'ZENITH'
+        return "ZENITH"

@@ -19,34 +19,34 @@ class AstroDataGsaoi(AstroDataGemini):
     """AstroData class for GSAOI data."""
 
     __keyword_dict = dict(
-        array_section='CCDSEC',
-      camera='DETECTOR',
-      central_wavelength='WAVELENG',
-      detector_name='DETECTOR',
+        array_section="CCDSEC",
+      camera="DETECTOR",
+      central_wavelength="WAVELENG",
+      detector_name="DETECTOR",
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'GSAOI'
+        return source[0].header.get("INSTRUME", "").upper() == "GSAOI"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['GSAOI'])
+        return TagSet(["GSAOI"])
 
     @astro_data_tag
     def _tag_dark(self):
-        if self.phu.get('OBSTYPE') == 'DARK':
-            return TagSet(['DARK', 'CAL'], blocks=['IMAGE'])
+        if self.phu.get("OBSTYPE") == "DARK":
+            return TagSet(["DARK", "CAL"], blocks=["IMAGE"])
 
     @astro_data_tag
     def _tag_image(self):
-        tags = ['IMAGE']
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            tags.extend(['FLAT', 'CAL'])
-        if 'DOMEFLAT' in self.phu.get('OBJECT', '').upper():
-            tags.extend(['DOMEFLAT', 'FLAT', 'CAL'])
-        elif 'TWILIGHT' in self.phu.get('OBJECT', '').upper():
-            tags.extend(['TWILIGHT', 'FLAT', 'CAL'])
+        tags = ["IMAGE"]
+        if self.phu.get("OBSTYPE") == "FLAT":
+            tags.extend(["FLAT", "CAL"])
+        if "DOMEFLAT" in self.phu.get("OBJECT", "").upper():
+            tags.extend(["DOMEFLAT", "FLAT", "CAL"])
+        elif "TWILIGHT" in self.phu.get("OBJECT", "").upper():
+            tags.extend(["TWILIGHT", "FLAT", "CAL"])
 
         return TagSet(tags)
 
@@ -54,11 +54,11 @@ class AstroDataGsaoi(AstroDataGemini):
     # at a higher level conflict with this
     @astro_data_tag
     def _type_gcal_lamp(self):
-        obj = self.phu.get('OBJECT', '').upper()
-        if obj == 'DOMEFLAT':
-            return TagSet(['LAMPON'])
-        elif obj == 'DOMEFLAT OFF':
-            return TagSet(['LAMPOFF'])
+        obj = self.phu.get("OBJECT", "").upper()
+        if obj == "DOMEFLAT":
+            return TagSet(["LAMPON"])
+        elif obj == "DOMEFLAT OFF":
+            return TagSet(["LAMPOFF"])
 
     @returns_list
     @astro_data_descriptor
@@ -72,11 +72,11 @@ class AstroDataGsaoi(AstroDataGemini):
             names of the arrays
         """
         try:
-            return self.hdr['ARRAYID']
+            return self.hdr["ARRAYID"]
         except KeyError:
             # Data have been mosaicked, so return the detector name
             # (as a single-element list if necessary)
-            return self.phu.get('DETECTOR')
+            return self.phu.get("DETECTOR")
 
     @astro_data_descriptor
     @gmu.return_requested_units(input_units="AA")
@@ -89,7 +89,7 @@ class AstroDataGsaoi(AstroDataGemini):
         float
             The central wavelength setting
         """
-        central_wavelength = self.phu.get('WAVELENG', -1)  # in Angstroms
+        central_wavelength = self.phu.get("WAVELENG", -1)  # in Angstroms
         if central_wavelength < 0.0:
             return None
 
@@ -112,7 +112,7 @@ class AstroDataGsaoi(AstroDataGemini):
         list/float
             gain (e/ADU)
         """
-        return self._look_up_arr_property('gain')
+        return self._look_up_arr_property("gain")
 
     @astro_data_descriptor
     def group_id(self):
@@ -155,7 +155,7 @@ class AstroDataGsaoi(AstroDataGemini):
 
         # Associate rules with data type
         # Note: add darks and twilight if necessary later.
-        if 'FLAT' in self.tags:
+        if "FLAT" in self.tags:
             id_descriptor_list = flat_id
         else:
             id_descriptor_list = science_id
@@ -164,7 +164,7 @@ class AstroDataGsaoi(AstroDataGemini):
         id_descriptor_list.extend(["read_mode", "detector_section"])
 
         return build_group_id(
-            self, id_descriptor_list, prettify=('filter_name')
+            self, id_descriptor_list, prettify=("filter_name")
         )
 
     @astro_data_descriptor
@@ -231,7 +231,7 @@ class AstroDataGsaoi(AstroDataGemini):
         """
         # Column 3 gives the fraction of the saturation level at which
         # the data become non-linear
-        fraction = self._look_up_arr_property('linlimit')
+        fraction = self._look_up_arr_property("linlimit")
         sat_level = self.saturation_level()
 
         if self.is_single:
@@ -259,7 +259,7 @@ class AstroDataGsaoi(AstroDataGemini):
             read noise in electrons
         """
         # Column 0 has the read noise (for 1 coadd)
-        raw_read_noise = self._look_up_arr_property('readnoise')
+        raw_read_noise = self._look_up_arr_property("readnoise")
         coadd_factor = math.sqrt(self.coadds())
         if self.is_single:
             try:
@@ -283,7 +283,7 @@ class AstroDataGsaoi(AstroDataGemini):
             read speed setting
         """
         # The number of non-destructive reads is the key in the dict
-        return lookup.read_modes.get(self.phu.get('LNRS'), 'Unknown')
+        return lookup.read_modes.get(self.phu.get("LNRS"), "Unknown")
 
     @use_keyword_if_prepared
     @astro_data_descriptor
@@ -303,8 +303,8 @@ class AstroDataGsaoi(AstroDataGemini):
         int/list
             saturation level
         """
-        welldepth = self._look_up_arr_property('welldepth')
-        orig_gain = self._look_up_arr_property('gain')
+        welldepth = self._look_up_arr_property("welldepth")
+        orig_gain = self._look_up_arr_property("gain")
         gain = self.gain()
         if self.is_single:
             try:
@@ -332,12 +332,12 @@ class AstroDataGsaoi(AstroDataGemini):
         # Try the first (only if sliced) extension, then the PHU
         try:
             h = self[0].hdr
-            crval = h['CRVAL1']
-            ctype = h['CTYPE1']
+            crval = h["CRVAL1"]
+            ctype = h["CTYPE1"]
         except KeyError:
-            crval = self.phu.get('CRVAL1')
-            ctype = self.phu.get('CTYPE1')
-        return crval if ctype == 'RA---TAN' else None
+            crval = self.phu.get("CRVAL1")
+            ctype = self.phu.get("CTYPE1")
+        return crval if ctype == "RA---TAN" else None
 
     @astro_data_descriptor
     def wcs_dec(self):
@@ -355,13 +355,13 @@ class AstroDataGsaoi(AstroDataGemini):
         # Try the first (only if sliced) extension, then the PHU
         try:
             h = self[0].hdr
-            crval = h['CRVAL2']
-            ctype = h['CTYPE2']
+            crval = h["CRVAL2"]
+            ctype = h["CTYPE2"]
         except KeyError:
-            crval = self.phu.get('CRVAL2')
-            ctype = self.phu.get('CTYPE2')
+            crval = self.phu.get("CRVAL2")
+            ctype = self.phu.get("CTYPE2")
 
-        return crval if ctype == 'DEC--TAN' else None
+        return crval if ctype == "DEC--TAN" else None
 
     def _look_up_arr_property(self, attr):
         """

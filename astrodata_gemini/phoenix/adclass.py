@@ -13,40 +13,40 @@ from ..gemini import AstroDataGemini
 class AstroDataPhoenix(AstroDataGemini):
     """AstroData class for Phoenix data."""
 
-    __keyword_dict = dict(focal_plane_mask = 'SLIT_POS')
+    __keyword_dict = dict(focal_plane_mask = "SLIT_POS")
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'PHOENIX'
+        return source[0].header.get("INSTRUME", "").upper() == "PHOENIX"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['PHOENIX'])
+        return TagSet(["PHOENIX"])
 
     @astro_data_tag
     def _tag_image(self):
-        if "image" in self.phu.get('VIEW_POS', '').lower():
-            return TagSet(['IMAGE'])
+        if "image" in self.phu.get("VIEW_POS", "").lower():
+            return TagSet(["IMAGE"])
 
     @astro_data_tag
     def _tag_spect(self):
-        if "open" in self.phu.get('VIEW_POS', '').lower():
-            return TagSet(['SPECT'])
+        if "open" in self.phu.get("VIEW_POS", "").lower():
+            return TagSet(["SPECT"])
 
     @astro_data_tag
     def _tag_dark(self):
-        if "dark" in self.phu.get('VIEW_POS', '').lower():
-            return TagSet(['DARK', 'CAL'], blocks=['IMAGE'])
+        if "dark" in self.phu.get("VIEW_POS", "").lower():
+            return TagSet(["DARK", "CAL"], blocks=["IMAGE"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if "flat" in self.phu.get('OBJECT', '').lower():
-            return TagSet(['FLAT', 'CAL'])
+        if "flat" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _tag_acquisition(self):
-        if "acq" in self.phu.get('OBJECT', '').lower():
-            return TagSet(['ACQUISITION'])
+        if "acq" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["ACQUISITION"])
 
     @astro_data_descriptor
     def dec(self):
@@ -58,7 +58,7 @@ class AstroDataPhoenix(AstroDataGemini):
         float
             declination in degrees
         """
-        return Angle(self.phu.get('DEC', 0), unit=u.degree).degree
+        return Angle(self.phu.get("DEC", 0), unit=u.degree).degree
 
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
@@ -85,7 +85,7 @@ class AstroDataPhoenix(AstroDataGemini):
             The name of the filter combination with or without the
             component ID.
         """
-        return self._may_remove_component('FILT_POS', stripID, pretty)
+        return self._may_remove_component("FILT_POS", stripID, pretty)
 
     @astro_data_descriptor
     def ra(self):
@@ -97,7 +97,7 @@ class AstroDataPhoenix(AstroDataGemini):
         float
             right ascension in degrees
         """
-        return Angle(self.phu.get('RA', 0), unit=u.hour).degree
+        return Angle(self.phu.get("RA", 0), unit=u.hour).degree
 
     @astro_data_descriptor
     def ut_datetime(self, strict=False, dateonly=False, timeonly=False):
@@ -112,8 +112,8 @@ class AstroDataPhoenix(AstroDataGemini):
             strict=strict, dateonly=dateonly, timeonly=timeonly
         )
         if utd is None:
-            utime = self[0].hdr.get('UT')
-            udate = self[0].hdr.get('UTDATE')
+            utime = self[0].hdr.get("UT")
+            udate = self[0].hdr.get("UTDATE")
         else:
             return utd
 

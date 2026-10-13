@@ -11,37 +11,37 @@ class AstroDataNici(AstroDataGemini):
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'NICI'
+        return source[0].header.get("INSTRUME", "").upper() == "NICI"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet({'NICI', 'IMAGE'}, ())
+        return TagSet({"NICI", "IMAGE"}, ())
 
     @astro_data_tag
     def _tag_dark(self):
-        if self.phu.get('OBSTYPE') == 'DARK':
-            return TagSet({'DARK', 'CAL'}, ())
+        if self.phu.get("OBSTYPE") == "DARK":
+            return TagSet({"DARK", "CAL"}, ())
 
     @astro_data_tag
     def _tag_flat(self):
         # NOTE: This will be set also for old type DARK frames... What should
         # we do?
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            return TagSet({'FLAT', 'CAL'}, {'SDI', 'ASDI'})
+        if self.phu.get("OBSTYPE") == "FLAT":
+            return TagSet({"FLAT", "CAL"}, {"SDI", "ASDI"})
 
     @astro_data_tag
     def _tag_dichroic(self):
-        dich = self.phu.get('DICHROIC', '')
-        if 'Mirror' in dich:
-            return TagSet({'ADI_B'}, ())
-        elif 'Open' in dich:
-            return TagSet({'ADI_R'}, ())
-        elif '50/50' in dich:
-            crmode = self.phu.get('CRMODE')
-            if crmode == 'FOLLOW':
-                return TagSet({'SDI'}, ())
-            elif crmode == 'FIXED':
-                return TagSet({'ASDI'}, ())
+        dich = self.phu.get("DICHROIC", "")
+        if "Mirror" in dich:
+            return TagSet({"ADI_B"}, ())
+        elif "Open" in dich:
+            return TagSet({"ADI_R"}, ())
+        elif "50/50" in dich:
+            crmode = self.phu.get("CRMODE")
+            if crmode == "FOLLOW":
+                return TagSet({"SDI"}, ())
+            elif crmode == "FIXED":
+                return TagSet({"ASDI"}, ())
 
     @astro_data_descriptor
     def exposure_time(self):
@@ -54,17 +54,17 @@ class AstroDataNici(AstroDataGemini):
             exposure time for each extension
         """
         try:
-            exptime_r = self.phu['ITIME_R'] * self.phu['NCOADD_R']
+            exptime_r = self.phu["ITIME_R"] * self.phu["NCOADD_R"]
         except KeyError:
             exptime_r = None
         try:
-            exptime_b = self.phu['ITIME_B'] * self.phu['NCOADD_B']
+            exptime_b = self.phu["ITIME_B"] * self.phu["NCOADD_B"]
         except KeyError:
             exptime_b = None
 
         # Use the filter header keywords to determine which exptime to use
         # Assume it's a red exposure if FILTER_B is not defined
-        filt_b = self.hdr.get('FILTER_B')
+        filt_b = self.hdr.get("FILTER_B")
         try:
             return [exptime_r if f is None else exptime_b for f in filt_b]
         except TypeError:
@@ -97,8 +97,8 @@ class AstroDataNici(AstroDataGemini):
             The name of the filter combination with or without the
             component ID.
         """
-        filt_r = self.hdr.get('FILTER_R')
-        filt_b = self.hdr.get('FILTER_B')
+        filt_r = self.hdr.get("FILTER_R")
+        filt_b = self.hdr.get("FILTER_B")
 
         # This assumes that precisely one of FILTER_R or FILTER_B is defined
         # in each HDU

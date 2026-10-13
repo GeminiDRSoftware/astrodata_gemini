@@ -15,29 +15,29 @@ class AstroDataTrecs(AstroDataGemini):
     """AstroData class for T-ReCS data."""
 
     __keyword_dict = dict(
-        camera = 'OBSMODE',
-        disperser = 'GRATING',
-        exposure_time = 'OBJTIME',
-        focal_plane_mask = 'SLIT',
-         pupil_mask = 'PUPILIMA'
+        camera = "OBSMODE",
+        disperser = "GRATING",
+        exposure_time = "OBJTIME",
+        focal_plane_mask = "SLIT",
+         pupil_mask = "PUPILIMA"
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'TRECS'
+        return source[0].header.get("INSTRUME", "").upper() == "TRECS"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['TRECS'])
+        return TagSet(["TRECS"])
 
     # override gemini-level "type_mode" because OBSMODE is used for something
     # else in TReCS.
     @astro_data_tag
     def _type_mode(self):
-        if 'MIRROR' in self.phu.get('GRATING', '').upper():
-            return TagSet(['IMAGE'])
+        if "MIRROR" in self.phu.get("GRATING", "").upper():
+            return TagSet(["IMAGE"])
         else:
-            return TagSet(['SPECT'])
+            return TagSet(["SPECT"])
 
     @astro_data_descriptor
     @gmu.return_requested_units(input_units="um")
@@ -53,12 +53,12 @@ class AstroDataTrecs(AstroDataGemini):
         disperser = self.disperser()
         if disperser is None:
             return None
-        if disperser == 'LowRes-10':
+        if disperser == "LowRes-10":
             wave_in_microns = 10.5
-        elif disperser == 'LowRes-20':
+        elif disperser == "LowRes-20":
             wave_in_microns = 20.0
-        elif disperser.startswith('HighRes-10'):
-            wave_in_microns = self.phu.get('HRCENWL')
+        elif disperser.startswith("HighRes-10"):
+            wave_in_microns = self.phu.get("HRCENWL")
         else:
             return None
         return wave_in_microns
@@ -76,7 +76,7 @@ class AstroDataTrecs(AstroDataGemini):
             The offset in pixels
         """
         try:
-            return self.phu.get('POFFSET') / self.pixel_scale()
+            return self.phu.get("POFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
 
@@ -93,7 +93,7 @@ class AstroDataTrecs(AstroDataGemini):
             The offset in pixels
         """
         try:
-            return -self.phu.get('QOFFSET') / self.pixel_scale()
+            return -self.phu.get("QOFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
 
@@ -113,11 +113,11 @@ class AstroDataTrecs(AstroDataGemini):
             The dispersion(s)
         """
         disperser = self.disperser()
-        if disperser == 'LowRes-10':
+        if disperser == "LowRes-10":
             dispersion = 0.022
-        elif disperser == 'LowRes-20':
+        elif disperser == "LowRes-20":
             dispersion = 0.033
-        elif disperser.startswith('HighRes-10'):
+        elif disperser.startswith("HighRes-10"):
             dispersion = 0.0019
         else:
             return None
@@ -134,10 +134,10 @@ class AstroDataTrecs(AstroDataGemini):
         list of floats/float
             Gains used for the observation
         """
-        bias_level = self.phu.get('BIASLEVL', '')
-        if bias_level == '2':
+        bias_level = self.phu.get("BIASLEVL", "")
+        if bias_level == "2":
             return 214.0
-        elif bias_level == '1':
+        elif bias_level == "1":
             return 718.0
 
     @astro_data_descriptor
@@ -163,6 +163,6 @@ class AstroDataTrecs(AstroDataGemini):
             the slit width in arcseconds
         """
         slit_name = self.slit()
-        if 'Open' not in slit_name:
-            return float(slit_name.replace('"', ''))
+        if "Open" not in slit_name:
+            return float(slit_name.replace('"', ""))
         return None

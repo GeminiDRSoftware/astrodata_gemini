@@ -10,41 +10,41 @@ class AstroDataFlamingos(AstroDataGemini):
     """AstroData class for FLAMINGOS data."""
 
     __keyword_dict = dict(
-        detector = 'DETECTOR',
-        filter_name = 'FILTER',
-        disperser = 'GRISM',
-        exposure_time = 'EXP_TIME',
+        detector = "DETECTOR",
+        filter_name = "FILTER",
+        disperser = "GRISM",
+        exposure_time = "EXP_TIME",
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'FLAMINGOS'
+        return source[0].header.get("INSTRUME", "").upper() == "FLAMINGOS"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['FLAMINGOS'])
+        return TagSet(["FLAMINGOS"])
 
     @astro_data_tag
     def _tag_spect(self):
-        if self.phu.get('BIAS') == 1.0:
-            return TagSet(['IMAGE'])
+        if self.phu.get("BIAS") == 1.0:
+            return TagSet(["IMAGE"])
         else:
-            return TagSet(['SPECT'])
+            return TagSet(["SPECT"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if 'flat' in self.phu.get('OBJECT', '').lower():
-            return TagSet(['FLAT', 'CAL'])
+        if "flat" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _tag_twilight(self):
-        if 'twilight' in self.phu.get('OBJECT', '').lower():
-            return TagSet(['TWILIGHT', 'CAL'])    
+        if "twilight" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["TWILIGHT", "CAL"])    
 
     @astro_data_tag
     def _tag_dark(self):
-        if 'dark' in self.phu.get('OBJECT', '').lower():
-            return TagSet(['DARK', 'CAL'])
+        if "dark" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["DARK", "CAL"])
 
     @astro_data_descriptor
     @gmu.return_requested_units()
@@ -78,7 +78,7 @@ class AstroDataFlamingos(AstroDataGemini):
     @astro_data_descriptor
     def detector(self):
         """Return the name of the detector."""
-        return self.phu.get(self._keyword_for('detector'))
+        return self.phu.get(self._keyword_for("detector"))
 
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
@@ -99,8 +99,8 @@ class AstroDataFlamingos(AstroDataGemini):
             Name of the disperser.
 
         """
-        dispr = self.phu.get(self._keyword_for('disperser'))
-        if 'open' not in dispr and 'dark' not in dispr:
+        dispr = self.phu.get(self._keyword_for("disperser"))
+        if "open" not in dispr and "dark" not in dispr:
             return dispr
         else:
             return None
@@ -116,12 +116,12 @@ class AstroDataFlamingos(AstroDataGemini):
         float
             Exposure time.
         """
-        return self.phu.get(self._keyword_for('exposure_time'), None)
+        return self.phu.get(self._keyword_for("exposure_time"), None)
 
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
         """Return the filter name; stripID and pretty have no effect."""
-        return self.phu.get(self._keyword_for('filter_name'))    
+        return self.phu.get(self._keyword_for("filter_name"))    
 
     @astro_data_descriptor
     def ra(self):

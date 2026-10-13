@@ -27,75 +27,75 @@ class AstroDataGnirs(AstroDataGemini):
     """AstroData class for GNIRS data."""
 
     __keyword_dict = dict(
-        central_wavelength='GRATWAVE',
-        array_name='ARRAYID',
-        grating_order='GRATORD',
+        central_wavelength="GRATWAVE",
+        array_name="ARRAYID",
+        grating_order="GRATORD",
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'GNIRS'
+        return source[0].header.get("INSTRUME", "").upper() == "GNIRS"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['GNIRS'])
+        return TagSet(["GNIRS"])
 
     @astro_data_tag
     def _type_dark(self):
-        if self.phu.get('OBSTYPE') == 'DARK':
-            return TagSet(['DARK', 'CAL'], blocks=['IMAGE', 'SPECT'])
+        if self.phu.get("OBSTYPE") == "DARK":
+            return TagSet(["DARK", "CAL"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _type_arc(self):
-        if self.phu.get('OBSTYPE') == 'ARC':
-            return TagSet(['ARC', 'CAL'])
+        if self.phu.get("OBSTYPE") == "ARC":
+            return TagSet(["ARC", "CAL"])
 
     @astro_data_tag
     def _type_image(self):
-        if self.phu.get('ACQMIR') == 'In':
-            return TagSet(['IMAGE'])
+        if self.phu.get("ACQMIR") == "In":
+            return TagSet(["IMAGE"])
 
     @astro_data_tag
     def _type_thruslit(self):
-        if 'Acq' not in self.phu.get('SLIT', ''):
-            tagset = ['THRUSLIT']
-            prism = self.phu.get('PRISM', '')
-            if 'MIR' in prism:
-                tagset.append('LS')
-            elif 'XD' in prism:
-                tagset.append('XD')
-            return TagSet(tagset, if_present=['IMAGE'])
+        if "Acq" not in self.phu.get("SLIT", ""):
+            tagset = ["THRUSLIT"]
+            prism = self.phu.get("PRISM", "")
+            if "MIR" in prism:
+                tagset.append("LS")
+            elif "XD" in prism:
+                tagset.append("XD")
+            return TagSet(tagset, if_present=["IMAGE"])
 
     @astro_data_tag
     def _type_spect(self):
-        if self.phu.get('ACQMIR') == 'Out':
-            tags = {'SPECT'}
-            slit = self.phu.get('SLIT', '').lower()
-            grat = self.phu.get('GRATING', '')
-            prism = self.phu.get('PRISM', '')
-            if 'ifu' in slit:
-                tags.add('IFU')
-            elif ('arcsec' in slit or 'pin' in slit) and 'mm' in grat:
-                if 'MIR' in prism:
-                    tags.add('LS')
-                elif 'XD' in prism:
-                    tags.add('XD')
+        if self.phu.get("ACQMIR") == "Out":
+            tags = {"SPECT"}
+            slit = self.phu.get("SLIT", "").lower()
+            grat = self.phu.get("GRATING", "")
+            prism = self.phu.get("PRISM", "")
+            if "ifu" in slit:
+                tags.add("IFU")
+            elif ("arcsec" in slit or "pin" in slit) and "mm" in grat:
+                if "MIR" in prism:
+                    tags.add("LS")
+                elif "XD" in prism:
+                    tags.add("XD")
             return TagSet(tags)
 
     @astro_data_tag
     def _type_flats(self):
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            if 'Pinholes' in self.phu.get('SLIT', ''):
+        if self.phu.get("OBSTYPE") == "FLAT":
+            if "Pinholes" in self.phu.get("SLIT", ""):
                 return TagSet(
-                    ['PINHOLE', 'CAL'], remove=['GCALFLAT'], blocks=['FLAT']
+                    ["PINHOLE", "CAL"], remove=["GCALFLAT"], blocks=["FLAT"]
                 )
 
-            return TagSet(['FLAT', 'CAL'])
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _type_standard(self):
-        if self.phu.get('PROCSTND'):
-            return TagSet(['STANDARD', 'CAL'])
+        if self.phu.get("PROCSTND"):
+            return TagSet(["STANDARD", "CAL"])
 
     @returns_list
     @astro_data_descriptor
@@ -108,11 +108,11 @@ class AstroDataGnirs(AstroDataGemini):
         list of str/str
             the array names
         """
-        conid = self.phu.get('CONID')
+        conid = self.phu.get("CONID")
         if conid is not None:
             return f"{self.phu.get(self._keyword_for('array_name'))}+{conid}"
         else:
-            return self.phu.get(self._keyword_for('array_name'))
+            return self.phu.get(self._keyword_for("array_name"))
 
     @astro_data_descriptor
     @gmu.return_requested_units()
@@ -131,10 +131,10 @@ class AstroDataGnirs(AstroDataGemini):
         """
         grating = self._grating(pretty=True, stripID=True)
 
-        if 'Short' in self.camera():
-            camera = 'Short'
-        elif 'Long' in self.camera():
-            camera = 'Long'
+        if "Short" in self.camera():
+            camera = "Short"
+        elif "Long" in self.camera():
+            camera = "Long"
         else:
             camera = None
         if "XD" in self.tags:
@@ -220,7 +220,7 @@ class AstroDataGnirs(AstroDataGemini):
             Location of the pixels exposed to light using an IRAF section
             format (1-based).
         """
-        return self._parse_section('FULLFRAME', pretty)
+        return self._parse_section("FULLFRAME", pretty)
 
     @astro_data_descriptor
     def detector_section(self, pretty=False):
@@ -249,11 +249,11 @@ class AstroDataGnirs(AstroDataGemini):
         string or list of strings
             Position of the detector using an IRAF section format (1-based).
         """
-        keyword = self._keyword_for('detector_section')
+        keyword = self._keyword_for("detector_section")
         try:
             self.hdr[keyword]
         except KeyError:
-            keyword = 'FULLFRAME'
+            keyword = "FULLFRAME"
         return self._parse_section(keyword, pretty)
 
     @astro_data_descriptor
@@ -269,13 +269,13 @@ class AstroDataGnirs(AstroDataGemini):
             The offset in pixels
         """
         try:
-            offset = self.phu.get('QOFFSET') / self.pixel_scale()
+            offset = self.phu.get("QOFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
         # Flipped if on bottom port unless AO is operating
         return (
             -offset
-            if (self.phu.get('INPORT') == 1 and not self.is_ao())
+            if (self.phu.get("INPORT") == 1 and not self.is_ao())
             else offset
         )
     @astro_data_descriptor
@@ -291,7 +291,7 @@ class AstroDataGnirs(AstroDataGemini):
             The offset in pixels
         """
         try:
-            return -self.phu.get('POFFSET') / self.pixel_scale()
+            return -self.phu.get("POFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
 
@@ -319,14 +319,14 @@ class AstroDataGnirs(AstroDataGemini):
             The disperser group, as grism&prism, with or without the
             component ID.
         """
-        if self.phu.get('ACQMIR') == 'In':
-            return 'MIRROR'
+        if self.phu.get("ACQMIR") == "In":
+            return "MIRROR"
 
         grating = self._grating(stripID=stripID, pretty=pretty)
         prism = self._prism(stripID=stripID, pretty=pretty)
         if prism is None or grating is None:
             return None
-        if prism.startswith('MIR'):
+        if prism.startswith("MIR"):
             return grating
 
         return "{}&{}".format(grating, prism)
@@ -356,10 +356,10 @@ class AstroDataGnirs(AstroDataGemini):
         """
         try:
             slit = self.slit(stripID=stripID, pretty=pretty).replace(
-                'Acquisition', 'Acq'
+                "Acquisition", "Acq"
             )
             decker = self.decker(stripID=stripID, pretty=pretty).replace(
-                'Acquisition', 'Acq'
+                "Acquisition", "Acq"
             )
         except AttributeError:  # either slit or decker is None
             return None
@@ -408,7 +408,7 @@ class AstroDataGnirs(AstroDataGemini):
         else:
             arraydict = detector_properties[arrayname]
             return getattr(
-                arraydict.get((read_mode, well_depth)), 'gain', None
+                arraydict.get((read_mode, well_depth)), "gain", None
             )
 
     @astro_data_descriptor
@@ -425,35 +425,35 @@ class AstroDataGnirs(AstroDataGemini):
             A group ID for compatible data.
         """
         tags = self.tags
-        if 'DARK' in tags:
-            desc_list = ['read_mode', 'exposure_time', 'coadds']
+        if "DARK" in tags:
+            desc_list = ["read_mode", "exposure_time", "coadds"]
         else:
             # The descriptor list is the same for flats and science frames
             desc_list = [
-                'observation_id',
-                'filter_name',
-                'camera',
-                'read_mode'
+                "observation_id",
+                "filter_name",
+                "camera",
+                "read_mode"
             ]
 
         desc_list.extend(
             [
-                'well_depth_setting',
-                'detector_section',
-                'disperser',
-                'focal_plane_mask'
+                "well_depth_setting",
+                "detector_section",
+                "disperser",
+                "focal_plane_mask"
             ]
         )
 
-        if 'IMAGE' in tags and 'FLAT' in tags:
-            additional_item = 'GNIRS_IMAGE_FLAT'
+        if "IMAGE" in tags and "FLAT" in tags:
+            additional_item = "GNIRS_IMAGE_FLAT"
         else:
             additional_item = None
 
         return build_group_id(
             self,
             desc_list,
-            prettify=('filter_name', 'disperser', 'focal_plane_mask'),
+            prettify=("filter_name", "disperser", "focal_plane_mask"),
             additional=additional_item
         )
 
@@ -519,7 +519,7 @@ class AstroDataGnirs(AstroDataGemini):
         else:
             arraydict = detector_properties[arrayname]
             limit = getattr(
-                arraydict.get((read_mode, well_depth)), 'linearlimit', None
+                arraydict.get((read_mode, well_depth)), "linearlimit", None
             )
 
         sat_level = self.saturation_level()
@@ -581,7 +581,7 @@ class AstroDataGnirs(AstroDataGemini):
         float
             the position angle (East of North) of the +ve y-direction
         """
-        return (self.phu[self._keyword_for('position_angle')] + 90) % 360
+        return (self.phu[self._keyword_for("position_angle")] + 90) % 360
 
     @astro_data_descriptor
     def ra(self):
@@ -674,10 +674,10 @@ class AstroDataGnirs(AstroDataGemini):
         str
             Read mode for the observation.
         """
-        readmode = self.phu.get('READMODE')
+        readmode = self.phu.get("READMODE")
         if readmode is None:
             readmode = read_modes.get(
-                (self.phu.get('LNRS'), self.phu.get('NDAVGS')), "Unknown"
+                (self.phu.get("LNRS"), self.phu.get("NDAVGS")), "Unknown"
             )
         return readmode
 
@@ -711,7 +711,7 @@ class AstroDataGnirs(AstroDataGemini):
         else:
             arraydict = detector_properties[arrayname]
             read_noise = getattr(
-                arraydict.get((read_mode, well_depth)), 'readnoise', None
+                arraydict.get((read_mode, well_depth)), "readnoise", None
             )
         try:
             return read_noise * math.sqrt(coadds)
@@ -748,7 +748,7 @@ class AstroDataGnirs(AstroDataGemini):
         else:
             arraydict = detector_properties[arrayname]
             well = getattr(
-                arraydict.get((read_mode, well_depth)), 'well', None
+                arraydict.get((read_mode, well_depth)), "well", None
             )
 
         if self.is_single:
@@ -783,9 +783,9 @@ class AstroDataGnirs(AstroDataGemini):
             The name of the slit with or without the component ID.
         """
         try:
-            slit = self.phu['SLIT'].replace(' ', '')
+            slit = self.phu["SLIT"].replace(" ", "")
             # Fix inconsistency in 1.00arcsec slit name
-            slit = slit.replace('1.0arcsec', '1.00arcsec')
+            slit = slit.replace("1.0arcsec", "1.00arcsec")
         except KeyError:
             return None
         return gmu.removeComponentID(slit) if stripID or pretty else slit
@@ -801,8 +801,8 @@ class AstroDataGnirs(AstroDataGemini):
             the slit width in arcseconds
         """
         fpmask = self.slit(pretty=True)
-        if 'arcsec' in fpmask:
-            return float(fpmask.replace('arcsec', ''))
+        if "arcsec" in fpmask:
+            return float(fpmask.replace("arcsec", ""))
         return None
 
     @astro_data_descriptor
@@ -819,7 +819,7 @@ class AstroDataGnirs(AstroDataGemini):
 
         """
         try:
-            biasvolt = self.phu['DETBIAS']
+            biasvolt = self.phu["DETBIAS"]
         except KeyError:
             return None
 
@@ -847,7 +847,7 @@ class AstroDataGnirs(AstroDataGemini):
         PRSM_ENG value from the PHU as an int, or None if unable.
         """
         try:
-            return int(self.phu.get('PRSM_ENG'))
+            return int(self.phu.get("PRSM_ENG"))
         except (ValueError, TypeError):
             return None
 
@@ -874,7 +874,7 @@ class AstroDataGnirs(AstroDataGemini):
         str
             The name of the grating with or without the component ID.
         """
-        grating = self.phu.get('GRATING')
+        grating = self.phu.get("GRATING")
         try:
             match = re.match(r"([\d/m]+)[A-Z]*(_G)(\d+)", grating)
             ret_grating = "{}{}{}".format(*match.groups())
@@ -905,7 +905,7 @@ class AstroDataGnirs(AstroDataGemini):
         str
             The name of the prism with or without the component ID.
         """
-        prism = self.phu.get('PRISM')
+        prism = self.phu.get("PRISM")
         try:
             match = re.match(r"(?:[A-Z0-9]*\+)?([A-Z]*_G\d+)", prism)
             ret_prism = match.group(1)

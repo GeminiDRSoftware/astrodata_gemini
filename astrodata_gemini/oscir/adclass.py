@@ -10,21 +10,21 @@ class AstroDataOscir(AstroDataGemini):
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'OSCIR'
+        return source[0].header.get("INSTRUME", "").upper() == "OSCIR"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['OSCIR'])
+        return TagSet(["OSCIR"])
 
     @astro_data_descriptor
     def airmass(self):
         """Return the airmass, from the AIRMASS1 keyword."""
-        return float(self.phu.get('AIRMASS1'))
+        return float(self.phu.get("AIRMASS1"))
 
     @astro_data_descriptor
     def exposure_time(self):
         """Return the exposure time, from the EXPTIME keyword."""
-        return float(self.phu.get('EXPTIME'))
+        return float(self.phu.get("EXPTIME"))
 
     @astro_data_descriptor
     def dec(self):

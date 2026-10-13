@@ -9,35 +9,35 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
     """AstroData class for Hokupa'a+QUIRC data."""
 
     __keyword_dict = dict(
-        airmass='AMEND', wavelength_band='FILTER', observation_type='IMAGETYP'
+        airmass="AMEND", wavelength_band="FILTER", observation_type="IMAGETYP"
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '') == 'Hokupaa+QUIRC'
+        return source[0].header.get("INSTRUME", "") == "Hokupaa+QUIRC"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['HOKUPAAQUIRC'])
+        return TagSet(["HOKUPAAQUIRC"])
 
     @astro_data_tag
     def _tag_image(self):
-        return TagSet(['IMAGE'])
+        return TagSet(["IMAGE"])
 
     @astro_data_tag
     def _tag_dark(self):
-        if 'dark' in self.phu.get('OBJECT', '').lower():
-            return TagSet(['DARK'], blocks=['IMAGE', 'SPECT'])
+        if "dark" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["DARK"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if 'flat' in self.phu.get('OBJECT', '').lower():
-            return TagSet(['FLAT', 'CAL'])
+        if "flat" in self.phu.get("OBJECT", "").lower():
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_descriptor
     def airmass(self):
         """Return the airmass of the observation."""
-        return self.phu.get(self._keyword_for('airmass'))
+        return self.phu.get(self._keyword_for("airmass"))
 
     @astro_data_descriptor
     def detector_name(self, pretty=False):
@@ -52,7 +52,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
             Detector name
 
         """
-        return 'QUIRC'
+        return "QUIRC"
 
     @astro_data_descriptor
     def filter_name(self, pretty=False):
@@ -88,7 +88,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
             instrument name
 
         """
-        return self.phu.get(self._keyword_for('instrument'))
+        return self.phu.get(self._keyword_for("instrument"))
 
 
     @astro_data_descriptor
@@ -102,7 +102,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
             observation type.
 
         """
-        return self.phu.get(self._keyword_for('observation_type'))
+        return self.phu.get(self._keyword_for("observation_type"))
 
     @astro_data_descriptor
     def ra(self):
@@ -141,7 +141,7 @@ class AstroDataHokupaaQUIRC(AstroDataGemini):
             Name of the bandpass.
 
         """
-        return self.phu.get(self._keyword_for('wavelength_band'))
+        return self.phu.get(self._keyword_for("wavelength_band"))
 
     @astro_data_descriptor
     def target_ra(self):

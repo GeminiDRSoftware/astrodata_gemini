@@ -33,10 +33,10 @@ def return_dict_for_bundle(desc_fn):
     Its behaviour on multi-extension slices is unclear.
     """
     def wrapper(self, *args, **kwargs):
-        if not self.is_single and 'BUNDLE' in self.tags:
+        if not self.is_single and "BUNDLE" in self.tags:
             ret_dict = dict()
-            cameras = self.hdr.get('CAMERA', '')
-            namps = self.hdr.get('NAMPS')
+            cameras = self.hdr.get("CAMERA", "")
+            namps = self.hdr.get("NAMPS")
             i = 0
             while i < len(namps):
                 camera = cameras[i].lower()
@@ -68,11 +68,11 @@ def use_nascent_phu_for_bundle(desc_fn):
     red/blue arm) is provided instead.
     """
     def wrapper(self, *args, **kwargs):
-        if 'BUNDLE' in self.tags:
+        if "BUNDLE" in self.tags:
             phu_index = min(
                 i
-                for i, camera in enumerate(self.hdr['CAMERA'])
-                if camera in ('BLUE', 'RED')
+                for i, camera in enumerate(self.hdr["CAMERA"])
+                if camera in ("BLUE", "RED")
             )
             nascent_phu = self[phu_index]
             return desc_fn(nascent_phu, *args, **kwargs)
@@ -84,12 +84,12 @@ class AstroDataGhost(AstroDataGemini):
     """Class for adding tags and descriptors to GHOST data."""
 
     __keyword_dict = dict(
-        array_section = 'CCDSEC',
-        array_name = 'AMPNAME',
-        overscan_section = 'BIASSEC',
-        res_mode = 'SMPNAME',
-        exposure_time = 'EXPTIME',
-        saturation_level = 'SATURATE',
+        array_section = "CCDSEC",
+        array_name = "AMPNAME",
+        overscan_section = "BIASSEC",
+        res_mode = "SMPNAME",
+        exposure_time = "EXPTIME",
+        saturation_level = "SATURATE",
     )
 
     def __iter__(self):
@@ -110,30 +110,30 @@ class AstroDataGhost(AstroDataGemini):
         camera, as only original bundles should have this.
         """
         obj = super().__getitem__(idx)
-        if 'BUNDLE' in self.tags:
+        if "BUNDLE" in self.tags:
             #print("BUNDLE", idx, obj._mapping)
             if max(obj.indices) - min(obj.indices) != len(obj.indices) - 1:
                 raise ValueError("Bundles can only be sliced contiguously")
             #print(obj.tags)
             # Find the nascent PHU if it's not a slit viewer, keep PHU if it is
             # this copes with CAMERA return a list or a string (single-slice)
-            if obj.hdr.get('CAMERA')[0].startswith('S'):
+            if obj.hdr.get("CAMERA")[0].startswith("S"):
                 # add in the first SLITV header so keywords are there
                 # (which is explicitly done in debundling)
                 objhdr = obj.hdr if obj.is_single else obj[0].hdr
                 phu = self.phu + objhdr
                 # because people just do things without understanding the
                 # ramifications
-                phu['EXPTIME'] = objhdr['EXPTIME']
+                phu["EXPTIME"] = objhdr["EXPTIME"]
                 obj.phu = phu
                 return obj
             for i in range(min(obj.indices), -1, -1):
                 ndd = self._all_nddatas[i]
                 if not ndd.shape:
-                    phu = ndd.meta['header']
+                    phu = ndd.meta["header"]
                     break
             else:
-                phu = self._all_nddatas[min(obj.indices)].meta['header']
+                phu = self._all_nddatas[min(obj.indices)].meta["header"]
             obj.phu = phu
             # This has to happen way down here because only by resetting the
             # PHU
@@ -168,63 +168,63 @@ class AstroDataGhost(AstroDataGemini):
         source : astrodata.AstroData
             The source file to check.
         """
-        return source[0].header.get('INSTRUME', '').upper() == 'GHOST'
+        return source[0].header.get("INSTRUME", "").upper() == "GHOST"
 
     @astro_data_tag
     def _tag_instrument(self):
         """Define the minimal tag set for GHOST data."""
-        return TagSet(['GHOST'])
+        return TagSet(["GHOST"])
 
     @astro_data_tag
     def _tag_bundle(self):
         """Define the 'bundled data' tag set for GHOST data."""
         # Gets blocked by tags created by split files
-        return TagSet(['BUNDLE'])
+        return TagSet(["BUNDLE"])
 
     @astro_data_tag
     def _tag_bias(self):
         """Define the 'bias data' tag set for GHOST data."""
-        if self.phu.get('OBSTYPE') == 'BIAS':
-            return TagSet(['CAL', 'BIAS'], blocks=['IMAGE', 'SPECT'])
+        if self.phu.get("OBSTYPE") == "BIAS":
+            return TagSet(["CAL", "BIAS"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _tag_dark(self):
         """Define the 'dark data' tag set for GHOST data."""
-        if self.phu.get('OBSTYPE') == 'DARK':
-            return TagSet(['CAL', 'DARK'], blocks=['IMAGE', 'SPECT'])
+        if self.phu.get("OBSTYPE") == "DARK":
+            return TagSet(["CAL", "DARK"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _tag_arc(self):
         """Define the 'arc data' tag set for GHOST data."""
-        if self.phu.get('OBSTYPE') == 'ARC':
-            return TagSet(['CAL', 'ARC'])
+        if self.phu.get("OBSTYPE") == "ARC":
+            return TagSet(["CAL", "ARC"])
 
     @astro_data_tag
     def _tag_flat(self):
         """Define the 'flat data' tag set for GHOST data."""
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            return TagSet(['CAL', 'FLAT'])
+        if self.phu.get("OBSTYPE") == "FLAT":
+            return TagSet(["CAL", "FLAT"])
 
     @astro_data_tag
     def _tag_slitflat(self):
         """Define the 'slitflat data' tag set for GHOST data."""
-        if (self.phu.get('OBSTYPE') == 'FLAT' and
-            self.phu.get('CAMERA', '').lower().startswith('slit')):
-            return TagSet(['CAL', 'SLITFLAT'])
+        if (self.phu.get("OBSTYPE") == "FLAT" and
+            self.phu.get("CAMERA", "").lower().startswith("slit")):
+            return TagSet(["CAL", "SLITFLAT"])
 
     @astro_data_tag
     def _tag_sky(self):
         """Define the 'flat data' tag set for GHOST data."""
-        if self.phu.get('OBSTYPE') == 'SKY':
-            return TagSet(['SKY'])
+        if self.phu.get("OBSTYPE") == "SKY":
+            return TagSet(["SKY"])
 
     # MCW 191107 - had to add SLIT back in to make cal system work
     @astro_data_tag
     def _tag_slitv(self):
         """Define the 'slit data' tag set for GHOST data."""
-        if self.phu.get('CAMERA', '').lower().startswith('slit'):
-            return TagSet(['SLITV', 'SLIT'],
-                          blocks=['SPECT', 'BUNDLE'])
+        if self.phu.get("CAMERA", "").lower().startswith("slit"):
+            return TagSet(["SLITV", "SLIT"],
+                          blocks=["SPECT", "BUNDLE"])
 
     @astro_data_tag
     def _tag_image(self):
@@ -234,16 +234,16 @@ class AstroDataGhost(AstroDataGemini):
         This must be done separately from the "SLITV" tag so that "SLITV"
         isn't blocked by BIAS or BPM.
         """
-        if self.phu.get('CAMERA', '').lower().startswith('slit'):
-            return TagSet(['IMAGE'])
+        if self.phu.get("CAMERA", "").lower().startswith("slit"):
+            return TagSet(["IMAGE"])
 
     @astro_data_tag
     def _tag_camera(self):
         """Define the 'spectrograph data' tag set for GHOST data."""
         # Also returns BLUE or RED if the CAMERA keyword is set thus
-        camera = self.phu.get('CAMERA')
-        if camera in ('BLUE', 'RED'):
-            return TagSet([camera], blocks=['BUNDLE'])
+        camera = self.phu.get("CAMERA")
+        if camera in ("BLUE", "RED"):
+            return TagSet([camera], blocks=["BUNDLE"])
 
     @astro_data_tag
     def _tag_spect(self):
@@ -253,31 +253,31 @@ class AstroDataGhost(AstroDataGemini):
         This must be done separately from "RED"/"BLUE" so that it isn't
         blocked by BIAS or BPM.
         """
-        camera = self.phu.get('CAMERA')
-        if camera in ('BLUE', 'RED'):
-            return TagSet(['SPECT', 'XD'], blocks=['BUNDLE'])
+        camera = self.phu.get("CAMERA")
+        if camera in ("BLUE", "RED"):
+            return TagSet(["SPECT", "XD"], blocks=["BUNDLE"])
 
     @astro_data_tag
     def _status_processed_ghost_cals(self):
         """Define the 'processed data' tag set for GHOST data."""
         kwords = set(
             [
-                'PRSLITIM',
-                'PRSLITBI',
-                'PRSLITDA',
-                'PRSLITFL',
-                'PRWAVLFT',
-                'PRPOLYFT',
-                'PROCSTND'
+                "PRSLITIM",
+                "PRSLITBI",
+                "PRSLITDA",
+                "PRSLITFL",
+                "PRWAVLFT",
+                "PRPOLYFT",
+                "PROCSTND"
             ]
         )
         if set(self.phu) & kwords:
-            return TagSet(['PROCESSED'])
+            return TagSet(["PROCESSED"])
 
     @astro_data_tag
     def _tag_processed_standard(self):
-        if 'PROCSTND' in self.phu:
-            return TagSet(['STANDARD'])
+        if "PROCSTND" in self.phu:
+            return TagSet(["STANDARD"])
 
     #@astro_data_tag
     #def _tag_binning_mode(self):
@@ -302,8 +302,8 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_tag
     def _tag_obsclass(self):
         """Define the tagset for 'partnerCal' observations."""
-        if self.phu.get('OBSCLASS') == 'partnerCal':
-            return TagSet(['PARTNER_CAL'])
+        if self.phu.get("OBSCLASS") == "partnerCal":
+            return TagSet(["PARTNER_CAL"])
 
     @astro_data_descriptor
     @return_dict_for_bundle
@@ -327,7 +327,7 @@ class AstroDataGhost(AstroDataGemini):
         """
         # Note that tiled arrays won't have an array_name, so we'll fake it
         # FIXME correctly fetch keyword for tileArrays primitive
-        if self.phu.get('TILEARRY', None) is not None:
+        if self.phu.get("TILEARRY", None) is not None:
             ampname = [0, ]
         else:
             ampname = self.array_name()
@@ -364,12 +364,12 @@ class AstroDataGhost(AstroDataGemini):
             viewer data. Returns `None` if arm/slit status can't be determined.
         """
         tags = self.tags
-        if 'BLUE' in tags:
-            return 'blue'
-        elif 'RED' in tags:
-            return 'red'
-        elif 'SLITV' in tags:
-            return 'slitv'
+        if "BLUE" in tags:
+            return "blue"
+        elif "RED" in tags:
+            return "red"
+        elif "SLITV" in tags:
+            return "slitv"
         return None
 
     @astro_data_descriptor
@@ -399,19 +399,19 @@ class AstroDataGhost(AstroDataGemini):
     @astro_data_descriptor
     def calibration_key(self):
         """Return a suitable calibration key for GHOST, including the arm."""
-        return (self.data_label().replace('_stack', ''), self.arm())
+        return (self.data_label().replace("_stack", ""), self.arm())
 
     # FIXME Remove once headers corrected
     @astro_data_descriptor
     @gmu.return_requested_units()
     def central_wavelength(self): # pragma: no cover
         """Return a dummy value to work around current Gemini cal_mgr."""
-        val = self.phu.get(self._keyword_for('central_wavelength'), None)
+        val = self.phu.get(self._keyword_for("central_wavelength"), None)
 
         if val is None:
-            if self.arm() == 'red':
+            if self.arm() == "red":
                 val = 750
-            elif self.arm() == 'blue':
+            elif self.arm() == "blue":
                 val = 440
             else:
                 return None
@@ -422,7 +422,7 @@ class AstroDataGhost(AstroDataGemini):
     @return_dict_for_bundle
     def detector_name(self, pretty=False):
         """Return the detector (CCD) name."""
-        return self.phu.get('DETECTOR')
+        return self.phu.get("DETECTOR")
 
     @astro_data_descriptor
     @return_dict_for_bundle
@@ -441,7 +441,7 @@ class AstroDataGhost(AstroDataGemini):
             except (AttributeError, ValueError):
                 return None
 
-        binning = self.hdr.get('CCDSUM')
+        binning = self.hdr.get("CCDSUM")
         if self.is_single:
             return _get_xbin(binning)
         else:
@@ -466,7 +466,7 @@ class AstroDataGhost(AstroDataGemini):
             except (AttributeError, ValueError, IndexError):
                 return None
 
-        binning = self.hdr.get('CCDSUM')
+        binning = self.hdr.get("CCDSUM")
         if self.is_single:
             return _get_ybin(binning)
         else:
@@ -539,7 +539,7 @@ class AstroDataGhost(AstroDataGemini):
             the gain setting
         """
         # TODO: confirm returns. Future-proofing for a possible high-gain mode
-        if 'SLITV' in self.tags:
+        if "SLITV" in self.tags:
             return "standard"
         gain = self.gain()
         if self.is_single:
@@ -565,24 +565,24 @@ class AstroDataGhost(AstroDataGemini):
             A group ID for compatible data
         """
         tags = self.tags
-        if 'DARK' in tags:
-            desc_list = ['exposure_time', 'coadds']
-        elif 'BIAS' in tags:
+        if "DARK" in tags:
+            desc_list = ["exposure_time", "coadds"]
+        elif "BIAS" in tags:
             desc_list = []
         else:  # science exposures (and ARCs)
-            desc_list = ['observation_id', 'res_mode']
-        desc_list.append('arm')
+            desc_list = ["observation_id", "res_mode"]
+        desc_list.append("arm")
 
         # never stack frames of mixed binning modes
-        desc_list.append('detector_x_bin')
-        desc_list.append('detector_y_bin')
+        desc_list.append("detector_x_bin")
+        desc_list.append("detector_y_bin")
 
         # MCW: We care about the resolution mode EXCEPT for dark and bias
-        if 'DARK' not in tags and 'BIAS' not in tags:
-            desc_list.append('res_mode')
+        if "DARK" not in tags and "BIAS" not in tags:
+            desc_list.append("res_mode")
 
         # CJS: Generally need to stop FLATs being stacked with science
-        additional_item = 'FLAT' if 'FLAT' in tags else None
+        additional_item = "FLAT" if "FLAT" in tags else None
 
         return build_group_id(
             self, desc_list, prettify=[], additional=additional_item
@@ -612,13 +612,13 @@ class AstroDataGhost(AstroDataGemini):
         int/dict
             number of exposures
         """
-        if 'BUNDLE' not in self.tags:
-            return len(self) if 'SLITV' in self.tags else 1  # probably
+        if "BUNDLE" not in self.tags:
+            return len(self) if "SLITV" in self.tags else 1  # probably
         if self.is_single:
             return 1
-        cameras = self.hdr.get('CAMERA')
-        namps = self.hdr.get('NAMPS')
-        ret_value = {'blue': 0, 'red': 0, 'slitv': 0}
+        cameras = self.hdr.get("CAMERA")
+        namps = self.hdr.get("NAMPS")
+        ret_value = {"blue": 0, "red": 0, "slitv": 0}
         for camera, namp in zip(cameras, namps):
             if namp is not None:
                 ret_value[camera.lower()] += 1
@@ -674,10 +674,10 @@ class AstroDataGhost(AstroDataGemini):
         str
             The read speed ("slow"/"medium"/"fast")
         """
-        if 'SLITV' in self.tags:
+        if "SLITV" in self.tags:
             return "standard"
         return ("slow", "medium", "fast", "unknown")[
-            self.phu.get('READMODE', 3)]
+            self.phu.get("READMODE", 3)]
 
     @astro_data_descriptor
     def res_mode(self):
@@ -690,12 +690,12 @@ class AstroDataGhost(AstroDataGemini):
             Resolution of the dataset ('high' | 'std'). Returns `None` if
             resolution mode cannot be determined.
         """
-        mode = self.phu.get('SMPNAME')
+        mode = self.phu.get("SMPNAME")
         try:
-            if mode.endswith('HI_ONLY'):
-                return 'high'
-            elif (mode.endswith('LO_ONLY') or mode.endswith('STD_ONLY')):
-                return 'std'
+            if mode.endswith("HI_ONLY"):
+                return "high"
+            elif (mode.endswith("LO_ONLY") or mode.endswith("STD_ONLY")):
+                return "std"
         except Exception:
             pass
         return None
@@ -704,7 +704,7 @@ class AstroDataGhost(AstroDataGemini):
     def saturation_level(self):
         """Patch because SATURATE=0 for the blue spectrograph."""
         retval = super().saturation_level()
-        if 'PREPARED' in self.tags:
+        if "PREPARED" in self.tags:
             return retval
         if self.is_single:
             return None if retval is None else retval if retval > 0 else 65535
@@ -740,7 +740,7 @@ class AstroDataGhost(AstroDataGemini):
         -------
         bool or `None`
         """
-        want_before = self.phu.get('ARCBEFOR', None)
+        want_before = self.phu.get("ARCBEFOR", None)
         if want_before:
             return True
         elif want_before is None:

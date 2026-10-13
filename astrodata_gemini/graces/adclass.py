@@ -9,34 +9,34 @@ from ..gemini import AstroDataGemini
 class AstroDataGraces(AstroDataGemini):
     """AstroData class for GRACES data."""
 
-    __keyword_dict = dict(detector = 'DETECTOR')
+    __keyword_dict = dict(detector = "DETECTOR")
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'GRACES'
+        return source[0].header.get("INSTRUME", "").upper() == "GRACES"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['GRACES'])
+        return TagSet(["GRACES"])
 
     @astro_data_tag
     def _tag_spect(self):
-        return TagSet(['SPECT'])
+        return TagSet(["SPECT"])
 
     @astro_data_tag
     def _tag_arc(self):
-        if self.phu.get('OBSTYPE') == 'ARC':
-            return TagSet(['ARC', 'CAL'])
+        if self.phu.get("OBSTYPE") == "ARC":
+            return TagSet(["ARC", "CAL"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            return TagSet(['FLAT', 'CAL'])
+        if self.phu.get("OBSTYPE") == "FLAT":
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _tag_bias(self):
-        if self.phu.get('OBSTYPE') == 'BIAS':
-            return TagSet(['BIAS', 'CAL'])
+        if self.phu.get("OBSTYPE") == "BIAS":
+            return TagSet(["BIAS", "CAL"])
 
     @astro_data_descriptor
     @gmu.return_requested_units()
@@ -70,7 +70,7 @@ class AstroDataGraces(AstroDataGemini):
     @astro_data_descriptor
     def detector(self):
         """Return the name of the detector."""
-        return self.phu.get(self._keyword_for('detector'))
+        return self.phu.get(self._keyword_for("detector"))
 
     @astro_data_descriptor
     def disperser(self, stripID=False, pretty=False):
@@ -92,7 +92,7 @@ class AstroDataGraces(AstroDataGemini):
             The name of the disperser, "GRACES".
 
         """
-        return 'GRACES'
+        return "GRACES"
 
     @astro_data_descriptor
     def position_angle(self):

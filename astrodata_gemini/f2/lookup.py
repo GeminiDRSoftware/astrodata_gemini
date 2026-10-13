@@ -8,15 +8,15 @@ DispersionOffsetMask = namedtuple("DispersionOffsetMask", "dispersion cenwaveoff
 
 
 filter_wavelengths = {
-    'Jlow'  : 1.1220,
-    'JH'    : 1.3900,
-    'H'     : 1.6310,
-    'HK'    : 1.8710,
-    'K-blue': 2.0600,
-    'Ks'    : 2.1570,
-    'K-red' : 2.3100,
-    'Klong' : 2.2000,
-    'K-long': 2.2000,
+    "Jlow"  : 1.1220,
+    "JH"    : 1.3900,
+    "H"     : 1.6310,
+    "HK"    : 1.8710,
+    "K-blue": 2.0600,
+    "Ks"    : 2.1570,
+    "K-red" : 2.3100,
+    "Klong" : 2.2000,
+    "K-long": 2.2000,
 }
 
 array_properties = {
@@ -31,10 +31,10 @@ array_properties = {
     # Non-linear limit: Saturation starts at ~35 kADU,
     # 35 kADU = 155400e-
     # readnoise and well are in units of electrons
-    '1': ArrayProperties(11.7, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12)),
-    '4': ArrayProperties(6.0, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12)),
-    '6': ArrayProperties(5.3, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12)),
-    '8': ArrayProperties(5.0, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12))
+    "1": ArrayProperties(11.7, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12)),
+    "4": ArrayProperties(6.0, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12)),
+    "6": ArrayProperties(5.3, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12)),
+    "8": ArrayProperties(5.0, 4.44, 155400, 0.72, 1.0, (0.9999107, -4.2854848e-8, 1.0096585e-12))
     }
 
 nominal_zeropoints = {
@@ -64,15 +64,15 @@ nominal_zeropoints = {
     # add 2.5*log_10(gain) = 2.5*log_10(4.44) = 1.62 to each of them.
 
     # (BAND, CAMERA): Nominal zeropoint for airmass=1
-    ('Y', 'f/16'): 25.11+1.62,
+    ("Y", "f/16"): 25.11+1.62,
     # ('J', 'f/16'): 25.19+1.62,
     # ('H', 'f/16'): 25.41+1.62,
     # ('Ks', 'f/16'): 24.59+1.62,
 
     # New values from Joan (Feb 2024) already in 1 e-/s
-    ('J', 'f/16'): 26.51,  # +/- 0.08
-    ('H', 'f/16'): 26.75,  # +/- 0.08
-    ('Ks', 'f/16'): 26.12, # +/- 0.08
+    ("J", "f/16"): 26.51,  # +/- 0.08
+    ("H", "f/16"): 26.75,  # +/- 0.08
+    ("Ks", "f/16"): 26.12, # +/- 0.08
 
 }
  # Instruction for making this LUT:

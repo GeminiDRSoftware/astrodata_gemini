@@ -9,12 +9,12 @@ class AstroDataGpi(AstroDataGemini):
     """AstroData class for GPI data."""
 
     __keyword_dict = dict(
-        array_section='DATASEC',
-        detector_section='DATASEC',
-        exposure_time='ITIME',
-        filter='IFSFILT',
-        focal_plane_mask='OCCULTER',
-        pupil_mask='APODIZER',
+        array_section="DATASEC",
+        detector_section="DATASEC",
+        exposure_time="ITIME",
+        filter="IFSFILT",
+        focal_plane_mask="OCCULTER",
+        pupil_mask="APODIZER",
     )
 
     @classmethod
@@ -22,29 +22,29 @@ class AstroDataGpi(AstroDataGemini):
         """Read the source, renaming the DQ extension 3 as SCI extension 2."""
         def gpi_parser(hdu):
             if (
-                hdu.header.get('EXTNAME') == 'DQ'
-                and hdu.header.get('EXTVER') == 3
+                hdu.header.get("EXTNAME") == "DQ"
+                and hdu.header.get("EXTVER") == 3
             ):
-                hdu.header['EXTNAME'] = ('SCI', 'BPM renamed by AstroData')
-                hdu.header['EXTVER'] = (int(2), 'BPM renamed by AstroData')
+                hdu.header["EXTNAME"] = ("SCI", "BPM renamed by AstroData")
+                hdu.header["EXTVER"] = (int(2), "BPM renamed by AstroData")
 
         return super().read(source, extname_parser=gpi_parser)
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'GPI'
+        return source[0].header.get("INSTRUME", "").upper() == "GPI"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet({'GPI'}, ())
+        return TagSet({"GPI"}, ())
 
     @astro_data_tag
     def _tag_disperser(self):
-        disp = self.phu.get('DISPERSR', '')
-        if disp.startswith('DISP_WOLLASTON'):
-            return TagSet({'POL'}, ())
-        elif disp.startswith('DISP_PRISM'):
-            return TagSet({'SPECT', 'IFU'}, ())
+        disp = self.phu.get("DISPERSR", "")
+        if disp.startswith("DISP_WOLLASTON"):
+            return TagSet({"POL"}, ())
+        elif disp.startswith("DISP_PRISM"):
+            return TagSet({"SPECT", "IFU"}, ())
 
     @astro_data_descriptor
     def dec(self):
@@ -74,11 +74,11 @@ class AstroDataGpi(AstroDataGemini):
             Exposure time.
         """
         # The ITIME keyword is in the extension HDUs!
-        exposure_time = self.hdr.get('ITIME', -1)[0]
+        exposure_time = self.hdr.get("ITIME", -1)[0]
         if exposure_time < 0:
             return None
 
-        if 'PREPARED' in self.tags:
+        if "PREPARED" in self.tags:
             return exposure_time
         else:
             return exposure_time * self.coadds()
@@ -105,9 +105,9 @@ class AstroDataGpi(AstroDataGemini):
             The name of the filter combination with or without the
             component ID.
         """
-        filter_name = self._may_remove_component('IFSFILT', stripID, pretty)
+        filter_name = self._may_remove_component("IFSFILT", stripID, pretty)
         if pretty:
-            filter_name = filter_name.replace('IFSFILT_', '')
+            filter_name = filter_name.replace("IFSFILT_", "")
         return filter_name
 
     @astro_data_descriptor

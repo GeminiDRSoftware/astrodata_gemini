@@ -23,40 +23,40 @@ class AstroDataNiri(AstroDataGemini):
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'NIRI'
+        return source[0].header.get("INSTRUME", "").upper() == "NIRI"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['NIRI'])
+        return TagSet(["NIRI"])
 
     @astro_data_tag
     def _tag_dark(self):
-        if self.phu.get('OBSTYPE') == 'DARK':
-            return TagSet(['DARK', 'CAL'], blocks=['SPECT', 'IMAGE'])
+        if self.phu.get("OBSTYPE") == "DARK":
+            return TagSet(["DARK", "CAL"], blocks=["SPECT", "IMAGE"])
 
     @astro_data_tag
     def _tag_arc(self):
-        if self.phu.get('OBSTYPE') == 'ARC':
-            return TagSet(['ARC'])
+        if self.phu.get("OBSTYPE") == "ARC":
+            return TagSet(["ARC"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            return TagSet(['CAL', 'FLAT'])
+        if self.phu.get("OBSTYPE") == "FLAT":
+            return TagSet(["CAL", "FLAT"])
 
     @astro_data_tag
     def _tag_image(self):
-        if 'grism' not in self.phu.get('FILTER3', ''):
-            tags = ['IMAGE']
-            if self.phu.get('OBJECT', '').upper() == 'TWILIGHT':
-                tags.extend(['CAL', 'FLAT', 'TWILIGHT'])
+        if "grism" not in self.phu.get("FILTER3", ""):
+            tags = ["IMAGE"]
+            if self.phu.get("OBJECT", "").upper() == "TWILIGHT":
+                tags.extend(["CAL", "FLAT", "TWILIGHT"])
 
             return TagSet(tags)
 
     @astro_data_tag
     def _tag_spect(self):
-        if 'grism' in self.phu.get('FILTER3', ''):
-            return TagSet(['SPECT', 'LS'])
+        if "grism" in self.phu.get("FILTER3", ""):
+            return TagSet(["SPECT", "LS"])
 
     @astro_data_descriptor
     def array_section(self, pretty=False):
@@ -141,7 +141,7 @@ class AstroDataNiri(AstroDataGemini):
             format (1-based).
         """
         # All NIRI pixels are data
-        return self._parse_section('FULLFRAME', pretty)
+        return self._parse_section("FULLFRAME", pretty)
 
     @astro_data_descriptor
     def detector_roi_setting(self):
@@ -170,10 +170,10 @@ class AstroDataNiri(AstroDataGemini):
         # Check for a sensibly-sized square
         if x1==0 and y1==0 and x2==y2 and x2 % 256==0:
             roi_setting = (
-                'Full Frame' if x2 == 1024 else 'Central{}'.format(x2)
+                "Full Frame" if x2 == 1024 else "Central{}".format(x2)
             )
         else:
-            roi_setting = 'Custom'
+            roi_setting = "Custom"
         return roi_setting
 
     @astro_data_descriptor
@@ -218,13 +218,13 @@ class AstroDataNiri(AstroDataGemini):
             The offset in pixels
         """
         try:
-            offset = self.phu.get('POFFSET') / self.pixel_scale()
+            offset = self.phu.get("POFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
         # Flipped if on bottom port unless AO is operating
         return (
             -offset
-            if (self.phu.get('INPORT')==1 and not self.is_ao())
+            if (self.phu.get("INPORT")==1 and not self.is_ao())
             else offset
         )
     @astro_data_descriptor
@@ -240,7 +240,7 @@ class AstroDataNiri(AstroDataGemini):
             The offset in pixels
         """
         try:
-            return -self.phu.get('QOFFSET') / self.pixel_scale()
+            return -self.phu.get("QOFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
 
@@ -267,13 +267,13 @@ class AstroDataNiri(AstroDataGemini):
         """
         stripID |= pretty
         try:
-            filter3 = self.phu['FILTER3']
+            filter3 = self.phu["FILTER3"]
         except KeyError:
             return None
-        if 'grism' in filter3:
+        if "grism" in filter3:
             return gmu.removeComponentID(filter3) if stripID else filter3
         else:
-            return 'MIRROR'
+            return "MIRROR"
 
     @astro_data_descriptor
     @gmu.return_requested_units()
@@ -338,7 +338,7 @@ class AstroDataNiri(AstroDataGemini):
             component ID.
         """
         raw_filters = [
-            self._may_remove_component('FILTER{}'.format(i), stripID, pretty)
+            self._may_remove_component("FILTER{}".format(i), stripID, pretty)
             for i in [1,2,3]
         ]
         # eliminate any open/grism/pupil from the list
@@ -346,14 +346,14 @@ class AstroDataNiri(AstroDataGemini):
             f
             for f in raw_filters
             if f is not None
-            and not any(x in f.lower() for x in ['open', 'grism', 'pupil'])
+            and not any(x in f.lower() for x in ["open", "grism", "pupil"])
         ]
         filters.sort()
 
-        if 'blank' in filters:
-            return 'blank'
+        if "blank" in filters:
+            return "blank"
         if not filters:
-            return 'open'
+            return "open"
 
         if pretty:
             try:
@@ -361,7 +361,7 @@ class AstroDataNiri(AstroDataGemini):
                     tuple(filters) if len(filters) > 1 else filters[0]]
             except KeyError:
                 pass
-        return '&'.join(filters)
+        return "&".join(filters)
 
     @returns_list
     @use_keyword_if_prepared
@@ -375,7 +375,7 @@ class AstroDataNiri(AstroDataGemini):
         float/list
             gain
         """
-        return lookup.array_properties.get('gain')
+        return lookup.array_properties.get("gain")
 
     @astro_data_descriptor
     def group_id(self):
@@ -391,22 +391,22 @@ class AstroDataNiri(AstroDataGemini):
             A group ID for compatible data.
         """
         tags = self.tags
-        if 'DARK' in tags:
-            desc_list = ['exposure_time', 'coadds']
+        if "DARK" in tags:
+            desc_list = ["exposure_time", "coadds"]
         else:
-            desc_list = ['observation_id', 'filter_name', 'camera']
+            desc_list = ["observation_id", "filter_name", "camera"]
 
         desc_list.extend(
-            ['read_mode', 'well_depth_setting', 'detector_section']
+            ["read_mode", "well_depth_setting", "detector_section"]
         )
-        if 'SPECT' in tags:
-            desc_list.extend(['disperser', 'focal_plane_mask'])
+        if "SPECT" in tags:
+            desc_list.extend(["disperser", "focal_plane_mask"])
 
-        if 'IMAGE' in tags and 'FLAT' in tags:
+        if "IMAGE" in tags and "FLAT" in tags:
             additional_item = (
-                'NIRI_IMAGE_TWILIGHT'
-                if 'TWILIGHT' in tags
-                else 'NIRI_IMAGE_FLAT'
+                "NIRI_IMAGE_TWILIGHT"
+                if "TWILIGHT" in tags
+                else "NIRI_IMAGE_FLAT"
             )
         else:
             additional_item = None
@@ -414,7 +414,7 @@ class AstroDataNiri(AstroDataGemini):
         return build_group_id(
             self,
             desc_list,
-            prettify=['filter_name', 'disperser', 'focal_plane_mask'],
+            prettify=["filter_name", "disperser", "focal_plane_mask"],
             additional=additional_item
         )
 
@@ -465,7 +465,7 @@ class AstroDataNiri(AstroDataGemini):
             non-linearity level
         """
         sat_level = self.saturation_level()
-        linear_limit = lookup.array_properties['linearlimit']
+        linear_limit = lookup.array_properties["linearlimit"]
         if isinstance(sat_level, list):
             return [(int(linear_limit * s) if s else None) for s in sat_level]
         else:
@@ -482,17 +482,17 @@ class AstroDataNiri(AstroDataGemini):
             the pupil mask
         """
         try:
-            filter3 = self.phu['FILTER3']
+            filter3 = self.phu["FILTER3"]
         except KeyError:
             return None
-        if filter3.startswith('pup'):
+        if filter3.startswith("pup"):
              return (
                 gmu.removeComponentID(filter3)
                 if pretty or stripID
                 else filter3
              )
         else:
-            return 'MIRROR'
+            return "MIRROR"
 
     @astro_data_descriptor
     def read_mode(self):
@@ -508,15 +508,15 @@ class AstroDataNiri(AstroDataGemini):
         str
             the read mode used
         """
-        setting = (self.phu.get('LNRS'), self.phu.get('NDAVGS'))
+        setting = (self.phu.get("LNRS"), self.phu.get("NDAVGS"))
         if setting == (16,16):
-            return 'Low Background'
+            return "Low Background"
         elif setting == (1,16):
-            return 'Medium Background'
+            return "Medium Background"
         elif setting == (1,1):
-            return 'High Background'
+            return "High Background"
         else:
-            return 'Unknown'
+            return "Unknown"
 
     @returns_list
     @use_keyword_if_prepared
@@ -533,12 +533,12 @@ class AstroDataNiri(AstroDataGemini):
             read noise
         """
         read_mode = self.read_mode()
-        if read_mode == 'Low Background':
-            key = 'lowreadnoise'
-        elif read_mode == 'High Background':
-            key = 'readnoise'
+        if read_mode == "Low Background":
+            key = "lowreadnoise"
+        elif read_mode == "High Background":
+            key = "readnoise"
         else:
-            key = 'medreadnoise'
+            key = "medreadnoise"
         try:
             read_noise = lookup.array_properties[key]
         except KeyError:
@@ -560,7 +560,7 @@ class AstroDataNiri(AstroDataGemini):
         coadds = self.coadds()
         gain = self.gain()
         well = lookup.array_properties.get(
-            self.well_depth_setting().lower()+'well')
+            self.well_depth_setting().lower()+"well")
         if self.is_single:
             try:
                 return int(well * coadds / gain)
@@ -582,8 +582,8 @@ class AstroDataNiri(AstroDataGemini):
             the slit width in arcseconds
         """
         fpmask = self.focal_plane_mask(pretty=True)
-        if 'pix' in fpmask:
-            m = re.match('f(.*)-(.*)pix', fpmask)
+        if "pix" in fpmask:
+            m = re.match("f(.*)-(.*)pix", fpmask)
             return int(m.group(2)) * 0.7 / int(m.group(1))
         return None
 
@@ -601,14 +601,14 @@ class AstroDataNiri(AstroDataGemini):
             the well-depth setting
         """
         try:
-            biasvolt = self.phu['A_VDDUC'] - self.phu['A_VDET']
-            if abs(biasvolt - lookup.array_properties['shallowbias']) < 0.05:
-                return 'Shallow'
-            elif abs(biasvolt - lookup.array_properties['deepbias']) < 0.05:
-                return 'Deep'
+            biasvolt = self.phu["A_VDDUC"] - self.phu["A_VDET"]
+            if abs(biasvolt - lookup.array_properties["shallowbias"]) < 0.05:
+                return "Shallow"
+            elif abs(biasvolt - lookup.array_properties["deepbias"]) < 0.05:
+                return "Deep"
         except KeyError:
             pass
-        return 'Unknown'
+        return "Unknown"
 
     @gmu.return_requested_units(input_units="nm")
     def actual_central_wavelength(self):

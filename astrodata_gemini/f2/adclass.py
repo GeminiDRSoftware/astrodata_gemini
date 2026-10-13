@@ -26,43 +26,43 @@ class AstroDataF2(AstroDataGemini):
     """AstroData class for Flamingos-2 data."""
 
     __keyword_dict = dict(
-        central_wavelength='WAVELENG',
-        disperser='GRISM',
-        lyot_stop='LYOT',
+        central_wavelength="WAVELENG",
+        disperser="GRISM",
+        lyot_stop="LYOT",
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() in ('F2', 'FLAM')
+        return source[0].header.get("INSTRUME", "").upper() in ("F2", "FLAM")
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['F2'])
+        return TagSet(["F2"])
 
     @astro_data_tag
     def _tag_dark(self):
-        ot = self.phu.get('OBSTYPE')
+        ot = self.phu.get("OBSTYPE")
         dkflt = False
-        for f in (self.phu.get('FILTER1', ''), self.phu.get('FILTER2', '')):
-            if re.match('DK.?', f):
+        for f in (self.phu.get("FILTER1", ""), self.phu.get("FILTER2", "")):
+            if re.match("DK.?", f):
                 dkflt = True
                 break
 
-        if dkflt or ot == 'DARK':
-            return TagSet(['DARK', 'CAL'], blocks=['IMAGE', 'SPECT'])
+        if dkflt or ot == "DARK":
+            return TagSet(["DARK", "CAL"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _tag_image(self):
         if (
-            self.phu.get('GRISM') == 'Open'
-            or self.phu.get('GRISMPOS') == 'Open'
+            self.phu.get("GRISM") == "Open"
+            or self.phu.get("GRISMPOS") == "Open"
         ):
-            return TagSet(['IMAGE'])
+            return TagSet(["IMAGE"])
 
     # Do not tag this as astro_data_tag. It's a helper function
     def _tag_is_spect(self):
-        grism = self.phu.get('GRISM', '')
-        grpos = self.phu.get('GRISMPOS', '')
+        grism = self.phu.get("GRISM", "")
+        grpos = self.phu.get("GRISMPOS", "")
 
         for pattern in ("JH.?", "HK.?", "R3K.?"):
             if re.match(pattern, grism) or re.match(pattern, grpos):
@@ -73,55 +73,55 @@ class AstroDataF2(AstroDataGemini):
     @astro_data_tag
     def _tag_is_ls(self):
         decker = (
-            self.phu.get('DECKER') == 'Long_slit'
-            or self.phu.get('DCKERPOS') == 'Long_slit'
+            self.phu.get("DECKER") == "Long_slit"
+            or self.phu.get("DCKERPOS") == "Long_slit"
         )
-        if decker or re.match(".?pix-slit", self.phu.get('MOSPOS', '')):
+        if decker or re.match(".?pix-slit", self.phu.get("MOSPOS", "")):
             if self._tag_is_spect():
-                return TagSet(['LS', 'SPECT'])
+                return TagSet(["LS", "SPECT"])
             else:
-                return TagSet(['LS', 'THRUSLIT'], if_present=['IMAGE'])
+                return TagSet(["LS", "THRUSLIT"], if_present=["IMAGE"])
 
     @astro_data_tag
     def _tag_is_mos(self):
         decker = (
-            self.phu.get('DECKER') == 'mos'
-            or self.phu.get('DCKERPOS') == 'mos'
+            self.phu.get("DECKER") == "mos"
+            or self.phu.get("DCKERPOS") == "mos"
         )
-        if decker or re.match("mos.?", self.phu.get('MOSPOS', '')):
+        if decker or re.match("mos.?", self.phu.get("MOSPOS", "")):
             if self._tag_is_spect():
-                return TagSet(['MOS', 'SPECT'])
+                return TagSet(["MOS", "SPECT"])
             else:
-                return TagSet(['MOS', 'THRUSLIT'], if_present=['IMAGE'])
+                return TagSet(["MOS", "THRUSLIT"], if_present=["IMAGE"])
 
     @astro_data_tag
     def _tag_arc(self):
-        if self.phu.get('OBSTYPE') == 'ARC':
-            return TagSet(['ARC', 'CAL'])
+        if self.phu.get("OBSTYPE") == "ARC":
+            return TagSet(["ARC", "CAL"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if self.phu.get('OBSTYPE') == 'FLAT':
-            return TagSet(['FLAT', 'CAL'])
+        if self.phu.get("OBSTYPE") == "FLAT":
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _tag_twilight(self):
-        if self.phu.get('OBJECT', '').upper() == 'TWILIGHT':
-            rej = {'FLAT'} if self.phu.get('GRISM') != 'Open' else set()
-            return TagSet(['TWILIGHT', 'CAL'], blocks=rej)
+        if self.phu.get("OBJECT", "").upper() == "TWILIGHT":
+            rej = {"FLAT"} if self.phu.get("GRISM") != "Open" else set()
+            return TagSet(["TWILIGHT", "CAL"], blocks=rej)
 
     @astro_data_tag
     def _tag_disperser(self):
-        disp = self.phu.get('DISPERSR', '')
-        if disp.startswith('DISP_WOLLASTON'):
-            return TagSet(['POL'])
-        elif disp.startswith('DISP_PRISM'):
-            return TagSet(['SPECT', 'IFU'])
+        disp = self.phu.get("DISPERSR", "")
+        if disp.startswith("DISP_WOLLASTON"):
+            return TagSet(["POL"])
+        elif disp.startswith("DISP_PRISM"):
+            return TagSet(["SPECT", "IFU"])
 
     @astro_data_tag
     def _tag_standard(self):
-        if self.phu.get('PROCSTND'):
-            return TagSet(['STANDARD', 'CAL'])
+        if self.phu.get("PROCSTND"):
+            return TagSet(["STANDARD", "CAL"])
 
 
     @returns_list
@@ -153,11 +153,11 @@ class AstroDataF2(AstroDataGemini):
             Location of the pixels exposed to light using an IRAF section
             format (1-based).
         """
-        if 'PREPARED' in self.tags:
+        if "PREPARED" in self.tags:
             return super().array_section(pretty=pretty)
 
         value_filter = (str if pretty else Section.from_string)
-        return value_filter('[1:2048,1:2048]')
+        return value_filter("[1:2048,1:2048]")
 
     def camera(self, stripID=False, pretty=False):
         """
@@ -175,11 +175,11 @@ class AstroDataF2(AstroDataGemini):
         camera = self.lyot_stop()
         if camera is None or not camera.startswith("f/"):
             focus = self.phu.get("FOCUS", "")
-            if not re.match('^f/\\d+$', focus):
+            if not re.match("^f/\\d+$", focus):
                 # Use original pixel scale
                 pixscale = (
                     self.phu["PIXSCALE"]
-                    if 'PREPARED' in self.tags
+                    if "PREPARED" in self.tags
                     else self.pixel_scale()
                 )
                 focus = "f/16" if pixscale > 0.1 else "f/32"
@@ -205,11 +205,11 @@ class AstroDataF2(AstroDataGemini):
         float
             The central wavelength setting
         """
-        central_wavelength = float(self.phu['WAVELENG']) * 0.1
+        central_wavelength = float(self.phu["WAVELENG"]) * 0.1
 
         filter = self.filter_name(keepID=True)
         # Header value for this filter in early data is incorrect:
-        if filter == 'K-long_G0812':
+        if filter == "K-long_G0812":
             central_wavelength = 2200.0
         # The new JH_G0816 and HK_G0817 filters were installed in 2022, but
         # their WAVELENG header keywords weren't simultaneously updated, thus
@@ -256,7 +256,7 @@ class AstroDataF2(AstroDataGemini):
             format (1-based).
 
         """
-        if 'PREPARED' in self.tags:
+        if "PREPARED" in self.tags:
             return super().data_section(pretty=pretty)
         return self.array_section(pretty=pretty)
 
@@ -288,7 +288,7 @@ class AstroDataF2(AstroDataGemini):
             Position of the detector using an IRAF section format (1-based).
 
         """
-        if 'PREPARED' in self.tags:
+        if "PREPARED" in self.tags:
             return super().detector_section(pretty=pretty)
         return self.array_section(pretty=pretty)
 
@@ -318,7 +318,7 @@ class AstroDataF2(AstroDataGemini):
             The offset in pixels
         """
         try:
-            return -self.phu.get('QOFFSET') / self.pixel_scale()
+            return -self.phu.get("QOFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
 
@@ -335,11 +335,11 @@ class AstroDataF2(AstroDataGemini):
             The offset in pixels
         """
         try:
-            offset = -self.phu.get('POFFSET') / self.pixel_scale()
+            offset = -self.phu.get("POFFSET") / self.pixel_scale()
         except TypeError:  # either is None
             return None
         # Bottom port flip
-        return -offset if self.phu.get('INPORT') == 1 else offset
+        return -offset if self.phu.get("INPORT") == 1 else offset
 
     @astro_data_descriptor
     @gmu.return_requested_units()
@@ -397,14 +397,14 @@ class AstroDataF2(AstroDataGemini):
 
         """
         try:
-            filter1 = self.phu['FILTER1']
-            filter2 = self.phu['FILTER2']
+            filter1 = self.phu["FILTER1"]
+            filter2 = self.phu["FILTER2"]
             lyot = self.lyot_stop()
         except KeyError:
             try:
                 # Old (pre-20100301) keyword names
-                filter1 = self.phu['FILT1POS']
-                filter2 = self.phu['FILT2POS']
+                filter1 = self.phu["FILT1POS"]
+                filter2 = self.phu["FILT2POS"]
                 lyot = self.lyot_stop()
             except KeyError:
                 return None
@@ -448,26 +448,26 @@ class AstroDataF2(AstroDataGemini):
             filter.append(filter3)
         if pretty or keepID:
             # Remove filters with the name 'open'
-            if 'open' in filter2 or 'Open' in filter2:
+            if "open" in filter2 or "Open" in filter2:
                 del filter[1]
-            if 'open' in filter1 or 'Open' in filter1:
+            if "open" in filter1 or "Open" in filter1:
                 del filter[0]
 
             if (
-                'Block' in filter1
-                or 'Block' in filter2
-                or 'Dark' in filter1
-                or 'Dark' in filter2
+                "Block" in filter1
+                or "Block" in filter2
+                or "Dark" in filter1
+                or "Dark" in filter2
             ):
-                filter = ['blank']
-            if 'DK' in filter1 or 'DK' in filter2:
-                filter = ['dark']
+                filter = ["blank"]
+            if "DK" in filter1 or "DK" in filter2:
+                filter = ["dark"]
 
             if len(filter) == 0:
-                filter = ['open']
+                filter = ["open"]
 
         # Return &-concatenated names if we still have two filter names
-        return '&'.join(filter[:])
+        return "&".join(filter[:])
 
     @returns_list
     @use_keyword_if_prepared
@@ -485,8 +485,8 @@ class AstroDataF2(AstroDataGemini):
             Gain used for the observation
 
         """
-        lnrs = self.phu.get('LNRS')
-        gain = getattr(array_properties.get(self.read_mode()), 'gain', None)
+        lnrs = self.phu.get("LNRS")
+        gain = getattr(array_properties.get(self.read_mode()), "gain", None)
         # F2 adds the reads (in ADU), so the electron-to-ADU conversion
         # needs to be divided by the number of reads
         return gain / lnrs if gain and lnrs else None
@@ -534,10 +534,10 @@ class AstroDataF2(AstroDataGemini):
         ## at the Gemini level
         if "DARK" in tags:
             id_descriptor_list = dark_id
-        elif 'IMAGE' in tags and 'FLAT' in tags:
+        elif "IMAGE" in tags and "FLAT" in tags:
             id_descriptor_list = flat_id
             additional_item = "F2_IMAGE_FLAT"
-        elif 'IMAGE' in tags and 'TWILIGHT' in tags:
+        elif "IMAGE" in tags and "TWILIGHT" in tags:
             id_descriptor_list = flat_twilight_id
             additional_item = "F2_IMAGE_TWILIGHT"
         else:
@@ -580,7 +580,7 @@ class AstroDataF2(AstroDataGemini):
         str
             LYOT stop name, or None
         """
-        lyot = self.phu.get('LYOT', self.phu.get('LYOTPOS', None))
+        lyot = self.phu.get("LYOT", self.phu.get("LYOTPOS", None))
         if lyot == "Undefined":
             lyot = None
         return lyot
@@ -602,9 +602,9 @@ class AstroDataF2(AstroDataGemini):
             focal plane mask name, or None
 
         """
-        mospos = self.phu.get('MOSPOS', None)
-        maskname = self.phu.get('MASKNAME', None)
-        return mospos if mospos == 'Open' else maskname
+        mospos = self.phu.get("MOSPOS", None)
+        maskname = self.phu.get("MASKNAME", None)
+        return mospos if mospos == "Open" else maskname
 
     @returns_list
     @astro_data_descriptor
@@ -658,7 +658,7 @@ class AstroDataF2(AstroDataGemini):
         # Element [3] gives the fraction of the saturation level at which
         # the data become non-linear
         fraction = getattr(
-            array_properties.get(self.read_mode()), 'linlimit', None
+            array_properties.get(self.read_mode()), "linlimit", None
         )
         sat_level = self.saturation_level()
         # Saturation level might be an element or a list
@@ -684,13 +684,13 @@ class AstroDataF2(AstroDataGemini):
         str
             Observation type
         """
-        return 'DARK' if 'F2_DARK' in self.tags else self.phu.get('OBSTYPE')
+        return "DARK" if "F2_DARK" in self.tags else self.phu.get("OBSTYPE")
 
     @astro_data_descriptor
     def pixel_scale(self):
         """Return the pixel scale, falling back on the PIXSCALE keyword."""
         pix_scale = super().pixel_scale()
-        return pix_scale or self.phu['PIXSCALE']
+        return pix_scale or self.phu["PIXSCALE"]
 
     @astro_data_descriptor
     def position_angle(self):
@@ -702,7 +702,7 @@ class AstroDataF2(AstroDataGemini):
         float
             the position angle (East of North) of the +ve y-direction
         """
-        return (self.phu[self._keyword_for('position_angle')] + 90) % 360
+        return (self.phu[self._keyword_for("position_angle")] + 90) % 360
 
     @astro_data_descriptor
     def read_mode(self):
@@ -714,7 +714,7 @@ class AstroDataF2(AstroDataGemini):
         str
             readout mode
         """
-        lnrs = self.phu.get('LNRS')
+        lnrs = self.phu.get("LNRS")
         return None if lnrs is None else str(lnrs)
 
     @returns_list
@@ -730,7 +730,7 @@ class AstroDataF2(AstroDataGemini):
             read noise
         """
         return getattr(
-            array_properties.get(self.read_mode(), None), 'readnoise', None
+            array_properties.get(self.read_mode(), None), "readnoise", None
         )
 
     @returns_list
@@ -746,7 +746,7 @@ class AstroDataF2(AstroDataGemini):
             saturation level
         """
         well_depth = getattr(
-            array_properties.get(self.read_mode(), None), 'welldepth', None
+            array_properties.get(self.read_mode(), None), "welldepth", None
         )
         gain = self.gain()
         if self.is_single:
@@ -771,8 +771,8 @@ class AstroDataF2(AstroDataGemini):
             the slit width in arcseconds
         """
         fpmask = self.focal_plane_mask(pretty=True)
-        if 'pix-slit' in fpmask:
-            return int(fpmask.replace('pix-slit', '')) * self.pixel_scale()
+        if "pix-slit" in fpmask:
+            return int(fpmask.replace("pix-slit", "")) * self.pixel_scale()
         return None
 
     # TODO: document why these are reversed
@@ -793,7 +793,7 @@ class AstroDataF2(AstroDataGemini):
             x offset
         """
         try:
-            return -self.phu['YOFFSET']
+            return -self.phu["YOFFSET"]
         except KeyError:
             return None
 
@@ -808,7 +808,7 @@ class AstroDataF2(AstroDataGemini):
             y offset
         """
         try:
-            return -self.phu['XOFFSET']
+            return -self.phu["XOFFSET"]
         except KeyError:
             return None
 

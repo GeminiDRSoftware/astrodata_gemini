@@ -9,35 +9,35 @@ class AstroDataIgrins(AstroDataGemini):
     """AstroData class for IGRINS data."""
 
     __keyword_dict = dict(
-        airmass = 'AMSTART',
-        wavelength_band = 'BAND',
-        detector_name = 'DETECTOR',
-        observation_class = 'OBJTYPE',
-        observation_type = 'OBJTYPE',
-        ra = 'OBJRA',
-        dec = 'OBJDEC',
-        slit_x_center = 'SLIT_CX',
-        slit_y_center = 'SLIT_CY',
-        slit_width = 'SLIT_WID',
-        slit_length = 'SLIT_LEN',
-        slit_angle = 'SLIT_ANG'
+        airmass = "AMSTART",
+        wavelength_band = "BAND",
+        detector_name = "DETECTOR",
+        observation_class = "OBJTYPE",
+        observation_type = "OBJTYPE",
+        ra = "OBJRA",
+        dec = "OBJDEC",
+        slit_x_center = "SLIT_CX",
+        slit_y_center = "SLIT_CY",
+        slit_width = "SLIT_WID",
+        slit_length = "SLIT_LEN",
+        slit_angle = "SLIT_ANG"
     )
 
     @staticmethod
     def _matches_data(source):
-        grins = source[0].header.get('INSTRUME', '').upper() == 'IGRINS'
+        grins = source[0].header.get("INSTRUME", "").upper() == "IGRINS"
         if not grins:
-            grins = source[1].header.get('INSTRUME', '').upper() == 'IGRINS'
+            grins = source[1].header.get("INSTRUME", "").upper() == "IGRINS"
         return grins
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['IGRINS'])
+        return TagSet(["IGRINS"])
 
     @astro_data_tag
     def _tag_image(self):
-        if self.phu.get('BAND') == 'S' or self[0].hdr.get('BAND') == 'S':
-            return TagSet(['IMAGE', 'ACQUISITION'])
+        if self.phu.get("BAND") == "S" or self[0].hdr.get("BAND") == "S":
+            return TagSet(["IMAGE", "ACQUISITION"])
 
     # @astro_data_tag
     # def _tag_spect(self):
@@ -47,49 +47,49 @@ class AstroDataIgrins(AstroDataGemini):
     @astro_data_tag
     def _tag_dark(self):
         if (
-            self.phu.get('OBJTYPE') == 'DARK'
-            or self[0].hdr.get('OBJTYPE') == 'DARK'
+            self.phu.get("OBJTYPE") == "DARK"
+            or self[0].hdr.get("OBJTYPE") == "DARK"
         ):
-            return TagSet(['DARK'], blocks=['IMAGE', 'SPECT'])
+            return TagSet(["DARK"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _tag_arc(self):
         if (
-            self.phu.get('OBJTYPE') == 'ARC'
-            or self[0].hdr.get('OBJTYPE') == 'ARC'
+            self.phu.get("OBJTYPE") == "ARC"
+            or self[0].hdr.get("OBJTYPE") == "ARC"
         ):
-            return TagSet(['ARC', 'CAL'])
+            return TagSet(["ARC", "CAL"])
 
     @astro_data_tag
     def _tag_flat(self):
         if (
-            self.phu.get('OBJTYPE') == 'FLAT'
-            or self[0].hdr.get('OBJTYPE') == 'FLAT'
+            self.phu.get("OBJTYPE") == "FLAT"
+            or self[0].hdr.get("OBJTYPE") == "FLAT"
         ):
-            return TagSet(['FLAT', 'CAL'])
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _tag_standard(self):
         if (
-            self.phu.get('OBJTYPE') == 'STD'
-            or self[0].hdr.get('OBJTYPE') == 'STD'
+            self.phu.get("OBJTYPE") == "STD"
+            or self[0].hdr.get("OBJTYPE") == "STD"
         ):
-            return TagSet(['STANDARD', 'CAL'])
+            return TagSet(["STANDARD", "CAL"])
 
     @astro_data_tag
     def _tag_science(self):
         if (
-            self.phu.get('OBJTYPE') == 'TAR'
-            or self[0].hdr.get('OBJTYPE') == 'TAR'
+            self.phu.get("OBJTYPE") == "TAR"
+            or self[0].hdr.get("OBJTYPE") == "TAR"
         ):
-            return TagSet(['SCIENCE'])
+            return TagSet(["SCIENCE"])
 
     @astro_data_descriptor
     def airmass(self):
         """Return the airmass, from the PHU or else the first extension."""
-        aim = self.phu.get(self._keyword_for('airmass'))
+        aim = self.phu.get(self._keyword_for("airmass"))
         if not aim:
-            aim = self[0].hdr.get(self._keyword_for('airmass'))
+            aim = self[0].hdr.get(self._keyword_for("airmass"))
         return aim
 
     @astro_data_descriptor
@@ -103,9 +103,9 @@ class AstroDataIgrins(AstroDataGemini):
             Detector name
 
         """
-        detnam = self.phu.get(self._keyword_for('detector_name'))
+        detnam = self.phu.get(self._keyword_for("detector_name"))
         if not detnam:
-            detnam = self[0].hdr.get(self._keyword_for('detector_name'))
+            detnam = self[0].hdr.get(self._keyword_for("detector_name"))
         return detnam
 
     @astro_data_descriptor
@@ -147,9 +147,9 @@ class AstroDataIgrins(AstroDataGemini):
             instrument name
 
         """
-        inst = self.phu.get(self._keyword_for('instrument'))
+        inst = self.phu.get(self._keyword_for("instrument"))
         if not inst:
-            inst = self[0].hdr.get(self._keyword_for('instrument'))
+            inst = self[0].hdr.get(self._keyword_for("instrument"))
 
         return inst
 
@@ -170,17 +170,17 @@ class AstroDataIgrins(AstroDataGemini):
         """
         oclass = None
 
-        otype = self.phu.get(self._keyword_for('observation_class'))
+        otype = self.phu.get(self._keyword_for("observation_class"))
         if not otype:
-            otype = self[0].hdr.get(self._keyword_for('observation_class'))
+            otype = self[0].hdr.get(self._keyword_for("observation_class"))
 
-        if 'S' in self.wavelength_band():
-            oclass = 'acq'
+        if "S" in self.wavelength_band():
+            oclass = "acq"
 
-        if 'STD' in otype:
-            oclass = 'partnerCal'
-        elif 'TAR' in otype:
-            oclass = 'science'
+        if "STD" in otype:
+            oclass = "partnerCal"
+        elif "TAR" in otype:
+            oclass = "science"
 
         return oclass
 
@@ -197,12 +197,12 @@ class AstroDataIgrins(AstroDataGemini):
             Observation type.
 
         """
-        otype = self.phu.get(self._keyword_for('observation_type'))
+        otype = self.phu.get(self._keyword_for("observation_type"))
         if not otype:
-            otype = self[0].hdr.get(self._keyword_for('observation_type'))
+            otype = self[0].hdr.get(self._keyword_for("observation_type"))
 
-        if otype in ['STD', 'TAR']:
-            otype = 'OBJECT'
+        if otype in ["STD", "TAR"]:
+            otype = "OBJECT"
 
         return otype
 
@@ -217,9 +217,9 @@ class AstroDataIgrins(AstroDataGemini):
             Right Ascension
 
         """
-        rad = self.phu.get(self._keyword_for('ra'))
+        rad = self.phu.get(self._keyword_for("ra"))
         if not rad:
-            rad = self[0].hdr.get(self._keyword_for('ra'))
+            rad = self[0].hdr.get(self._keyword_for("ra"))
         return rad
 
     @astro_data_descriptor
@@ -233,9 +233,9 @@ class AstroDataIgrins(AstroDataGemini):
             Declination
 
         """
-        decd = self.phu.get(self._keyword_for('dec'))
+        decd = self.phu.get(self._keyword_for("dec"))
         if not decd:
-            decd = self[0].hdr.get(self._keyword_for('dec'))
+            decd = self[0].hdr.get(self._keyword_for("dec"))
         return decd
 
     @astro_data_descriptor
@@ -249,9 +249,9 @@ class AstroDataIgrins(AstroDataGemini):
             Name of the bandpass.
 
         """
-        waveb = self.phu.get(self._keyword_for('wavelength_band'))
+        waveb = self.phu.get(self._keyword_for("wavelength_band"))
         if not waveb:
-            waveb = self[0].hdr.get(self._keyword_for('wavelength_band'))
+            waveb = self[0].hdr.get(self._keyword_for("wavelength_band"))
         return waveb
 
     #@astro_data_descriptor
@@ -265,7 +265,7 @@ class AstroDataIgrins(AstroDataGemini):
             center x position in pixels
 
         """
-        return self.phu.get(self._keyword_for('slit_x_center'))
+        return self.phu.get(self._keyword_for("slit_x_center"))
 
     #@astro_data_descriptor
     def _slit_y_center(self):
@@ -278,7 +278,7 @@ class AstroDataIgrins(AstroDataGemini):
             center y position in pixels
 
         """
-        return self.phu.get(self._keyword_for('slit_y_center'))
+        return self.phu.get(self._keyword_for("slit_y_center"))
 
     #@astro_data_descriptor
     def _slit_width(self):
@@ -291,7 +291,7 @@ class AstroDataIgrins(AstroDataGemini):
             slit width in pixels
 
         """
-        return self.phu.get(self._keyword_for('slit_width'))
+        return self.phu.get(self._keyword_for("slit_width"))
 
     #@astro_data_descriptor
     def _slit_length(self):
@@ -304,7 +304,7 @@ class AstroDataIgrins(AstroDataGemini):
             slit length in pixels
 
         """
-        return self.phu.get(self._keyword_for('slit_length'))
+        return self.phu.get(self._keyword_for("slit_length"))
 
     #@astro_data_descriptor
     def _slit_angle(self):
@@ -317,7 +317,7 @@ class AstroDataIgrins(AstroDataGemini):
             slit length in pixels
 
         """
-        return self.phu.get(self._keyword_for('slit_angle'))      
+        return self.phu.get(self._keyword_for("slit_angle"))      
 
     @astro_data_descriptor
     def target_ra(self):

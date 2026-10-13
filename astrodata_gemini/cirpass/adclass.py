@@ -9,35 +9,35 @@ class AstroDataCirpass(AstroDataGemini):
     """AstroData class for CIRPASS data."""
 
     __keyword_dict = dict(
-        ra = 'TEL_RA',
-        dec = 'TEL_DEC',
+        ra = "TEL_RA",
+        dec = "TEL_DEC",
     )
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '') == 'CIRPASS'
+        return source[0].header.get("INSTRUME", "") == "CIRPASS"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['CIRPASS'])
+        return TagSet(["CIRPASS"])
 
     @astro_data_tag
     def _tag_image(self):
-        return TagSet(['IMAGE'])
+        return TagSet(["IMAGE"])
 
     @astro_data_tag
     def _tag_dark(self):
-        if 'dark' in self.phu.get('OBSTYPE', '').lower():
-            return TagSet(['DARK', 'CAL'], blocks=['IMAGE'])
+        if "dark" in self.phu.get("OBSTYPE", "").lower():
+            return TagSet(["DARK", "CAL"], blocks=["IMAGE"])
 
     @astro_data_tag
     def _tag_flat(self):
-        if 'flat' in self.phu.get('OBSTYPE', '').lower():
-            return TagSet(['FLAT', 'CAL'])
+        if "flat" in self.phu.get("OBSTYPE", "").lower():
+            return TagSet(["FLAT", "CAL"])
 
     @astro_data_tag
     def _tag_bias(self):
-        if 'bias' in self.phu.get('OBSTYPE', '').lower():
-            return TagSet(['BIAS', 'CAL'], blocks=['IMAGE'])
+        if "bias" in self.phu.get("OBSTYPE", "").lower():
+            return TagSet(["BIAS", "CAL"], blocks=["IMAGE"])
 
     @astro_data_descriptor
     def ra(self):

@@ -18,47 +18,47 @@ class AstroDataNifs(AstroDataGemini):
     """AstroData class for NIFS data."""
 
     __keyword_dict = dict(
-        array_section = 'DATASEC',
-        camera = 'INSTRUME',
-        central_wavelength = 'GRATWAVE',
-        detector_section = 'DATASEC',
-        disperser = 'GRATING',
-        focal_plane_mask = 'APERTURE',
-        observation_epoch = 'EPOCH',
+        array_section = "DATASEC",
+        camera = "INSTRUME",
+        central_wavelength = "GRATWAVE",
+        detector_section = "DATASEC",
+        disperser = "GRATING",
+        focal_plane_mask = "APERTURE",
+        observation_epoch = "EPOCH",
     )
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'NIFS'
+        return source[0].header.get("INSTRUME", "").upper() == "NIFS"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet(['NIFS'])
+        return TagSet(["NIFS"])
 
     @astro_data_tag
     def _tag_dark(self):
-        if self.phu.get('OBSTYPE') == 'DARK':
-            return TagSet(['DARK', 'CAL'], blocks=['IMAGE', 'SPECT'])
+        if self.phu.get("OBSTYPE") == "DARK":
+            return TagSet(["DARK", "CAL"], blocks=["IMAGE", "SPECT"])
 
     @astro_data_tag
     def _tag_image(self):
-        if self.phu.get('FLIP') == 'In':
-            return TagSet(['IMAGE'])
+        if self.phu.get("FLIP") == "In":
+            return TagSet(["IMAGE"])
 
     @astro_data_tag
     def _tag_arc(self):
-        if self.phu.get('OBSTYPE') == 'ARC':
-            return TagSet(['ARC', 'CAL'])
+        if self.phu.get("OBSTYPE") == "ARC":
+            return TagSet(["ARC", "CAL"])
 
     @astro_data_tag
     def _tag_ronchi(self):
-        req = self.phu.get('OBSTYPE'), self.phu.get('APERTURE')
-        if req == ('FLAT', 'Ronchi_Screen_G5615'):
-            return TagSet(['RONCHI', 'CAL'])
+        req = self.phu.get("OBSTYPE"), self.phu.get("APERTURE")
+        if req == ("FLAT", "Ronchi_Screen_G5615"):
+            return TagSet(["RONCHI", "CAL"])
 
     @astro_data_tag
     def _tag_spect(self):
-        if self.phu.get('FLIP') == 'Out':
-            return TagSet(['SPECT', 'IFU'])
+        if self.phu.get("FLIP") == "Out":
+            return TagSet(["SPECT", "IFU"])
 
     @astro_data_descriptor
     def filter_name(self, stripID=False, pretty=False):
@@ -83,13 +83,13 @@ class AstroDataNifs(AstroDataGemini):
             The name of the filter with or without the component ID.
 
         """
-        filt = self.phu.get('FILTER')
+        filt = self.phu.get("FILTER")
         if stripID or pretty:
             filt = gmu.removeComponentID(filt)
-        return 'blank' if filt == 'Blocked' else filt
+        return "blank" if filt == "Blocked" else filt
 
     def _from_biaspwr(self, constant_name):
-        bias_volt = self.phu.get('BIASPWR')
+        bias_volt = self.phu.get("BIASPWR")
 
         for bias, constants in constants_by_bias.items():
             if abs(bias - bias_volt) < 0.1:
@@ -135,7 +135,7 @@ class AstroDataNifs(AstroDataGemini):
             Level in ADU at which the non-linear regime starts.
         """
         saturation_level = self.saturation_level()
-        corrected = 'NONLINCR' in self.phu
+        corrected = "NONLINCR" in self.phu
 
         linear_limit = self._from_biaspwr(
             "linearlimit" if corrected else "nonlinearlimit"
@@ -167,7 +167,7 @@ class AstroDataNifs(AstroDataGemini):
         fpm = self.focal_plane_mask()
         disp = self.disperser()
         filt = self.filter_name()
-        return getattr(config_dict.get((fpm, disp, filt)), 'pixscale', None)
+        return getattr(config_dict.get((fpm, disp, filt)), "pixscale", None)
 
     @astro_data_descriptor
     def read_mode(self):
@@ -184,7 +184,7 @@ class AstroDataNifs(AstroDataGemini):
         """
         # NOTE: The original read_mode descriptor obtains the bias voltage
         #       value, but then it does NOTHING with it. I'll just skip it.
-        return lnrs_mode_map.get(self.phu.get('LNRS'), 'Unknown')
+        return lnrs_mode_map.get(self.phu.get("LNRS"), "Unknown")
 
     @returns_list
     @astro_data_descriptor
@@ -205,7 +205,7 @@ class AstroDataNifs(AstroDataGemini):
         rn = self._from_biaspwr("readnoise")
         try:
             return float(
-                rn * math.sqrt(self.coadds()) / math.sqrt(self.phu.get('LNRS'))
+                rn * math.sqrt(self.coadds()) / math.sqrt(self.phu.get("LNRS"))
             )
         except TypeError:
             return None

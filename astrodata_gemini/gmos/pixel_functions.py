@@ -40,7 +40,7 @@ def get_bias_level(adinput=None, estimate=True):
     # to the function from the primitives_qa module - MS 2014-05-14 see
     # Trac #683
     try:  # the header keyword gets deleted when trimming, so it is there?
-        adinput.hdr[adinput._keyword_for('overscan_section')]
+        adinput.hdr[adinput._keyword_for("overscan_section")]
     except KeyError:  # no, it isn't!
         estimate = True  # so we have to estimate
     __ALLOWED_TYPES__ = ["GMOS"]
@@ -167,8 +167,8 @@ def _get_bias_level_estimate(adinput=None):
         lut_bias = bias_dict.get((read_speed_setting, gain_setting, ampname))
 
     # Get the overscan value and the raw bias level from the extension headers
-    overscan_values = adinput.hdr.get('OVERSCAN')
-    raw_bias_levels = adinput.hdr.get('RAWBIAS')
+    overscan_values = adinput.hdr.get("OVERSCAN")
+    raw_bias_levels = adinput.hdr.get("RAWBIAS")
 
     try:
         bias_level = [o if o is not None else

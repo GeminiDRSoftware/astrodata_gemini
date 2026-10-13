@@ -10,18 +10,18 @@ class AstroDataBhros(AstroDataGemini):
     """AstroData class for BhROS data."""
 
     __keyword_dict = dict(
-        array_section = 'CCDSEC',
-        central_wavelength = 'WAVELENG',
-        overscan_section = 'BIASSEC'
+        array_section = "CCDSEC",
+        central_wavelength = "WAVELENG",
+        overscan_section = "BIASSEC"
     )
 
     @staticmethod
     def _matches_data(source):
-        return source[0].header.get('INSTRUME', '').upper() == 'BHROS'
+        return source[0].header.get("INSTRUME", "").upper() == "BHROS"
 
     @astro_data_tag
     def _tag_instrument(self):
-        return TagSet({'BHROS', 'SPECT'}, ())
+        return TagSet({"BHROS", "SPECT"}, ())
 
     @astro_data_descriptor
     @gmu.return_requested_units(input_units="AA")
@@ -35,7 +35,7 @@ class AstroDataBhros(AstroDataGemini):
             The central wavelength setting
         """
         # The central_wavelength keyword is in Angstroms
-        keyword = self._keyword_for('central_wavelength')
+        keyword = self._keyword_for("central_wavelength")
         wave_in_angstroms = self.phu.get(keyword, -1)
         if wave_in_angstroms < 0:
             return None
@@ -75,7 +75,7 @@ class AstroDataBhros(AstroDataGemini):
         str
             The name of the disperser
         """
-        return 'bHROS'
+        return "bHROS"
 
     @astro_data_descriptor
     def ra(self):
