@@ -1,6 +1,6 @@
 import datetime
-from astrodata import Section
 
+from astrodata import Section
 
 # Expected descriptor values for the IGRINS-2
 # test files.  Every name in ad.descriptors is represented for every file.

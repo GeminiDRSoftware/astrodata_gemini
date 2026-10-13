@@ -107,7 +107,8 @@ exclude = [
 force-exclude = true
 
 include = [
-    "astrodata_gemini",
+    "astrodata_gemini/**/*.py",
+    "tests/**/*.py",
     "noxfile.py",
 ]
 
@@ -167,6 +168,7 @@ ignore = [
 # The lookup tables have wide data rows that are clearer left on one line:
 #  + E501: Line too long
 "astrodata_gemini/*/lookup.py" = ["E501"]
+"tests/unit/*lut*.py" = ["E501"]
 
 # Tests should not be worried about:
 #  + ERA001: Commented out code

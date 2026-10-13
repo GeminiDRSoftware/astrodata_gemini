@@ -1,6 +1,6 @@
 import datetime
-from astrodata import Section
 
+from astrodata import Section
 
 # This has been modified from a dict to a hideous nested list so
 # path_to_inputs can be used

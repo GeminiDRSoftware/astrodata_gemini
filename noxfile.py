@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import ClassVar
 
 import nox
-from nox.command import CommandFailed
 from packaging.requirements import Requirement
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -272,7 +271,9 @@ def pre_download_test_data(session):
     desc_all_keys = set()
     for lut_path in desc_luts_paths:
         lut_name = Path(lut_path).stem
-        lut_descriptors_dict = get_lut_data(lut_name, lut_path).descriptors_data
+        lut_descriptors_dict = get_lut_data(
+            lut_name, lut_path
+        ).descriptors_data
         desc_all_keys = desc_all_keys | set(lut_descriptors_dict.keys())
 
     all_keys = set(lut_tags_dict.keys()) | desc_all_keys
@@ -298,8 +299,8 @@ def pre_download_test_data(session):
 
     if failed_to_download:
         session.log(
-            f"{RED}Failed to download the following files (they might be derivatives: {RESET}"
-            f"\n{'\n'.join(failed_to_download)}\n"
+            f"{RED}Failed to download the following files (they might be "
+            f"derivatives: {RESET}\n{'\n'.join(failed_to_download)}\n"
         )
 
 
