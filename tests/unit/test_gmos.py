@@ -3,11 +3,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import astrodata_gemini
+import astrodata_gemini  # noqa: F401  (plugin: registers the AstroData classes)
 
-from .lut_tags import tags_data
+from ..testing import (  # noqa: F401
+    astrofaker,
+    find_test_data,
+    get_storage_location,
+)
 from .gmos_lut_descriptors import descriptors_data
-from ..testing import astrofaker, find_test_data, get_storage_location
+from .lut_tags import tags_data
 
 # The LUTs key GMOS files by site.
 GMOS_KEYS = ("GMOS-N", "GMOS-S")
@@ -137,7 +141,7 @@ def test_all_descriptors_represented(ad):
 
 @pytest.mark.gmos
 @pytest.mark.astrofaker
-def test_tag_as_standard_fake(astrofaker):
+def test_tag_as_standard_fake(astrofaker):  # noqa: F811
 
     # LTT4363 (a high proper motion specphot) on Jan 1, 2021
     ad = astrofaker.create(

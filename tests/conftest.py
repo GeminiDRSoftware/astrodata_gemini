@@ -1,8 +1,10 @@
 # conftest.py — loads before any test_*.py is collected
-import sys
 import copy
+import sys
+
 import astrodata
-import astrodata_gemini
+
+import astrodata_gemini  # noqa: F401  (plugin: registers the AstroData classes)
 
 if any(m == "astrofaker" or m.startswith("astrofaker.") for m in sys.modules):
     raise RuntimeError(

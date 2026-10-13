@@ -1,12 +1,13 @@
-import os
-from pathlib import Path
-import sys
 import copy
-from . import conftest
+import os
+import sys
+from pathlib import Path
 
 import astrodata
 import pytest
 from astrodata.testing import download_from_archive
+
+from . import conftest
 
 
 def _purge_astrofaker_from_sys_modules():

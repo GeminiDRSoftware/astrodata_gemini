@@ -5,11 +5,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import astrodata_gemini
+import astrodata_gemini  # noqa: F401  (plugin: registers the AstroData classes)
 
+from ..testing import find_test_data, get_storage_location
 from .lut_tags import tags_data
 from .others_lut_descriptors import descriptors_data
-from ..testing import find_test_data, get_storage_location
 
 # Instruments covered by this module and their AstroData class.
 INSTRUMENT_CLASSES = {

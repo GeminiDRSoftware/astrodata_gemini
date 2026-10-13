@@ -1,14 +1,13 @@
-from datetime import datetime, timedelta
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-import astrodata_gemini
+import astrodata_gemini  # noqa: F401  (plugin: registers the AstroData classes)
 
-from .lut_tags import tags_data
-from .ghost_lut_descriptors import descriptors_data
 from ..testing import find_test_data, get_storage_location
+from .ghost_lut_descriptors import descriptors_data
+from .lut_tags import tags_data
 
 
 @pytest.fixture(scope="module")
