@@ -104,6 +104,7 @@ line-length = 79
 exclude = [
     "docs",
 ]
+force-exclude = true
 
 include = [
     "astrodata_gemini",
@@ -185,6 +186,9 @@ ignore = [
 
 [tool.ruff.format]
 skip-magic-trailing-comma = true
+exclude = [
+    "astrodata_gemini/*/lookup.py",
+]
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
