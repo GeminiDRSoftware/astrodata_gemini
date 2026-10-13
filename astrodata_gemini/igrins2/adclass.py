@@ -211,7 +211,10 @@ class AstroDataIgrins2(AstroDataGemini):
         exptimes = list(set(self.hdr.get("EXPTIME")) - {None})
         if len(exptimes) == 1:
             return exptimes.pop()
-        raise ValueError("Exposure times are not identical: ,".join(exptimes))
+        raise ValueError(
+            "Exposure times are not identical: "
+            + ", ".join(str(t) for t in exptimes)
+        )
 
     @staticmethod
     def _matches_data(source):
