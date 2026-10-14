@@ -259,12 +259,21 @@ def write_req_file(session, optionals=[]):
 
 @nox.session
 def linting(session):
-    """Run the linters."""
-    # Install the dependencies for linting
-    install_pip_test_dependencies(session, optionals=["dev"])
+    """Run the linters.
 
-    # Run the linters
-    session.run("ruff", "check", ".")
+    Only ruff is needed.  The files, the rules and the line length are set in
+    [tool.ruff] in pyproject.toml.  Keep the ruff version in step with the
+    one in .pre-commit-config.yaml.
+    """
+    session.install("ruff==0.17.0")
+
+    # On GitHub Actions, annotate the pull request with the errors.
+    check_options = []
+    if os.environ.get("GITHUB_ACTIONS"):
+        check_options.append("--output-format=github")
+
+    session.run("ruff", "check", *check_options, ".")
+    session.run("ruff", "format", "--diff", ".")
 
 
 @nox.session(venv_backend="venv", python="3.14")

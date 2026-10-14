@@ -1,0 +1,38 @@
+name: Lint
+
+# Run this workflow on every push to the repository, on pull requests, and on
+# manual trigger.
+on:
+    push:
+    pull_request:
+    workflow_dispatch:
+
+# Cancel a run that is still going when a newer one starts for the same ref.
+concurrency:
+    group: lint-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v7
+
+            - name: Set up Python
+              uses: actions/setup-python@v7
+              with:
+                  python-version: "3.14"
+
+            - name: Install nox
+              run: python -m pip install "nox>=2026.8.17"
+
+            # The nox session installs ruff (the version is pinned in the
+            # noxfile) and runs "ruff check" and "ruff format --diff".  The
+            # rules, the line length and the files covered are set in
+            # [tool.ruff] in pyproject.toml.
+            - name: Lint
+              run: nox -s linting
