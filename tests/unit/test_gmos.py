@@ -5,11 +5,7 @@ import pytest
 
 import astrodata_gemini  # noqa: F401  (plugin: registers the AstroData classes)
 
-from ..testing import (  # noqa: F401
-    astrofaker,
-    find_test_data,
-    get_storage_location,
-)
+from ..testing import astrofaker, find_test_data, get_storage_location  # noqa: F401
 from .gmos_lut_descriptors import descriptors_data
 from .lut_tags import tags_data
 

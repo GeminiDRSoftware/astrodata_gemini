@@ -110,6 +110,7 @@ force-exclude = true
 include = [
     "astrodata_gemini/**/*.py",
     "tests/**/*.py",
+    "nox_utils/**/*.py",
     "noxfile.py",
 ]
 

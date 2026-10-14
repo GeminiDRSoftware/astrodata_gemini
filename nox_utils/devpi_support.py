@@ -1,12 +1,16 @@
+"""Support functions for the devpi test-index nox sessions."""
+
 import socket
+from contextlib import closing
+
 
 def devpi_available_port(host, initial_port):
     """
     Find an available port starting from the initial_port.
+
     If the initial_port is not available, increment the port number until
     an available one is found.
     """
-
     port = initial_port
 
     # In case there's a bug/issue, only try a specific number of times.
