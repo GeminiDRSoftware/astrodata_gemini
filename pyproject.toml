@@ -90,6 +90,12 @@ markers = [
 omit = [
     "tests/*",
     "docs/*",
+    "astrodata_gemini/*/lookup.py",
+    "astrodata_gemini/*/tests/*",   # to remove when igrins2 is sorted.
+]
+
+source = [
+    "astrodata_gemini",
 ]
 
 [tool.coverage.report]

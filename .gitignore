@@ -165,3 +165,6 @@ dmypy.json
 
 # Ruff cache
 .ruff_cache/
+
+# Artifacts
+_badges/

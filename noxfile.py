@@ -18,7 +18,7 @@ from nox_utils import dragons_support
 from nox_utils.devpi_support import devpi_available_port
 
 # Sessions to run by default when nox is called without arguments.
-nox.options.sessions = []
+nox.options.sessions = ["unit-tests"]
 nox.options.error_on_external_run = True
 
 
@@ -44,7 +44,7 @@ class SessionVariables:
 
     # pytest options for the test sessions
     pytest_options = []
-    # pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
+    pytest_options = ["--cov=astrodata_gemini", "--cov-report=term-missing"]
     unit_pytest_options = pytest_options + [str(unit_test_dir)]
     integration_pytest_options = pytest_options + [str(integration_test_dir)]
 
@@ -255,6 +255,33 @@ def write_req_file(session, optionals=[]):
 # -----------------------------------------------------------------------
 # Nox Sessions
 # -----------------------------------------------------------------------
+
+
+@nox.session(python="3.14")
+def coverage(session):
+    """Build the coverage reports and badge from the .coverage data file.
+
+    The data is collected by pytest-cov in the unit_tests session, so run
+    that session first.
+    """
+    if not Path(".coverage").exists():
+        session.error("No .coverage file; run the unit_tests session first.")
+
+    session.install("coverage>=7.15", "genbadge[coverage]>=1.1.3")
+
+    # Generate the coverage report.
+    session.run("coverage", "report", "--show-missing")
+    session.run("coverage", "html")
+
+    # Create a coverage badge
+    session.run("coverage", "xml")
+    Path("_badges").mkdir(exist_ok=True)
+    session.run(
+        "genbadge",
+        "coverage",
+        "-i", "./coverage.xml",
+        "-o", "_badges/coverage.svg"
+    )  # fmt: skip
 
 
 @nox.session
