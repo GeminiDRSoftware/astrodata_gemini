@@ -21,7 +21,10 @@ from nox_utils.devpi_support import devpi_available_port
 nox.options.sessions = []
 nox.options.error_on_external_run = True
 
-# ---- Session Variables ---------------------------------------------------
+
+# ----------------------------------------------------------------------
+# Session Variables
+# -----------------------------------------------------------------------
 
 
 class SessionVariables:
@@ -73,7 +76,9 @@ class SessionVariables:
         raise NotImplementedError(message)
 
 
-# ---- Utility functions ---------------------------------------------------
+# ------------------------------------------------------------------------
+# Utility functions
+# ------------------------------------------------------------------------
 
 
 def apply_data_caching_environment_variable(session: nox.Session) -> None:
@@ -247,10 +252,22 @@ def write_req_file(session, optionals=[]):
     return req_file_path
 
 
-# ---- Nox Sessions ---------------------------------------------------------
+# -----------------------------------------------------------------------
+# Nox Sessions
+# -----------------------------------------------------------------------
 
 
-@nox.session(venv_backend="venv", python="3.12")
+@nox.session
+def linting(session):
+    """Run the linters."""
+    # Install the dependencies for linting
+    install_pip_test_dependencies(session, optionals=["dev"])
+
+    # Run the linters
+    session.run("ruff", "check", ".")
+
+
+@nox.session(venv_backend="venv", python="3.14")
 def pre_download_test_data(session):
     """Pre-download test data for the unit and integration tests."""
     apply_data_caching_environment_variable(session)
@@ -318,6 +335,11 @@ def unit_tests(session):
     session.run("pytest", *SessionVariables.unit_pytest_options, *pytest_args)
 
 
+# -------------------------------------------------------------------------
+# Development Environment Session
+# -------------------------------------------------------------------------
+
+
 @nox.session
 def devshell(session):
     """Create a development environment with all dependencies installed.
@@ -383,7 +405,7 @@ def devshell(session):
         session.notify("initialize_pre_commit")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def initialize_pre_commit(session):
     """Initialize pre-commit hooks."""
     session.install("pre-commit")
@@ -391,6 +413,18 @@ def initialize_pre_commit(session):
         "pre-commit",
         "install",
         "--install-hooks",
+        "--hook-type=pre-commit",
+        "--hook-type=commit-msg",
+    )
+
+
+@nox.session(python="3.14")
+def deactivate_pre_commit(session):
+    """Deactivate pre-commit hooks."""
+    session.install("pre-commit")
+    session.run(
+        "pre-commit",
+        "uninstall",
         "--hook-type=pre-commit",
         "--hook-type=commit-msg",
     )

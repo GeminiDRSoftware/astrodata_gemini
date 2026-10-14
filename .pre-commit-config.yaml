@@ -1,0 +1,33 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+default_stages: ["pre-commit"]
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-json
+    -   id: check-toml
+    -   id: check-docstring-first
+    -   id: check-case-conflict
+    # -   id: trailing-whitespace
+    # -   id: end-of-file-fixer
+    -   id: check-symlinks
+    -   id: check-vcs-permalinks
+    -   id: debug-statements
+    -   id: forbid-submodules
+#    -   id: no-commit-to-branch   # reactivate when ready to block main
+#        args:
+#        - --branch=main
+#        - --pattern=^release/.*
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.17.0
+  hooks:
+    # Run the linter.
+    - id: ruff-check
+      # args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format
+      args: [ --diff]
