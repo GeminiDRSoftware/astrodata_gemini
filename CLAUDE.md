@@ -97,5 +97,5 @@ single-test check when nox is clearly unnecessary, and say that you're doing so.
   (https://geminidrsoftware.github.io/astrodata/) plugin for accessing data 
   from the Gemini Observatory instruments through the `astrodata` uniform interface.
 - **Usage:** @README.md
-- **Tests:** nox (see "Running tests" above); main sessions: unit-tests
+- **Tests:** nox (see "Running tests" above); main sessions: unit_tests
 - **Lint/format:** ruff check ; ruff format --diff

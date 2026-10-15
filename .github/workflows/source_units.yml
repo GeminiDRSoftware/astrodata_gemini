@@ -1,0 +1,85 @@
+name: Source unit tests
+
+# Run the unit tests (nox session "unit_tests") from the source tree on the
+# three operating systems and the four supported Python versions.
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+    workflow_call:
+
+# Cancel a run that is still going when a newer one starts for the same ref.
+concurrency:
+    group: source-units-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+defaults:
+    run:
+        shell: bash
+
+jobs:
+    unit_tests:
+        name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 60
+
+        strategy:
+            # Let the other combinations finish when one fails.
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                    - windows-latest
+                python-version:
+                    - "3.12"
+                    - "3.13"
+                    - "3.14"
+
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v7
+
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v7
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - name: Install nox
+              run: python -m pip install "nox>=2026.8.17"
+
+            # The test files are downloaded from the archive the first time
+            # they are needed, into _test_data_cache (see
+            # apply_data_caching_environment_variable in the noxfile).  Cache
+            # that directory so that the download happens only when the list
+            # of files in test_github.py changes.  The data does not depend
+            # on the Python version.
+            - name: Cache the test data
+              uses: actions/cache@v5
+              with:
+                  path: _test_data_cache
+                  key: testdata-${{ hashFiles('tests/unit/test_github.py') }}
+                  enableCrossOSArchive: true
+                  restore-keys: |
+                      testdata-
+
+            # Only the tests marked "github" are run here; they use the small
+            # subset of the test data that is practical to download on every
+            # push.  The session name carries the Python version, eg.
+            # unit_tests-3.12.  Arguments after -- are passed to pytest.
+            - name: Run the unit tests
+              run: python -m nox -s "unit_tests-${{ matrix.python-version }}" -- -m github
+
+            - name: Upload the coverage data
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
+                  path: .coverage
+                  include-hidden-files: true
+                  if-no-files-found: ignore

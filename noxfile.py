@@ -18,7 +18,7 @@ from nox_utils import dragons_support
 from nox_utils.devpi_support import devpi_available_port
 
 # Sessions to run by default when nox is called without arguments.
-nox.options.sessions = ["unit-tests"]
+nox.options.sessions = ["unit_tests"]
 nox.options.error_on_external_run = True
 
 
@@ -32,7 +32,6 @@ class SessionVariables:
 
     # Python versions:
     python_versions: ClassVar[list[str]] = [
-        "3.11",
         "3.12",
         "3.13",
         "3.14",
