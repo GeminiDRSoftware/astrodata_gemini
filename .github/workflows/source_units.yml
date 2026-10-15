@@ -64,7 +64,7 @@ jobs:
               with:
                   path: _test_data_cache
                   key: testdata-${{ hashFiles('tests/unit/test_github.py') }}
-                  enableCrossOSArchive: true
+                  enableCrossOsArchive: true
                   restore-keys: |
                       testdata-
 

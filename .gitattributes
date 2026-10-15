@@ -1,0 +1,7 @@
+# Check out text files with LF line endings on every platform, so that file
+# hashes (e.g. hashFiles() in the GitHub Actions cache key) are the same on
+# Linux, macOS and Windows.
+* text=auto eol=lf
+
+# Windows batch files need CRLF.
+*.bat text eol=crlf
