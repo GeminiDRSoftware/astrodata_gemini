@@ -11,7 +11,8 @@ from pathlib import Path
 from typing import ClassVar
 
 import nox
-from packaging.requirements import Requirement
+
+# from packaging.requirements import Requirement
 
 sys.path.insert(0, str(Path(__file__).parent))
 from nox_utils import dragons_support
@@ -192,31 +193,61 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
     ]
     session_python_version = session.run(*cmd, silent=True).strip()
 
-    # The requirements file may contain PEP 508 environment markers
-    # (e.g. numpy's python_version-conditioned pins). conda cannot
-    # parse those. Evaluate each marker for this session's Python
-    # version and strip it, dropping any requirement that doesn't
-    # apply.
-    with fileinput.input(files=str(req_file_path), inplace=True) as file:
+    # # The requirements file may contain PEP 508 environment markers
+    # # (e.g. numpy's python_version-conditioned pins). conda cannot
+    # # parse those. Evaluate each marker for this session's Python
+    # # version and strip it, dropping any requirement that doesn't
+    # # apply.
+    # with fileinput.input(files=str(req_file_path), inplace=True) as file:
+    #     for line in file:
+    #         stripped = line.strip()
+    #         if not stripped:
+    #             continue
+    #
+    #         requirement = Requirement(stripped)
+    #
+    #         if requirement.marker is None or requirement.marker.evaluate(
+    #             environment={"python_version": session_python_version}
+    #         ):
+    #             requirement.marker = None
+    #             print(str(requirement), end="\n"
+
+    conda_deps = []
+    pip_deps = []
+    with fileinput.input(files=str(req_file_path)) as file:
         for line in file:
             stripped = line.strip()
             if not stripped:
                 continue
 
-            requirement = Requirement(stripped)
-
-            if requirement.marker is None or requirement.marker.evaluate(
-                environment={"python_version": session_python_version}
+            if (
+                "@" in stripped
+                or line.startswith("git+")
+                or ("[" in stripped and "]" in stripped)
             ):
-                requirement.marker = None
-                print(str(requirement), end="\n")
+                pip_deps.append(stripped)
+            else:
+                conda_deps.append(stripped)
 
-    session.conda_install(
-        "--quiet",
-        "--file",
-        str(req_file_path),
-        channel=SessionVariables.dragons_conda_channels,
+    # "conda env update" has no --channel option; the channels are set here.
+    # "nodefaults" keeps conda from also searching the default channels.
+    channels = [*SessionVariables.dragons_conda_channels, "nodefaults"]
+    env_contents = (
+        "channels:\n  - " + "\n  - ".join(channels) + "\n"
+        f"dependencies:\n  - python={session_python_version}\n"
+        "  - pip\n"
+        "  - " + "\n  - ".join(conda_deps) + "\n"
+        "  - pip:\n    - " + "\n    - ".join(pip_deps) + "\n"
     )
+    env_file_path = Path(session.create_tmp()) / "environment.yml"
+    env_file_path.write_text(env_contents)
+
+    session.run(
+        "conda", "env", "update",
+        "--prefix", session.virtualenv.location,
+        "--quiet",
+        "--file", str(env_file_path),
+    )  # fmt: skip
 
 
 def write_req_file(session, optionals=[]):
@@ -254,6 +285,27 @@ def write_req_file(session, optionals=[]):
 # -----------------------------------------------------------------------
 # Nox Sessions
 # -----------------------------------------------------------------------
+
+
+@nox.session(venv_backend="conda", python=SessionVariables.python_versions)
+def conda_unit_tests(session):
+    """Run the unit tests with pytest in a conda environment."""
+    apply_data_caching_environment_variable(session)
+    session.run("conda", "config", "--env", "--add", "channels", "conda-forge")
+
+    install_conda_test_dependencies(session, optionals=["test"])
+    session.install("-e", ".", "--no-deps")
+
+    # Positional arguments after -- are passed to pytest
+    pytest_args = session.posargs
+
+    # Run the tests.
+    session.run(
+        "pytest",
+        *SessionVariables.unit_pytest_options,
+        *pytest_args,
+        external=True,
+    )
 
 
 @nox.session(python="3.14")

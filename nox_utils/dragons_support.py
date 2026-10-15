@@ -1,8 +1,8 @@
 """Settings for creating an environment with DRAGONS installed."""
 
 dragons_conda_channels = [
-    "conda-forge",
     "http://astroconda.gemini.edu/public",
+    "conda-forge",
 ]  # fmt: skip
 
 dragons_venv_params = [

@@ -1,0 +1,84 @@
+name: Source conda unit tests
+
+# Run the unit tests (nox session "conda_unit_tests") from the source tree in
+# conda environments, on ubuntu and macos, for Python 3.12 to 3.14.
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+    workflow_call:
+
+# Cancel a run that is still going when a newer one starts for the same ref.
+# The group name must differ from the one in source_units.yml, or the two
+# workflows would cancel each other.
+concurrency:
+    group: source-conda-units-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+# A login shell, so that the "conda" set up by setup-miniconda is found.
+defaults:
+    run:
+        shell: bash -el {0}
+
+jobs:
+    conda_unit_tests:
+        name: "Conda Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 60
+
+        strategy:
+            # Let the other combinations finish when one fails.
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                # The Python version of the test environment.  The nox session
+                # name carries it, eg. conda_unit_tests-3.12.
+                python-version:
+                    - "3.12"
+                    - "3.13"
+                    - "3.14"
+
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v7
+
+            # This Python only runs nox.  The conda session builds its own
+            # environment with the Python version from the session name.
+            - name: Set up Python to run nox
+              uses: actions/setup-python@v7
+              with:
+                  python-version: "3.14"
+
+            - name: Set up conda
+              uses: conda-incubator/setup-miniconda@v4
+
+            - name: Install nox
+              run: python -m pip install "nox>=2026.8.17"
+
+            # The test files are downloaded from the archive the first time
+            # they are needed, into _test_data_cache (see
+            # apply_data_caching_environment_variable in the noxfile).  Cache
+            # that directory so that the download happens only when the list
+            # of files in test_github.py changes.  The data does not depend
+            # on the Python version.
+            - name: Cache the test data
+              uses: actions/cache@v5
+              with:
+                  path: _test_data_cache
+                  key: testdata-${{ hashFiles('tests/unit/test_github.py') }}
+                  enableCrossOsArchive: true
+                  restore-keys: |
+                      testdata-
+
+            # Only the tests marked "github" are run here; they use the small
+            # subset of the test data that is practical to download on every
+            # push.  Arguments after -- are passed to pytest.
+            - name: Run the unit tests
+              run: python -m nox -s "conda_unit_tests-${{ matrix.python-version }}" -- -m github
