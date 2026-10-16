@@ -71,6 +71,9 @@ release = __version__
 
 # -- General configuration ---------------------------------------------------
 
+# Local extensions
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "_ext"))
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx_automodapi.automodapi",
@@ -81,11 +84,9 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "sphinx-copybutton",
+    "sphinx_copybutton",
+    "gemini_pages",
 ]
-
-# Raise warnings to errors.
-warningiserror = True
 
 #templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -153,7 +154,7 @@ rst_prolog = """
 .. role:: raw-html(raw)
    :format: html
 
-.. |ADMaster| replace:: `AstroData Manual <https://geminidrsoftware.github.io/astrodata/manuals/index.html>`__
+.. |astrodata| replace:: `AstroData <https://geminidrsoftware.github.io/astrodata/>`__
 .. |DRAGONS| replace:: `DRAGONS <https://dragons.readthedocs.io/en/stable/>`__
 
 """

@@ -1,14 +1,30 @@
-.. gemini_instruments documentation master file, created by
-   sphinx-quickstart on Wed Aug  5 14:45:13 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. astrodata_gemini documentation master file
 
-gemini_instruments documentation
-================================
+astrodata_gemini documentation
+==============================
+
+Description
+-----------
+``astrodata_gemini`` is an |astrodata| plugin for accessing data from the
+Gemini Observatory instruments through the |astrodata| uniform interface.
+
+Installation
+------------
+
+``astrodata_gemini`` is available on the [Python Package Index][pypi link] and
+can be installed using ``pip``:
+
+.. code-block:: bash
+
+    python -m pip install astrodata_gemini
+
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Table of Contents:
 
-   descriptors_api
+   usage
+   api/core_methods
+   api/instruments/index
+   api/gemini_descriptors
