@@ -156,5 +156,6 @@ rst_prolog = """
 
 .. |astrodata| replace:: `AstroData <https://geminidrsoftware.github.io/astrodata/>`__
 .. |DRAGONS| replace:: `DRAGONS <https://dragons.readthedocs.io/en/stable/>`__
+.. |pypi_pkg| replace:: `PyPI <https://pypi.org/project/astrodata-gemini/>`__
 
 """

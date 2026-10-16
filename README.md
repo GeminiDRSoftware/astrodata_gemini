@@ -3,7 +3,7 @@
 [astrodata docs]: https://geminidrsoftware.github.io/astrodata/
 [astrodata repo]: https://github.com/GeminiDRSoftware/astrodata/
 [documentation]: https://astrodata-gemini.readthedocs.io/en/latest/
-[pypi link]: https://pypi.org/project/astrodata_gemini
+[pypi link]: https://pypi.org/project/astrodata-gemini
 <!-- [citation link]: https://github.com/GeminiDRSoftware/astrodata_gemini/blob/main/CITATION.md -->
 [DRAGONS citation]: https://zenodo.org/records/10841622
 <!-- [zenodo DOI link]: -->

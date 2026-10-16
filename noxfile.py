@@ -6,6 +6,7 @@ import functools
 import glob
 import importlib.util
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import ClassVar
@@ -333,6 +334,27 @@ def coverage(session):
         "-i", "./coverage.xml",
         "-o", "_badges/coverage.svg"
     )  # fmt: skip
+
+
+@nox.session
+def docs(session):
+    """Build the documentation."""
+    # Install the dependencies for building the docs.
+    install_pip_test_dependencies(session, optionals=["docs"])
+    session.install("-e", ".", "--no-deps")
+
+    # Build the docs.
+    build_dir = Path("docs") / "_build" / "html"
+    if build_dir.exists():
+        shutil.rmtree(build_dir)
+    session.run("sphinx-build", "-W", "--keep-going", "docs", str(build_dir))
+    session.log(f"Documentation built in {str(build_dir)}")
+
+    index_location = build_dir / "index.html"
+    session.log(
+        "Open the documentation in a browser with:\n"
+        f"  {index_location.absolute().as_uri()}"
+    )
 
 
 @nox.session

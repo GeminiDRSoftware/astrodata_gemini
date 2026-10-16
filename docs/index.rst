@@ -11,7 +11,7 @@ Gemini Observatory instruments through the |astrodata| uniform interface.
 Installation
 ------------
 
-``astrodata_gemini`` is available on the [Python Package Index][pypi link] and
+``astrodata_gemini`` is available on PyPI at |pypi_pkg| and
 can be installed using ``pip``:
 
 .. code-block:: bash
