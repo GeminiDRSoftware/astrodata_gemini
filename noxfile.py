@@ -5,9 +5,12 @@ import fileinput
 import functools
 import glob
 import importlib.util
+import json
 import os
+import re
 import shutil
 import sys
+import time
 from pathlib import Path
 from typing import ClassVar
 
@@ -156,6 +159,87 @@ def install_pip_test_dependencies(session, packages=None, optionals=[]):
     session.install("-r", str(req_file_path), "--timeout=30")
 
 
+def _requirement_name(requirement):
+    """Return the normalized package name of a requirement string."""
+    return re.split(r"[\s<>=!~;\[]", requirement, maxsplit=1)[0].lower()
+
+
+def _parse_conda_json(session, output):
+    """Return the JSON document found in the output of a conda command.
+
+    Conda can print notices (e.g. "A newer version of conda exists") on
+    standard output before, or after, the JSON document.  Skip them.
+    """
+    start = output.find("{")
+    if start >= 0:
+        try:
+            return json.JSONDecoder().raw_decode(output[start:])[0]
+        except ValueError:
+            pass
+    session.error(f"Unexpected output from conda:\n{output[:2000]}")
+
+
+def _missing_on_conda(session, python_version, requirements, channels):
+    """Return the names of the requirements that conda cannot provide.
+
+    A single dry-run solve of all the requirements, together with the
+    session's Python version, tells which ones are not available from the
+    channels, taking the version requirements into account.  Nothing is
+    installed.
+
+    Arguments
+    ---------
+    session : nox.Session
+        The nox session object.
+
+    python_version : str
+        The Python version of the session, e.g. "3.14".
+
+    requirements : list of str
+        The requirements to check, in a syntax conda understands.
+
+    channels : list of str
+        The conda channels to search.  Only these are searched, not the
+        default channels or the ones in the user's .condarc.
+
+    Returns
+    -------
+    set of str
+        The normalized names of the packages that are not available.
+    """
+    if not requirements:
+        return set()
+
+    channel_args = [arg for ch in channels for arg in ("-c", ch)]
+    probe_prefix = str(Path(session.create_tmp()) / "probe")
+
+    # The astroconda channel fails at random, so try a few times.
+    attempts = 3
+    for attempt in range(1, attempts + 1):
+        output = session.run(
+            "conda", "create", "--dry-run", "--json",
+            "--prefix", probe_prefix,
+            "--override-channels", *channel_args,
+            f"python={python_version}", *requirements,
+            silent=True, success_codes=[0, 1],
+        )  # fmt: skip
+        result = _parse_conda_json(session, output)
+
+        error = result.get("exception_name")
+        if error is None:
+            return set()
+        if error == "PackagesNotFoundError":
+            return {_requirement_name(p) for p in result["packages"]}
+        if error != "UnavailableInvalidChannel":
+            session.error(f"conda could not check the packages: {error}")
+
+        session.log(f"conda channel error (attempt {attempt}/{attempts})")
+        if attempt < attempts:
+            time.sleep(5)
+
+    session.error("The conda channels are not available.")
+
+
 def install_conda_test_dependencies(session, packages=None, optionals=[]):
     """Install the test dependencies from pyproject.toml using conda.
 
@@ -194,26 +278,12 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
     ]
     session_python_version = session.run(*cmd, silent=True).strip()
 
-    # # The requirements file may contain PEP 508 environment markers
-    # # (e.g. numpy's python_version-conditioned pins). conda cannot
-    # # parse those. Evaluate each marker for this session's Python
-    # # version and strip it, dropping any requirement that doesn't
-    # # apply.
-    # with fileinput.input(files=str(req_file_path), inplace=True) as file:
-    #     for line in file:
-    #         stripped = line.strip()
-    #         if not stripped:
-    #             continue
-    #
-    #         requirement = Requirement(stripped)
-    #
-    #         if requirement.marker is None or requirement.marker.evaluate(
-    #             environment={"python_version": session_python_version}
-    #         ):
-    #             requirement.marker = None
-    #             print(str(requirement), end="\n"
+    channels = SessionVariables.dragons_conda_channels
 
-    conda_deps = []
+    # Requirements that conda cannot take (direct references, extras) go
+    # straight to pip.  For the others, check which ones are available as
+    # conda packages.
+    candidates = []
     pip_deps = []
     with fileinput.input(files=str(req_file_path)) as file:
         for line in file:
@@ -228,13 +298,22 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
             ):
                 pip_deps.append(stripped)
             else:
-                conda_deps.append(stripped)
+                candidates.append(stripped)
+
+    missing = _missing_on_conda(
+        session, session_python_version, candidates, channels
+    )
+    conda_deps = []
+    for requirement in candidates:
+        if _requirement_name(requirement) in missing:
+            pip_deps.append(requirement)
+        else:
+            conda_deps.append(requirement)
 
     # "conda env update" has no --channel option; the channels are set here.
     # "nodefaults" keeps conda from also searching the default channels.
-    channels = [*SessionVariables.dragons_conda_channels, "nodefaults"]
     env_contents = (
-        "channels:\n  - " + "\n  - ".join(channels) + "\n"
+        "channels:\n  - " + "\n  - ".join([*channels, "nodefaults"]) + "\n"
         f"dependencies:\n  - python={session_python_version}\n"
         "  - pip\n"
         "  - " + "\n  - ".join(conda_deps) + "\n"
