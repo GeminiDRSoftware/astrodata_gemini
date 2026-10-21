@@ -1,6 +1,9 @@
 [build-system]
 requires = ["setuptools>=77", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
+# warning: pyramid used by devpi requires setuptools<82.  They are working
+# on it. Everything works okay now, but this note is just in case it stops
+# working in the future.
 
 [project]
 name = "astrodata_gemini"

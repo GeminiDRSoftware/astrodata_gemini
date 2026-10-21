@@ -20,7 +20,7 @@ import nox
 
 sys.path.insert(0, str(Path(__file__).parent))
 from nox_utils import dragons_support
-from nox_utils.devpi_support import devpi_available_port
+from nox_utils.devpi_support import DevpiServerManager
 
 # Sessions to run by default when nox is called without arguments.
 nox.options.sessions = ["unit_tests"]
@@ -59,20 +59,20 @@ class SessionVariables:
     dragons_venv_params = dragons_support.dragons_venv_params
     dragons_github_url = dragons_support.dragons_github_url
 
-    # devpi server information
-    devpi_host = "localhost"
-    devpi_initial_port = 1420
+    # # devpi server information
+    # devpi_host = "localhost"
+    # devpi_initial_port = 1420
 
-    @classmethod
-    @functools.cache
-    def devpi_port(cls):
-        """Return the devpi port."""
-        return devpi_available_port(cls.devpi_host, cls.devpi_initial_port)
-
-    @classmethod
-    def devpi_url(cls):
-        """Return the devpi url."""
-        return f"http://{cls.devpi_host}:{cls.devpi_port()}/"
+    # @classmethod
+    # @functools.cache
+    # def devpi_port(cls):
+    #     """Return the devpi port."""
+    #     return devpi_available_port(cls.devpi_host, cls.devpi_initial_port)
+    #
+    # @classmethod
+    # def devpi_url(cls):
+    #     """Return the devpi url."""
+    #     return f"http://{cls.devpi_host}:{cls.devpi_port()}/"
 
     def __new__(cls) -> None:
         """Just catches accidental invocations."""
@@ -330,6 +330,14 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
     )  # fmt: skip
 
 
+def optional_dependencies(*names):
+    """Return the requirements of the given extras in pyproject.toml."""
+    extras = nox.project.load_toml("pyproject.toml")["project"][
+        "optional-dependencies"
+    ]
+    return [requirement for name in names for requirement in extras[name]]
+
+
 def write_req_file(session, optionals=[]):
     """Write the requirements.txt file from pyproject.toml.
 
@@ -363,8 +371,44 @@ def write_req_file(session, optionals=[]):
 
 
 # -----------------------------------------------------------------------
+# Decorators
+# -----------------------------------------------------------------------
+
+
+def use_devpi_server(func):
+    """Start and stop a devpi server for the session.
+
+    This is used as a function decorator, and must come after the
+    ``@nox.session`` decorator.
+    """
+
+    @functools.wraps(func)
+    def wrapper(session, *args, **kwargs):
+        install_pip_test_dependencies(
+            session, packages=optional_dependencies("build_test")
+        )
+
+        # Launch the devpi server and run the session function.
+        with DevpiServerManager(session):
+            func(session, *args, **kwargs)
+
+    return wrapper
+
+
+# -----------------------------------------------------------------------
 # Nox Sessions
 # -----------------------------------------------------------------------
+
+
+@nox.session(python=SessionVariables.python_versions)
+@use_devpi_server
+def build_tests_unit(session):
+    """Run the unit tests from a build stored in a devpi server.
+
+    This session will build the package, upload it to an isolated devpi server,
+    and run the tests using the build version of the package.
+    """
+    apply_data_caching_environment_variable(session)
 
 
 @nox.session(venv_backend="conda", python=SessionVariables.python_versions)
