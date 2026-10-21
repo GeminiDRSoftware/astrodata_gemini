@@ -15,17 +15,19 @@ from pathlib import Path
 from typing import ClassVar
 
 import nox
+from packaging.utils import parse_sdist_filename
 
 # from packaging.requirements import Requirement
 
 sys.path.insert(0, str(Path(__file__).parent))
 from nox_utils import dragons_support
-from nox_utils.devpi_support import DevpiServerManager
+from nox_utils.devpi_support import TESTPASS, TESTUSER, DevpiServerManager
 
 # Sessions to run by default when nox is called without arguments.
 nox.options.sessions = ["unit_tests"]
 nox.options.error_on_external_run = True
 
+PYPROJECT = Path(__file__).parent / "pyproject.toml"
 
 # ----------------------------------------------------------------------
 # Session Variables
@@ -59,21 +61,6 @@ class SessionVariables:
     dragons_venv_params = dragons_support.dragons_venv_params
     dragons_github_url = dragons_support.dragons_github_url
 
-    # # devpi server information
-    # devpi_host = "localhost"
-    # devpi_initial_port = 1420
-
-    # @classmethod
-    # @functools.cache
-    # def devpi_port(cls):
-    #     """Return the devpi port."""
-    #     return devpi_available_port(cls.devpi_host, cls.devpi_initial_port)
-    #
-    # @classmethod
-    # def devpi_url(cls):
-    #     """Return the devpi url."""
-    #     return f"http://{cls.devpi_host}:{cls.devpi_port()}/"
-
     def __new__(cls) -> None:
         """Just catches accidental invocations."""
         message = "This class should not be instantiated."
@@ -85,7 +72,7 @@ class SessionVariables:
 # ------------------------------------------------------------------------
 
 
-def apply_data_caching_environment_variable(session: nox.Session) -> None:
+def apply_data_caching_environment_variable(session: nox.Session):
     """Add a test caching env var to the session's environment."""
     default_data_cache_path = str(Path(os.getcwd()) / "_test_data_cache")
 
@@ -100,6 +87,46 @@ def apply_data_caching_environment_variable(session: nox.Session) -> None:
     session.env["ADGEMINI_STORE_TESTDATA"] = (
         os.getenv("ADGEMINI_STORE_TESTDATA") or default_data_cache_path
     )
+
+
+def build_and_upload_to_devpi(session):
+    """Build the package and upload it to the devpi server.
+
+    Arguments
+    ---------
+    session : nox.Session
+        The nox session object.
+
+    Returns
+    -------
+    str
+        The version of the package that was built and uploaded.
+    """
+    # Build the package.
+    tmp_build_dir = Path(session.create_tmp()) / "build"
+    tmp_build_dir.mkdir()
+    session.run(
+        "python", "-m", "build",
+        "--sdist",
+        "--outdir", str(tmp_build_dir)
+    )  # fmt: skip
+
+    # Get the version
+    sdist = next(Path(tmp_build_dir).glob("*.tar.gz"))
+    name, version = parse_sdist_filename(sdist.name)
+    version = str(version)
+
+    # Upload the package to the devpi server.
+    session.run(
+        "twine",
+        "upload",
+        "--repository-url", session.env["DEVPI_INDEX_URL"],
+        "--username", TESTUSER,
+        "--password", TESTPASS,
+        str(sdist),
+    )  # fmt: skip
+
+    return version
 
 
 def get_lut_data(module_name, lut_path):
@@ -332,7 +359,7 @@ def install_conda_test_dependencies(session, packages=None, optionals=[]):
 
 def optional_dependencies(*names):
     """Return the requirements of the given extras in pyproject.toml."""
-    extras = nox.project.load_toml("pyproject.toml")["project"][
+    extras = nox.project.load_toml(PYPROJECT)["project"][
         "optional-dependencies"
     ]
     return [requirement for name in names for requirement in extras[name]]
@@ -352,7 +379,7 @@ def write_req_file(session, optionals=[]):
         [project.optional-dependencies] section of pyproject.toml.
     """
     # Get the dependencies from pyproject.toml
-    toml_config = nox.project.load_toml("pyproject.toml")
+    toml_config = nox.project.load_toml(PYPROJECT)
     requirements = toml_config["project"]["dependencies"]
     for optional in optionals:
         requirements += toml_config["project"]["optional-dependencies"].get(
@@ -408,7 +435,35 @@ def build_tests_unit(session):
     This session will build the package, upload it to an isolated devpi server,
     and run the tests using the build version of the package.
     """
+    # build the package and upload it to the devpi server
+    version = build_and_upload_to_devpi(session)
+
     apply_data_caching_environment_variable(session)
+
+    # Switch to a work directory
+    working_dir = Path(session.create_tmp())
+    with session.chdir(working_dir):
+        # install the package from the devpi server.
+        install_pip_test_dependencies(session, optionals=["test"])
+        session.install(
+            "--trusted-host",
+            "localhost",
+            "--index-url",
+            session.env["PIP_INDEX_URL"],
+            f"astrodata_gemini=={version}",
+        )
+
+        # run the unit tests
+        # --import-mode=importlib is needed to ensure that the root repo
+        # is not on sys.path, so that the tests are run against the installed
+        # package, not the source code in the repo.
+        pos_args = session.posargs
+        session.run(
+            "pytest",
+            "--import-mode=importlib",
+            *SessionVariables.unit_pytest_options,
+            *pos_args,
+        )
 
 
 @nox.session(venv_backend="conda", python=SessionVariables.python_versions)

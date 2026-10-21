@@ -8,10 +8,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "astrodata_gemini"
 dynamic = ["version"]
-description = """
-A plugin for accessing data from the Gemini Observatory instruments through
-the astrodata uniform interface.
-"""
+description = "An astrodata plugin for Gemini Observatory instrument data."
 authors = [
     { name = "DRAGONS development team" },
 ]

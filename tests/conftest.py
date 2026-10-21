@@ -6,6 +6,14 @@ import astrodata
 
 import astrodata_gemini  # noqa: F401  (plugin: registers the AstroData classes)
 
+
+def pytest_report_header(config):
+    return (
+        f"astrodata_gemini {astrodata_gemini.__version__}: "
+        f"{astrodata_gemini.__file__}"
+    )
+
+
 if any(m == "astrofaker" or m.startswith("astrofaker.") for m in sys.modules):
     raise RuntimeError(
         "astrofaker was already imported before conftest.py ran — "

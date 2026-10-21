@@ -11,6 +11,8 @@ import nox
 
 HOST = "localhost"
 INITIAL_PORT = 1420
+TESTUSER = "testuser"
+TESTPASS = "123"
 
 
 class DevpiServerError(RuntimeError):
