@@ -1,0 +1,81 @@
+name: Build unit testing
+
+# Run the unit tests on built package.  The package is built and uploaded
+# to a devpi server, then installed from there.
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    schedule:
+        - cron: "20 1 * * mon"
+    workflow_dispatch:
+    workflow_call:
+
+# Cancel a run that is still going when a newer one starts for the same ref.
+concurrency:
+    group: build-units-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+defaults:
+    run:
+        shell: bash
+
+jobs:
+    unit_tests:
+        name: "Build and run unit tests - Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 60
+
+        strategy:
+            # Let the other combinations finish when one fails.
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                    - windows-latest
+                python-version:
+                    - "3.12"
+                    - "3.13"
+                    - "3.14"
+
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0   # need to see the tags
+
+            - name: Check git tags
+              run: |
+                  git fetch --tags
+                  git describe --tags --always
+
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v7
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - name: Install nox
+              run: python -m pip install "nox>=2026.8.17"
+
+            # The test files are downloaded from the archive the first time
+            # they are needed, into _test_data_cache (see
+            # apply_data_caching_environment_variable in the noxfile).  Cache
+            # that directory so that the download happens only when the list
+            # of files in test_github.py changes.  The data does not depend
+            # on the Python version.
+            - name: Cache the test data
+              uses: actions/cache@v5
+              with:
+                  path: _test_data_cache
+                  key: testdata-${{ hashFiles('tests/unit/test_github.py') }}
+                  enableCrossOsArchive: true
+                  restore-keys: |
+                      testdata-
+
+            - name: Build and run unit tests
+              run: nox -s "build_tests_unit-${{ matrix.python-version }}" -- -vv -m github
