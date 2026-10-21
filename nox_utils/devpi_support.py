@@ -39,6 +39,12 @@ class DevpiServerManager:
         self.index_url = None
         self.server_process = None
 
+        # The server output goes to a file, not to a pipe: nobody reads a
+        # pipe while the server runs, and the server blocks when it is full.
+        # The file is outside of the server directory, so it survives the
+        # clean up and can be read after the session.
+        self.log_path = Path(session.create_tmp()) / "devpi-server.log"
+
         # Initialization methods
         self.configure_devpi_tmp_dir()
 
@@ -49,7 +55,22 @@ class DevpiServerManager:
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Stop the devpi server."""
+        if exc_type is not None:
+            self.log_server_output()
         self.stop_devpi_server()
+
+    def log_server_output(self, max_lines=100):
+        """Write the end of the devpi server output to the session log."""
+        session = self.session
+        if not self.log_path.exists():
+            return
+
+        lines = self.log_path.read_text(errors="replace").splitlines()
+        session.log(
+            f"Last {min(max_lines, len(lines))} lines of the devpi server "
+            f"output ({self.log_path}):"
+        )
+        session.log("\n".join(lines[-max_lines:]))
 
     def configure_devpi_tmp_dir(self):
         """Configure the temporary directory for the devpi server."""
@@ -110,9 +131,7 @@ class DevpiServerManager:
         started = self.wait_for_devpi_startup(session)
 
         if server_process.poll() is not None or not started:
-            stdout, stderr = server_process.communicate()
-            session.log(f"stdout: {stdout}")
-            session.log(f"stderr: {stderr}")
+            self.log_server_output()
 
             message = "Devpi server failed to start."
             raise DevpiServerError(message)
@@ -130,17 +149,20 @@ class DevpiServerManager:
             message = "devpi-server is not installed in the session."
             raise DevpiServerError(message)
 
-        # The request-timeout helps when using a conda environment.
-        self.server_process = subprocess.Popen(
-            [
-                devpi_server_path,
-                "--serverdir", tmp_dir,
-                "--port", str(port),
-                "--request-timeout", "30",
-            ],  # noqa: S603
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )  # fmt: skip
+        # The request-timeout helps when using a conda environment.  The
+        # server inherits its own copy of the log file, so ours can be closed
+        # as soon as the process has started.
+        with self.log_path.open("w") as log_file:
+            self.server_process = subprocess.Popen(
+                [
+                    devpi_server_path,
+                    "--serverdir", tmp_dir,
+                    "--port", str(port),
+                    "--request-timeout", "30",
+                ],  # noqa: S603
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+            )  # fmt: skip
 
         # Wait for the server to start
         session.log("Waiting for devpi server to start...")
